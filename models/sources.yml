@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: crosschain
+    database: "{{ 'crosschain' if target.database == 'LIVEQUERY' else 'crosschain_dev' }}"
+    schema: core
+    tables:
+      - name: dim_date_hours
