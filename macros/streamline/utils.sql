@@ -5,25 +5,24 @@
     DROP FUNCTION IF EXISTS {{ func_name }}({{ compile_signature(signature, drop_ = True) }});
 {% endmacro %}
 
-{% macro construct_api_route(route) %}
+{%- macro construct_api_route(route) -%}
     'https://{{ var("REST_API_ID_PROD") if target.name == "prod" else var("REST_API_ID_DEV") }}.execute-api.{{ var( aws_region, "us-east-1" ) }}.amazonaws.com/{{ target.name }}/{{ route }}'
-{% endmacro %}
+{%- endmacro -%}
 
 {% macro compile_signature(
         params,
         drop_ = False
     ) %}
-    {%- for name,
+    {% for name,
         data_type in params -%}
-        {%- if drop_ %}
-            {{ data_type }}
-        {% else %}
-            {{ name ~ " " ~ data_type }}
+        {% if drop_ -%}
+            {{ data_type -}}
+        {% else -%}
+            {{ name ~ " " ~ data_type -}}
         {% endif -%}
-
-        {%- if not loop.last %},
-        {% endif %}
-    {% endfor -%}
+        {%- if not loop.last -%},
+        {%- endif %}
+    {%- endfor -%}
 {% endmacro %}
 
 {% macro create_sql_function(
@@ -35,17 +34,23 @@
         options = none,
         func_type = none
     ) %}
-    CREATE
-    OR REPLACE {{ func_type }} FUNCTION {{ name_ }}({{ compile_signature(signature) }}) returns {{ return_type }}
-    {% if options %}
+    CREATE OR REPLACE {{ func_type }} FUNCTION {{ name_ }}(
+            {{- compile_signature(signature) }}
+    )
+    RETURNS {{ return_type }}
+    {% if options -%}
         {{ options }}
     {% endif %}
-    {%- if api_integration %}
-        api_integration = {{ api_integration }} AS {{ construct_api_route(sql_) }};
-    {% else %}
-        AS $$ {{ sql_ }} $$;
-    {% endif -%}
-{% endmacro %}
+    {%- if api_integration -%}
+    api_integration = {{ api_integration }}
+    AS {{ construct_api_route(sql_) ~ ";" }}
+    {% else -%}
+    AS
+    $$
+    {{ sql_ }}
+    $$;
+    {%- endif -%}
+{%- endmacro -%}
 
 {% macro create_or_drop_function_from_config(
         config,

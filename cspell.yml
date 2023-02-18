@@ -2,3 +2,5 @@ version: "0.2"
 language: en
 words:
   - GETVARIABLE
+  - livequery
+  - udfs

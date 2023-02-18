@@ -1,0 +1,12 @@
+{{ create_or_drop_function_from_config((var("UDFS") ["streamline.introspect"]), drop_=True) }}
+{{ create_or_drop_function_from_config((var("UDFS") ["streamline.whoami"]), drop_=True) }}
+{{ create_or_drop_function_from_config((var("UDFS") ["streamline.udf_register_secret"]), drop_=True) }}
+{{ create_or_drop_function_from_config((var("UDFS") ["beta.udf_register_secret"]), drop_=True) }}
+{{ create_or_drop_function_from_config((var("UDFS") ["streamline.udf_api"]), drop_=True) }}
+{{ create_or_drop_function_from_config((var("UDFS") ["beta.udf_api"]), drop_=True) }}
+{{ create_or_drop_function_from_config((var("UDFS") ["streamline.introspect"]), drop_=False) }}
+{{ create_or_drop_function_from_config((var("UDFS") ["streamline.whoami"]), drop_=False) }}
+{{ create_or_drop_function_from_config((var("UDFS") ["streamline.udf_register_secret"]), drop_=False) }}
+{{ create_or_drop_function_from_config((var("UDFS") ["beta.udf_register_secret"]), drop_=False) }}
+{{ create_or_drop_function_from_config((var("UDFS") ["streamline.udf_api"]), drop_=False) }}
+{{ create_or_drop_function_from_config((var("UDFS") ["beta.udf_api"]), drop_=False) }}
