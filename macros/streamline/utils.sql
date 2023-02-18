@@ -9,20 +9,20 @@
     'https://{{ var("REST_API_ID_PROD") if target.name == "prod" else var("REST_API_ID_DEV") }}.execute-api.{{ var( aws_region, "us-east-1" ) }}.amazonaws.com/{{ target.name }}/{{ route }}'
 {%- endmacro -%}
 
-{% macro compile_signature(
+{%- macro compile_signature(
         params,
         drop_ = False
-    ) %}
+    ) -%}
     {% for name,
         data_type in params -%}
-        {% if drop_ -%}
+        {% if drop_ %}
             {{ data_type -}}
-        {% else -%}
+        {% else %}
             {{ name ~ " " ~ data_type -}}
         {% endif -%}
-        {%- if not loop.last -%},
-        {%- endif %}
-    {%- endfor -%}
+        {%-if not loop.last -%},
+        {%- endif -%}
+    {% endfor -%}
 {% endmacro %}
 
 {% macro create_sql_function(
