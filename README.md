@@ -1,6 +1,7 @@
 ## Profile Set Up
 
-#### Use the following within profiles.yml 
+#### Use the following within profiles.yml
+
 ----
 
 ```yml
@@ -45,14 +46,22 @@ When False, none of the on-run-start macros are executed on model run
 Default values are False
 
 * Usage:
-dbt run --var '{"UPDATE_UDFS_AND_SPS":True}'  -m ...
+dbt run --var 'UPDATE_UDFS_AND_SPS": True'  -m ...
+
+Dropping and creating udfs can also be done without running a model:
+
+```sh
+dbt run-operation create_udfs --args 'drop_:false'
+dbt run-operation create_udfs --args 'drop_:true'
+```
 
 ### Resources:
-- Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
-- Check out [Discourse](https://discourse.getdbt.com/) for commonly asked questions and answers
-- Join the [chat](https://community.getdbt.com/) on Slack for live discussions and support
-- Find [dbt events](https://events.getdbt.com) near you
-- Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
+
+* Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
+* Check out [Discourse](https://discourse.getdbt.com/) for commonly asked questions and answers
+* Join the [chat](https://community.getdbt.com/) on Slack for live discussions and support
+* Find [dbt events](https://events.getdbt.com) near you
+* Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
 
 ## Applying Model Tags
 
@@ -67,7 +76,7 @@ Database and schema tags are applied via the `add_database_or_schema_tags` macro
 
 ### Model tags
 
-To add/update a model's snowflake tags, add/modify the `meta` model property under `config`.  Only table level tags are supported at this time via DBT.
+To add/update a model's snowflake tags, add/modify the `meta` model property under `config` .  Only table level tags are supported at this time via DBT.
 
 ```
 {{ config(
