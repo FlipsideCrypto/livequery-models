@@ -29,10 +29,10 @@ tests:
 
 on-run-start:
   - "{{ create_sps() }}"
-  # - "{{ create_udfs() }}"
+  - "{{ create_udfs() }}"
 
 on-run-end:
-  - '{{ apply_meta_as_tags(results) }}'
+  - "{{ apply_meta_as_tags(results) }}"
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
@@ -43,5 +43,11 @@ on-run-end:
 
 vars:
   "dbt_date:time_zone": GMT
-  UPDATE_UDFS_AND_SPS: False
+  UPDATE_UDFS_AND_SPS: true
   UPDATE_SNOWFLAKE_TAGS: True
+  STREAMLINE_INVOKE_STREAMS: False
+  STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES: False
+  REST_API_ID_PROD: hn8uqhku77
+  REST_API_ID_DEV: hn8uqhku77
+  API_INTEGRATION: AWS_LIVE_QUERY_DEV
+  AWS_REGION: us-east-1
