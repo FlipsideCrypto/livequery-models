@@ -52,10 +52,10 @@
     {%- endif -%}
 {%- endmacro -%}
 
-{% macro create_or_drop_function_from_config(
+{%- macro create_or_drop_function_from_config(
         config,
         drop_ = False
-    ) %}
+    ) -%}
     {% set name_ = config ["name"] %}
     {% set signature = config ["signature"] %}
     {% set return_type = config ["return_type"] %}
@@ -64,7 +64,7 @@
     {% set api_integration = config ["api_integration"] %}
     {% set func_type = config ["func_type"] %}
 
-    {% if not drop_ %}
+    {% if not drop_ -%}
         {{ create_sql_function(
             name_ = name_,
             signature = signature,
@@ -74,10 +74,10 @@
             api_integration = api_integration,
             func_type = func_type
         ) }}
-    {% else %}
+    {%- else -%}
         {{ drop_function(
             name_,
             signature = signature,
         ) }}
-    {% endif %}
+    {%- endif %}
 {% endmacro %}
