@@ -43,11 +43,10 @@ The documentation included here details the design of the LiveQuery functions av
     ex: Defillama GET request -> working with the output (JSON flatten)
 
     WITH chain_base AS (
-
-    SELECT
-        ethereum.streamline.udf_api(
-            'GET','https://api.llama.fi/chains',{},{}
-        ) AS read
+        SELECT
+            ethereum.streamline.udf_api(
+                'GET','https://api.llama.fi/chains',{},{}
+            ) AS read
     )
 
     SELECT
