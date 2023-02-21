@@ -40,6 +40,23 @@ The documentation included here details the design of the LiveQuery functions av
 
 - `live.udf_api`(Method STRING, URL STRING, Headers OBJECT, Data OBJECT): Use this UDF to make a GET or POST request on any API
     ```
+    ex: Defillama GET request -> working with the output (JSON flatten)
+
+    WITH chain_base AS (
+
+    SELECT
+        ethereum.streamline.udf_api(
+            'GET','https://api.llama.fi/chains',{},{}
+        ) AS read
+    )
+
+    SELECT
+        VALUE:chainId::STRING AS chain_id,
+        VALUE:name::STRING AS chain,
+        VALUE:tokenSymbol::STRING AS token_symbol
+    FROM chain_base,
+        LATERAL FLATTEN (input=> read:data)
+
     ex: Solana Token Metadata
 
     SELECT
@@ -50,7 +67,7 @@ The documentation included here details the design of the LiveQuery functions av
             { }
         );
 
-    Running with multiple Solana token addresses at the same time
+    ex: Running with multiple token addresses at the same time
 
     WITH solana_addresses AS (
         SELECT
@@ -72,7 +89,7 @@ The documentation included here details the design of the LiveQuery functions av
     FROM
         solana_addresses;
 
-    Hit Quicknode (see instructions below for how to register an API Key with Flipside securely)
+    ex: Hit Quicknode (see instructions below for how to register an API Key with Flipside securely)
     
     SELECT
         live.udf_api(
