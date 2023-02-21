@@ -1,5 +1,3 @@
-{% docs __overview__ %}
-
 # Welcome to the Flipside Crypto LiveQuery Models Documentation!
 
 ## **What does this documentation cover?**
@@ -7,7 +5,7 @@ The documentation included here details the design of the LiveQuery functions av
 
 ### **Overview of Available Functions**
 
-**UTILS Functions**
+#### **UTILS Functions**
 
 - `utils.hex_to_int`: Use this UDF to transform any hex string to integer
     ```
@@ -37,9 +35,8 @@ The documentation included here details the design of the LiveQuery functions av
 - `utils.evm_decode_logs`
 - `utils.udf_introspect`
 - `utils.udf_register_secret`
-- `utils.whoami`
 
-**LIVE Functions & Examples**
+#### **LIVE Functions & Examples**
 
 - `live.udf_api`(Method STRING, URL STRING, Headers OBJECT, Data OBJECT): Use this UDF to make a GET or POST request on any API
     ```
@@ -90,7 +87,7 @@ The documentation included here details the design of the LiveQuery functions av
         );
     ```
 
-### **Registering and Using LiveQuery Credentials to Query Quicknode**
+##### **Registering and Using LiveQuery Credentials to Query Quicknode**
 With LiveQuery you can safely store encrypted credentials, such as an API key, with Flipside, and query blockchain nodes directly via our SQL interface. Here’s how:
 1. Sign up for a free [Quicknode API Account](https://www.quicknode.com/core-api)
 2. Navigate to ***Endpoints*** on the left hand side then click the ***Get Started*** tab and ***Copy*** the HTTP Provider Endpoint. Do not adjust the Setup or Security parameters.
@@ -98,6 +95,20 @@ With LiveQuery you can safely store encrypted credentials, such as an API key, w
 4. Fill out the form and ***Submit this Credential***
 5. Paste the provided query into [Flipside](https://flipside.new) and query your node directly in the app with your submitted Credential (`{my_url}`).
 
+##### **API Endpoints available for use with LiveQuery:**
+Please visit the Flipside discord or open a ticket for questions, concerns or more information.
+
+- Snapshot: [https://hub.snapshot.org/graphql](https://docs.snapshot.org/graphql-api) 
+- Defillama: [https://api.llama.fi/](https://defillama.com/docs/api)
+- Defillama: [https://yields.llama.fi/](https://defillama.com/docs/api)
+- Defillama: [https://stablecoins.llama.fi/](https://defillama.com/docs/api)
+- Defillama: [https://bridges.llama.fi/](https://defillama.com/docs/api)
+- Defillama: [https://coins.llama.fi/](https://defillama.com/docs/api)
+- zkSync: [https://api.zksync.io/api/v0.2/](https://docs.zksync.io/apiv02-docs/)
+- DeepNFT Value: [https://api.deepnftvalue.com/v1](https://deepnftvalue.readme.io/reference/getting-started-with-deepnftvalue-api)
+- Zapper: [https://api.zapper.fi/v2/](https://api.zapper.fi/api/static/index.html#/Apps/AppsController_getApps)
+- Helius: [https://api.helius.xyz](https://docs.helius.xyz/introduction/why-helius)
+- Stargaze Name Service: [https://rest.stargaze-apis.com](https://github.com/public-awesome/names/blob/main/API.md)
 
 ## **Using dbt docs**
 ### Navigation
@@ -124,7 +135,3 @@ Note that you can also right-click on models to interactively filter and explore
 - [Tutorials](https://docs.flipsidecrypto.com/our-data/tutorials)
 - [Github](https://github.com/FlipsideCrypto/external-models)
 - [What is dbt?](https://docs.getdbt.com/docs/introduction)
-
-
-
-{% enddocs %}
