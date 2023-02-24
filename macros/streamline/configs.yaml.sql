@@ -1,27 +1,90 @@
 {% macro udf_configs() %}
-streamline.introspect:
-  name: streamline.udf_introspect
+
+{#
+  UTILITY SCHEMA
+#}
+- name: _utils.udf_introspect
   signature:
     - [echo, STRING]
   func_type: SECURE EXTERNAL
   return_type: TEXT
-  api_integration: AWS_LIVE_QUERY_DEV
+  api_integration: '{{ var("API_INTEGRATION") }}'
   sql: introspect
 
-beta.udf_register_secret:
-  name: beta.udf_register_secret
+
+- name: _utils.udf_whoami
+  signature: []
+  func_type: SECURE
+  return_type: TEXT
+  options: NOT NULL STRICT IMMUTABLE MEMOIZABLE
+  sql: |
+    SELECT
+      COALESCE(SPLIT_PART(GETVARIABLE('QUERY_TAG_SESSION'), ',',2), CURRENT_USER())
+
+- name: _utils.udf_register_secret
   signature:
-    - [request_id, string]
-    - [key, string]
+    - [request_id, STRING]
+    - [user_id, STRING]
+    - [key, STRING]
+  return_type: TEXT
+  func_type: SECURE EXTERNAL
+  api_integration: '{{ var("API_INTEGRATION") }}'
+  options: NOT NULL STRICT
+  sql: secret/register
+- name: utils.udf_register_secret
+  signature:
+    - [request_id, STRING]
+    - [key, STRING]
   func_type: SECURE
   return_type: TEXT
   options: NOT NULL STRICT IMMUTABLE
   sql: |
     SELECT
-      STREAMLINE.UDF_REGISTER_SECRET(REQUEST_ID, STREAMLINE.UDF_WHOAMI(), KEY)
+      _utils.UDF_REGISTER_SECRET(REQUEST_ID, _utils.UDF_WHOAMI(), KEY)
 
-beta.udf_api:
-  name: beta.udf_api
+- name: utils.udf_hex_to_int
+  signature:
+    - [hex, STRING]
+  return_type: TEXT
+  options: |
+    NULL
+    LANGUAGE PYTHON
+    STRICT IMMUTABLE
+    RUNTIME_VERSION = '3.8'
+    HANDLER = 'hex_to_int'
+  sql: |
+    {{ python_hex_to_int() | indent(4) }}
+- name: utils.udf_hex_to_int
+  signature:
+    - [encoding, STRING]
+    - [hex, STRING]
+  return_type: TEXT
+  options: |
+    NULL
+    LANGUAGE PYTHON
+    STRICT IMMUTABLE
+    RUNTIME_VERSION = '3.8'
+    HANDLER = 'hex_to_int'
+  sql: |
+    {{ python_udf_hex_to_int_with_encoding() | indent(4) }}
+
+{#
+  LIVE SCHEMA
+#}
+- name: _live.udf_api
+  signature:
+    - [method, STRING]
+    - [url, STRING]
+    - [headers, OBJECT]
+    - [DATA, OBJECT]
+    - [user_id, STRING]
+    - [SECRET, STRING]
+  return_type: VARIANT
+  func_type: SECURE EXTERNAL
+  api_integration: '{{ var("API_INTEGRATION") }}'
+  options: NOT NULL STRICT
+  sql: udf_api
+- name: live.udf_api
   signature:
     - [method, STRING]
     - [url, STRING]
@@ -33,49 +96,15 @@ beta.udf_api:
   options: NOT NULL STRICT VOLATILE
   sql: |
     SELECT
-      STREAMLINE.UDF_API(
+      _live.UDF_API(
           method,
           url,
           headers,
           data,
-          STREAMLINE.UDF_WHOAMI(),
+          _utils.UDF_WHOAMI(),
           secret_name
       )
 
-streamline.udf_api:
-  name: streamline.udf_api
-  signature:
-    - [method, STRING]
-    - [url, STRING]
-    - [headers, OBJECT]
-    - [DATA, OBJECT]
-    - [user_id, STRING]
-    - [SECRET, STRING]
-  return_type: VARIANT
-  func_type: SECURE EXTERNAL
-  api_integration: AWS_LIVE_QUERY_DEV
-  options: NOT NULL STRICT
-  sql: udf_api
 
-streamline.udf_register_secret:
-  name: streamline.udf_register_secret
-  signature:
-    - [request_id, string]
-    - [user_id, string]
-    - [key, string]
-  return_type: TEXT
-  func_type: SECURE EXTERNAL
-  api_integration: AWS_LIVE_QUERY_DEV
-  options: NOT NULL STRICT
-  sql: secret/register
-
-streamline.whoami:
-  name: streamline.udf_whoami
-  signature: []
-  func_type: SECURE
-  return_type: TEXT
-  options: NOT NULL STRICT IMMUTABLE MEMOIZABLE
-  sql: |
-    SELECT
-      COALESCE(SPLIT_PART(GETVARIABLE('QUERY_TAG_SESSION'), ',',2), CURRENT_USER())
 {% endmacro %}
+

@@ -37,6 +37,7 @@
     CREATE OR REPLACE {{ func_type }} FUNCTION {{ name_ }}(
             {{- compile_signature(signature) }}
     )
+    COPY GRANTS
     RETURNS {{ return_type }}
     {% if options -%}
         {{ options }}

@@ -6,20 +6,14 @@
         {%  set udfs = fromyaml(name) %}
         {% set sql %}
         CREATE schema if NOT EXISTS silver;
-        CREATE schema if NOT EXISTS streamline;
         CREATE schema if NOT EXISTS beta;
-        {{- create_or_drop_function_from_config(udfs["streamline.introspect"], drop_=True) }}
-        {{- create_or_drop_function_from_config(udfs["streamline.whoami"], drop_=True) }}
-        {{- create_or_drop_function_from_config(udfs["streamline.udf_register_secret"], drop_=True) }}
-        {{- create_or_drop_function_from_config(udfs["beta.udf_register_secret"], drop_=True) }}
-        {{- create_or_drop_function_from_config(udfs["streamline.udf_api"], drop_=True) }}
-        {{- create_or_drop_function_from_config(udfs["beta.udf_api"], drop_=True) }}
-        {{- create_or_drop_function_from_config(udfs["streamline.introspect"], drop_=False) }}
-        {{- create_or_drop_function_from_config(udfs["streamline.whoami"], drop_=False) }}
-        {{- create_or_drop_function_from_config(udfs["streamline.udf_register_secret"], drop_=False) }}
-        {{- create_or_drop_function_from_config(udfs["beta.udf_register_secret"], drop_=False) }}
-        {{- create_or_drop_function_from_config(udfs["streamline.udf_api"], drop_=False) }}
-        {{- create_or_drop_function_from_config(udfs["beta.udf_api"], drop_=False) }}
+        CREATE schema if NOT EXISTS utils;
+        CREATE schema if NOT EXISTS _utils;
+        CREATE schema if NOT EXISTS _live;
+        CREATE schema if NOT EXISTS live;
+        {%- for udf in udfs -%}
+        {{- create_or_drop_function_from_config(udf, drop_=drop_) -}}
+        {% endfor %}
         {% endset %}
         {% do run_query(sql) %}
     {% endif %}
