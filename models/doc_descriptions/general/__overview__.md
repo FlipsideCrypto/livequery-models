@@ -22,7 +22,7 @@ The documentation included here details the design of the LiveQuery functions av
             '0xd013ca23e77a65003c2c659c5442c00c805371b7fc1ebd4c206c41d1536bd90b'
         )
     ```
-- `utils.hex_encode_function`(Function VARCHAR): Use this UDF to hex encode any string
+- `utils.hex_encode_function` (coming soon)(Function VARCHAR): Use this UDF to hex encode any string
     ```
     ex: Decimals Function Signature
 
@@ -32,8 +32,7 @@ The documentation included here details the design of the LiveQuery functions av
         LEFT(text_sig,10) AS function_sig,
         '0x313ce567' AS expected_sig
     ```
-- `utils.evm_decode_logs`
-- `utils.udf_introspect`
+- `utils.evm_decode_logs` (coming soon)
 - `utils.udf_register_secret`
 
 #### **LIVE Functions & Examples**
