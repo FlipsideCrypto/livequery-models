@@ -2,11 +2,11 @@
 def hex_to_int(hex) -> str:
     """
     Converts hex (of any size) to int (as a string). Snowflake and java script can only handle up to 64-bit (38 digits of precision)
-    select hex_to_int('200000000000000000000000000000211');
+    hex_to_int('200000000000000000000000000000211');
     >> 680564733841876926926749214863536423441
-    select hex_to_int('0x200000000000000000000000000000211');
+    hex_to_int('0x200000000000000000000000000000211');
     >> 680564733841876926926749214863536423441
-    select hex_to_int(NULL);
+    hex_to_int(NULL);
     >> NULL
     """
     return (str(int(hex, 16)) if hex and hex != "0x" else None)
@@ -17,14 +17,14 @@ def hex_to_int(hex) -> str:
 def hex_to_int(encoding, hex) -> str:
   """
   Converts hex (of any size) to int (as a string). Snowflake and java script can only handle up to 64-bit (38 digits of precision)
-  select hex_to_int('hex', '200000000000000000000000000000211');
+  hex_to_int('hex', '200000000000000000000000000000211');
   >> 680564733841876926926749214863536423441
-  select hex_to_int('hex', '0x200000000000000000000000000000211');
+  hex_to_int('hex', '0x200000000000000000000000000000211');
   >> 680564733841876926926749214863536423441
-  select hex_to_int('hex', NULL);
+  hex_to_int('hex', NULL);
   >> NULL
-  select hex_to_int('s2c', 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffe5b83acf');
-   >> -440911153
+  hex_to_int('s2c', 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffe5b83acf');
+  >> -440911153
   """
   if not hex:
     return None
