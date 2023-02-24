@@ -23,9 +23,9 @@
 
 - name: _utils.udf_register_secret
   signature:
-    - [request_id, string]
-    - [user_id, string]
-    - [key, string]
+    - [request_id, STRING]
+    - [user_id, STRING]
+    - [key, STRING]
   return_type: TEXT
   func_type: SECURE EXTERNAL
   api_integration: AWS_LIVE_QUERY_DEV
@@ -33,8 +33,8 @@
   sql: secret/register
 - name: utils.udf_register_secret
   signature:
-    - [request_id, string]
-    - [key, string]
+    - [request_id, STRING]
+    - [key, STRING]
   func_type: SECURE
   return_type: TEXT
   options: NOT NULL STRICT IMMUTABLE
@@ -44,7 +44,7 @@
 
 - name: utils.udf_hex_to_int
   signature:
-    - [hex, string]
+    - [hex, STRING]
   return_type: TEXT
   options: |
     NULL
