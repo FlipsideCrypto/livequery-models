@@ -8,7 +8,7 @@
     - [echo, STRING]
   func_type: SECURE EXTERNAL
   return_type: TEXT
-  api_integration: AWS_LIVE_QUERY_DEV
+  api_integration: '{{ var("API_INTEGRATION") }}'
   sql: introspect
 
 
@@ -28,7 +28,7 @@
     - [key, STRING]
   return_type: TEXT
   func_type: SECURE EXTERNAL
-  api_integration: AWS_LIVE_QUERY_DEV
+  api_integration: '{{ var("API_INTEGRATION") }}'
   options: NOT NULL STRICT
   sql: secret/register
 - name: utils.udf_register_secret
@@ -81,7 +81,7 @@
     - [SECRET, STRING]
   return_type: VARIANT
   func_type: SECURE EXTERNAL
-  api_integration: AWS_LIVE_QUERY_DEV
+  api_integration: '{{ var("API_INTEGRATION") }}'
   options: NOT NULL STRICT
   sql: udf_api
 - name: live.udf_api

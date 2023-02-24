@@ -49,5 +49,5 @@ vars:
   STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES: False
   REST_API_ID_PROD: hn8uqhku77
   REST_API_ID_DEV: hn8uqhku77
-  API_INTEGRATION: AWS_LIVE_QUERY_DEV
+  API_INTEGRATION: AWS_LIVE_QUERY{{ '_DEV' if target.name != 'prod' else ''  }}
   AWS_REGION: us-east-1
