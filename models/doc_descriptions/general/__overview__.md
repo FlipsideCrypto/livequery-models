@@ -1,3 +1,5 @@
+{% docs __overview__ %}
+
 # Welcome to the Flipside Crypto LiveQuery Models Documentation!
 
 ## **What does this documentation cover?**
@@ -150,3 +152,5 @@ Note that you can also right-click on models to interactively filter and explore
 - [Tutorials](https://docs.flipsidecrypto.com/our-data/tutorials)
 - [Github](https://github.com/FlipsideCrypto/external-models)
 - [What is dbt?](https://docs.getdbt.com/docs/introduction)
+
+{% enddocs %}
