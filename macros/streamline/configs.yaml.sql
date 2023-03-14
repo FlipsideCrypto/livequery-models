@@ -68,7 +68,7 @@
   sql: |
     {{ python_udf_hex_to_int_with_encoding() | indent(4) }}
 
-- name: utils.hex_to_string
+- name: utils.udf_hex_to_string
   signature:
     - [hex, STRING]
   return_type: TEXT
