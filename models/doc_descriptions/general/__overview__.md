@@ -94,7 +94,10 @@ The documentation included here details the design of the LiveQuery functions av
     SELECT
         live.udf_api(
             'POST',
-            '{my_url}',
+            concat(
+                'http://sample-endpoint-name.network.quiknode.pro/',
+                '{my_key}'
+            ),
             {},
             { 'method' :'eth_blockNumber',
               'params' :[],
@@ -109,8 +112,8 @@ With LiveQuery you can safely store encrypted credentials, such as an API key, w
 1. Sign up for a free [Quicknode API Account](https://www.quicknode.com/core-api)
 2. Navigate to ***Endpoints*** on the left hand side then click the ***Get Started*** tab and ***Copy*** the HTTP Provider Endpoint. Do not adjust the Setup or Security parameters.
 3. Visit [Ephit](https://science.flipsidecrypto.xyz/ephit) to obtain an Ephemeral query that will securely link your API Endpoint to Flipside's backend. This will allow you to refer to the URL securely in our application without referencing it or exposing keys directly.
-4. Fill out the form and ***Submit this Credential***
-5. Paste the provided query into [Flipside](https://flipside.new) and query your node directly in the app with your submitted Credential (`{my_url}`).
+4. Fill out the form and click ***Submit this Credential***
+5. Paste the provided query into [Flipside](https://flipside.new) and query your node directly in the app with your submitted Credential (`{my_key}`).
 
 ##### **API Endpoints available for use with LiveQuery:**
 Please visit the Flipside discord or open a ticket for questions, concerns or more information.
