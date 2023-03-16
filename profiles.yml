@@ -1,4 +1,4 @@
-livequery:
+reference:
   target: prod
   outputs:
     dev:
