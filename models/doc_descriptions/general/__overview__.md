@@ -9,13 +9,13 @@ The documentation included here details the design of the LiveQuery functions av
 
 #### **UTILS Functions**
 
-- `utils.hex_to_int`: Use this UDF to transform any hex string to integer
+- `livequery.utils.hex_to_int`: Use this UDF to transform any hex string to integer
     ```
     ex: Curve Swaps
 
     SELECT
         regexp_substr_all(SUBSTR(DATA, 3, len(DATA)), '.{64}') AS segmented_data,
-        utils.hex_to_int(segmented_data [1] :: STRING) :: INTEGER AS tokens_sold
+        livequery.utils.hex_to_int(segmented_data [1] :: STRING) :: INTEGER AS tokens_sold
     FROM
         optimism.core.fact_event_logs
     WHERE
@@ -24,28 +24,28 @@ The documentation included here details the design of the LiveQuery functions av
             '0xd013ca23e77a65003c2c659c5442c00c805371b7fc1ebd4c206c41d1536bd90b'
         )
     ```
-- `utils.hex_encode_function` (coming soon)(Function VARCHAR): Use this UDF to hex encode any string
+- `livequery.utils.hex_encode_function` (coming soon)(Function VARCHAR): Use this UDF to hex encode any string
     ```
     ex: Decimals Function Signature
 
     SELECT
         `decimals` AS function_name,
-        utils.hex_encode_function(`decimals()`) :: STRING AS text_sig, 
+        livequery.utils.hex_encode_function(`decimals()`) :: STRING AS text_sig, 
         LEFT(text_sig,10) AS function_sig,
         '0x313ce567' AS expected_sig
     ```
-- `utils.evm_decode_logs` (coming soon)
-- `utils.udf_register_secret`
+- `livequery.utils.evm_decode_logs` (coming soon)
+- `livequery.utils.udf_register_secret`
 
 #### **LIVE Functions & Examples**
 
-- `live.udf_api`(Method STRING, URL STRING, Headers OBJECT, Data OBJECT): Use this UDF to make a GET or POST request on any API
+- `livequery.live.udf_api`(Method STRING, URL STRING, Headers OBJECT, Data OBJECT): Use this UDF to make a GET or POST request on any API
     ```
     ex: Defillama GET request -> working with the output (JSON flatten)
 
     WITH chain_base AS (
         SELECT
-            ethereum.streamline.udf_api(
+            livequery.live.udf_api(
                 'GET','https://api.llama.fi/chains',{},{}
             ) AS read
     )
@@ -60,7 +60,7 @@ The documentation included here details the design of the LiveQuery functions av
     ex: Solana Token Metadata
 
     SELECT
-        live.udf_api(
+        livequery.live.udf_api(
             'GET',
             'https://public-api.solscan.io/token/meta?tokenAddress=SPraYi59a21jEhqvPBbWuwmjA4vdTaSLbiRTefcHJSR',
             { },
@@ -77,7 +77,7 @@ The documentation included here details the design of the LiveQuery functions av
             '4KbzSz2VF1LCvEaw8viq1335VgWzNjMd8rwQMsCkKHip'
     )
     SELECT
-        live.udf_api(
+        livequery.live.udf_api(
             'GET',
             concat(
                 'https://public-api.solscan.io/token/meta?tokenAddress=',
@@ -92,7 +92,7 @@ The documentation included here details the design of the LiveQuery functions av
     ex: Hit Quicknode (see instructions below for how to register an API Key with Flipside securely)
     
     SELECT
-        live.udf_api(
+        livequery.live.udf_api(
             'POST',
             concat(
                 'http://sample-endpoint-name.network.quiknode.pro/',
