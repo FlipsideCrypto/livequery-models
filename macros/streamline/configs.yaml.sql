@@ -105,15 +105,7 @@
     RETURNS NULL ON NULL INPUT
     IMMUTABLE
   sql: |
-    SELECT IFF(method IS NULL or params IS NULL,
-              NULL,
-              {
-                'jsonrpc': '2.0',
-                'method': method,
-                'params': params,
-                'id': HASH(method, params)::string
-              }
-              )
+    {{ sql_udf_json_rpc_call() }}
 - name: utils.udf_json_rpc_call
   signature:
     - [method, STRING]
@@ -125,15 +117,7 @@
     RETURNS NULL ON NULL INPUT
     IMMUTABLE
   sql: |
-    SELECT IFF(method IS NULL or params IS NULL,
-              NULL,
-              {
-                'jsonrpc': '2.0',
-                'method': method,
-                'params': params,
-                'id': HASH(method, params)::string
-              }
-              )
+    {{ sql_udf_json_rpc_call() }}
 - name: utils.udf_json_rpc_call
   signature:
     - [method, STRING]
@@ -146,7 +130,7 @@
     RETURNS NULL ON NULL INPUT
     IMMUTABLE
   sql: |
-    {{ sql_json_rpc_call() }}
+    {{ sql_udf_json_rpc_call(False) }}
 - name: utils.udf_json_rpc_call
   signature:
     - [method, STRING]
@@ -159,7 +143,7 @@
     RETURNS NULL ON NULL INPUT
     IMMUTABLE
   sql: |
-    {{ sql_json_rpc_call() }}
+    {{ sql_udf_json_rpc_call(False) }}
 
 {#
   LIVE SCHEMA
@@ -173,7 +157,7 @@
     - [user_id, STRING]
     - [SECRET, STRING]
   return_type: VARIANT
-  func_type: SECURE EXTERNAL
+  func_type: EXTERNAL
   api_integration: '{{ var("API_INTEGRATION") }}'
   options: |
     NOT NULL
@@ -199,6 +183,103 @@
           url,
           headers,
           data,
+          _utils.UDF_WHOAMI(),
+          secret_name
+      )
+- name: live.udf_api
+  signature:
+    - [method, STRING]
+    - [url, STRING]
+    - [headers, OBJECT]
+    - [data, OBJECT]
+  return_type: VARIANT
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+  sql: |
+    SELECT
+      _live.UDF_API(
+          method,
+          url,
+          headers,
+          data,
+          _utils.UDF_WHOAMI(),
+          ''
+      )
+- name: live.udf_api
+  signature:
+    - [url, STRING]
+    - [data, OBJECT]
+  return_type: VARIANT
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+  sql: |
+    SELECT
+      _live.UDF_API(
+          'POST',
+          url,
+          {'Content-Type': 'application/json'},
+          data,
+          _utils.UDF_WHOAMI(),
+          ''
+      )
+- name: live.udf_api
+  signature:
+    - [url, STRING]
+    - [data, OBJECT]
+    - [secret_name, STRING]
+  return_type: VARIANT
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+  sql: |
+    SELECT
+      _live.UDF_API(
+          'POST',
+          url,
+          {'Content-Type': 'application/json'},
+          data,
+          _utils.UDF_WHOAMI(),
+          secret_name
+      )
+- name: live.udf_api
+  signature:
+    - [url, STRING]
+  return_type: VARIANT
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+  sql: |
+    SELECT
+      _live.UDF_API(
+          'GET',
+          url,
+          {},
+          {},
+          _utils.UDF_WHOAMI(),
+          ''
+      )
+- name: live.udf_api
+  signature:
+    - [url, STRING]
+    - [secret_name, STRING]
+  return_type: VARIANT
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+  sql: |
+    SELECT
+      _live.UDF_API(
+          'GET',
+          url,
+          {},
+          {},
           _utils.UDF_WHOAMI(),
           secret_name
       )
