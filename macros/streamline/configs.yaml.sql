@@ -171,7 +171,6 @@
     - [data, OBJECT]
     - [secret_name, STRING]
   return_type: VARIANT
-  func_type: SECURE
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
