@@ -1,5 +1,4 @@
-{% macro
-() %}
+{% macro() %}
     SELECT IFF(method IS NULL or params IS NULL,
               NULL,
               {
