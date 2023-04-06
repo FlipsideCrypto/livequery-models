@@ -16,8 +16,11 @@
   signature: []
   func_type: SECURE
   return_type: TEXT
-  options: NOT NULL RETURNS NULL ON NULL INPUT
-  IMMUTABLE MEMOIZABLE
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    IMMUTABLE
+    MEMOIZABLE
   sql: |
     SELECT
       COALESCE(SPLIT_PART(GETVARIABLE('QUERY_TAG_SESSION'), ',',2), CURRENT_USER())
@@ -30,7 +33,9 @@
   return_type: TEXT
   func_type: SECURE EXTERNAL
   api_integration: '{{ var("API_INTEGRATION") }}'
-  options: NOT NULL RETURNS NULL ON NULL INPUT
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
   sql: secret/register
 - name: utils.udf_register_secret
   signature:
@@ -38,8 +43,10 @@
     - [key, STRING]
   func_type: SECURE
   return_type: TEXT
-  options: NOT NULL RETURNS NULL ON NULL INPUT
-  IMMUTABLE
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    IMMUTABLE
   sql: |
     SELECT
       _utils.UDF_REGISTER_SECRET(REQUEST_ID, _utils.UDF_WHOAMI(), KEY)
@@ -91,18 +98,17 @@
   signature:
     - [method, STRING]
     - [params, ARRAY]
-  return_type: TEXT
+  return_type: OBJECT
   options: |
     NULL
     LANGUAGE SQL
     RETURNS NULL ON NULL INPUT
     IMMUTABLE
-    MEMOIZABLE
   sql: |
     SELECT IFF(method IS NULL or params IS NULL,
               NULL,
               {
-                'jsonrpc': '2.0'
+                'jsonrpc': '2.0',
                 'method': method,
                 'params': params,
                 'id': HASH(method, params)::string
@@ -112,18 +118,17 @@
   signature:
     - [method, STRING]
     - [params, OBJECT]
-  return_type: TEXT
+  return_type: OBJECT
   options: |
     NULL
     LANGUAGE SQL
     RETURNS NULL ON NULL INPUT
     IMMUTABLE
-    MEMOIZABLE
   sql: |
     SELECT IFF(method IS NULL or params IS NULL,
               NULL,
               {
-                'jsonrpc': '2.0'
+                'jsonrpc': '2.0',
                 'method': method,
                 'params': params,
                 'id': HASH(method, params)::string
@@ -134,24 +139,27 @@
     - [method, STRING]
     - [params, OBJECT]
     - [id, STRING]
-  return_type: TEXT
+  return_type: OBJECT
   options: |
     NULL
     LANGUAGE SQL
     RETURNS NULL ON NULL INPUT
     IMMUTABLE
-    MEMOIZABLE
   sql: |
-    SELECT IFF(method IS NULL or params IS NULL,
-              NULL,
-              {
-                'jsonrpc': '2.0'
-                'method': method,
-                'params': params,
-                'id': id
-              }
-              )
-
+    {{ sql_json_rpc_call() }}
+- name: utils.udf_json_rpc_call
+  signature:
+    - [method, STRING]
+    - [params, ARRAY]
+    - [id, STRING]
+  return_type: OBJECT
+  options: |
+    NULL
+    LANGUAGE SQL
+    RETURNS NULL ON NULL INPUT
+    IMMUTABLE
+  sql: |
+    {{ sql_json_rpc_call() }}
 
 {#
   LIVE SCHEMA
@@ -167,7 +175,9 @@
   return_type: VARIANT
   func_type: SECURE EXTERNAL
   api_integration: '{{ var("API_INTEGRATION") }}'
-  options: NOT NULL RETURNS NULL ON NULL INPUT
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
   sql: udf_api
 - name: live.udf_api
   signature:
@@ -178,7 +188,10 @@
     - [secret_name, STRING]
   return_type: VARIANT
   func_type: SECURE
-  options: NOT NULL RETURNS NULL ON NULL INPUT VOLATILE
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
   sql: |
     SELECT
       _live.UDF_API(

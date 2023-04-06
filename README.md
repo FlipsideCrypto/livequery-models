@@ -54,8 +54,8 @@ dbt run --var 'UPDATE_UDFS_AND_SPS": True'  -m ...
 Dropping and creating udfs can also be done without running a model:
 
 ```sh
-dbt run-operation create_udfs --var 'UPDATE_UDFS_AND_SPS": True' --args 'drop_:false'
-dbt run-operation create_udfs --var 'UPDATE_UDFS_AND_SPS": True' --args 'drop_:true'
+dbt run-operation create_udfs --vars '{"UPDATE_UDFS_AND_SPS":True}' --args '{"drop_":false}'
+dbt run-operation create_udfs --vars '{"UPDATE_UDFS_AND_SPS":True}' --args '{"drop_":true}'
 ```
 
 ## Resources
