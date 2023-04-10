@@ -1,7 +1,7 @@
-# LiveQuery Function Overview
+# LiveQuery Functions Overview
 
 ## Table of Contents
-- [LiveQuery Function Overview](#livequery-function-overview)
+- [LiveQuery Functions Overview](#livequery-functions-overview)
   - [Table of Contents](#table-of-contents)
 - [LiveQuery Functions](#livequery-functions)
 - [Live Functions](#live-functions)
