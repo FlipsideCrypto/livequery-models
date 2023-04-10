@@ -50,6 +50,7 @@
   - API request = 1 row in the query
   - API request (per row) response size limit: 6MB
   - API request timeout (per row) limit: 30 seconds
+  - Data app query timeout limit: 15 minutes
 - Batching is supported for JSON RPC requests. 
   - Again, this is very easy to abuse. Be mindful of the API's rate limits when using this functionality.
 - It is strongly recommended that you start small and test your queries before requesting large amounts of data.
