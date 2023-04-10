@@ -1,4 +1,5 @@
 # LiveQuery Functions Overview
+**LiveQuery is a powerful tool that enables users to interact with approved APIs, access utility functions for easy handling of complex blockchain data, and maintain best practices for usage. With LiveQuery Functions, users can access a variety of APIs, create JSON RPC requests, easily convert data types such as hex strings to integers, securely store encrypted credentials, and more. This resource offers guidance on limits, best practices, sample queries, and future enhancements to ensure effective use of the LiveQuery Functions.**
 
 ## Table of Contents
 - [LiveQuery Functions Overview](#livequery-functions-overview)
@@ -95,7 +96,7 @@ Note: Several of these parameters are optional. We believe we have an override f
 | IPFS                  | [Docs](https://docs.ipfs.tech/reference/http/api/)                                     | No                      |
 
 
-If you are interested in using an API that is not on this list, please reach out us on Discord.
+If you are interested in using an API that is not on this list, please reach out to us on Discord.
 
 ---
 ### Sample Queries
