@@ -8,14 +8,22 @@
 - [Live Functions](#live-functions)
   - [Limits and Best Practices](#limits-and-best-practices)
   - [udf\_api](#udf_api)
+    - [Syntax](#syntax)
+    - [Arguments](#arguments)
     - [Approved APIs](#approved-apis)
     - [Sample Queries](#sample-queries)
 - [Utility Functions](#utility-functions)
   - [udf\_hex\_to\_int](#udf_hex_to_int)
+    - [Syntax](#syntax-1)
+    - [Arguments](#arguments-1)
     - [Sample Queries](#sample-queries-1)
   - [udf\_hex\_to\_string](#udf_hex_to_string)
+    - [Syntax](#syntax-2)
+    - [Arguments](#arguments-2)
     - [Sample Queries](#sample-queries-2)
   - [udf\_json\_rpc\_call](#udf_json_rpc_call)
+    - [Syntax](#syntax-3)
+    - [Arguments](#arguments-3)
     - [Sample Queries](#sample-queries-3)
 - [Registering Secrets](#registering-secrets)
 - [Other DBT docs - LiveQuery Models](#other-dbt-docs---livequery-models)
@@ -69,15 +77,27 @@
 - If you build something that you believe is powerful enough to be included in this documentation, please reach out to us on Discord or Twitter! We would love to hear feedback and see what you are building.
 
 ## udf_api
-- Purpose: This function can be used to interact directly with approved APIs.
-- Parameters:
-  - `method` (string): The HTTP method to use (GET, POST, etc.)
-  - `url` (string): The URL to call
-  - `headers` (object): A JSON object containing the headers to send with the request
-  - `data` (object): A JSON object containing the data to send with the request
-  - `secret_name` (string): The name of the secret to use for authentication. Please see the [secret registration section](#registering-secrets) below for more information.
+This function can be used to interact directly with approved APIs, including QuickNode, DeFi Llama, and more. Please see the [Approved APIs](#approved-apis) section below for a list of approved APIs.
+### Syntax
+```sql
+livequery.live.udf_api(
+  [method,]
+  url,
+  [headers,]
+  [data,]
+  [secret_name]
+)
+```
+### Arguments
+**Required**
+- `url` (string): The URL to call. If you are doing a GET request that does not require authentication, you can pass the URL directly. Otherwise, you may need to pass in some or all of the optional arguments below. You may also need to pass a secret value into the URL if you are using an API that requires authentication.
 
-Note: Several of these parameters are optional. We believe we have an override for all of the most common use cases. For example, if you are doing a get request on an API that does not require authentication, you can call the function with just the URL.
+**Optional**
+- `method` (string): The HTTP method to use (GET, POST, etc.)
+- `headers` (object): A JSON object containing the headers to send with the request
+- `data` (object): A JSON object containing the data to send with the request. Batched JSON RPC requests are supported by passing an array of JSON RPC requests.
+- `secret_name` (string): The name of the secret to use for authentication. Please see the [secret registration section](#registering-secrets) below for more information.
+
 
 ### Approved APIs
   
@@ -96,7 +116,7 @@ Note: Several of these parameters are optional. We believe we have an override f
 | IPFS                  | [Docs](https://docs.ipfs.tech/reference/http/api/)                                     | No                      |
 
 
-If you are interested in using an API that is not on this list, please reach out to us on Discord.
+If you are interested in using an API that is not on this list, please reach out to us on [Discord]().
 
 ---
 ### Sample Queries
@@ -256,10 +276,22 @@ FROM
 Utility functions are designed to make your life easier when interacting with blockchain data.
 
 ## udf_hex_to_int
-- Purpose: This function converts a hex string to an integer. 
-- Parameters: 
-  - `encoding` (string): The encoding to use. Valid values are `s2c` and `hex`. This parameter is optional. If not provided, the function will default to `hex`.
-  - `hex` (string): The hex string to convert
+This function converts a hex string to an integer. 
+
+### Syntax
+```sql
+livequery.utils.udf_hex_to_int(
+  [encoding,]
+  hex
+)
+```
+### Arguments
+**Required**
+- `hex` (string): The hex string to convert
+
+**Optional**
+- `encoding` (string): The encoding to use. Valid values are `s2c` and `hex`. This parameter is optional. If not provided, the function will default to `hex`.
+
 ### Sample Queries
 <details>
   <summary>Convert Hex to Integer</summary>
@@ -286,9 +318,19 @@ Utility functions are designed to make your life easier when interacting with bl
 ---
 
 ## udf_hex_to_string 
-- Purpose: This function converts a hex string to a string of human readable characters. It will handle obscure characters like emojis and special characters.
-- Parameters:
-  - `hex` (string): The hex string to convert
+
+This function converts a hex string to a string of human readable characters. It will handle obscure characters like emojis and special characters.
+
+### Syntax
+```sql
+livequery.utils.udf_hex_to_string(
+  hex
+)
+```
+### Arguments
+**Required**
+- `hex` (string): The hex string to convert
+
 ### Sample Queries
 <details>
   <summary>Convert Hex to Text</summary>
@@ -302,11 +344,24 @@ Utility functions are designed to make your life easier when interacting with bl
 ---
 
 ## udf_json_rpc_call
-- Purpose: This function creates a JSON RPC request based on the parameters provided.
-- Parameters: 
-  - `method` (string): The method to call
-  - `params` (array, object): The parameters to pass to the method. This can be an array or an object.
-  - `id` (string): The ID of the request. This parameter is optional. If not provided, the function will default to a random number.
+This function creates a JSON RPC request based on the parameters provided.
+
+### Syntax
+```sql
+livequery.utils.udf_json_rpc_call(
+  method,
+  params
+  [,id]
+)
+```
+### Arguments
+**Required**
+- `method` (string): The method to call
+- `params` (array, object): The parameters to pass to the method. This can be an array or an object.
+
+**Optional**
+- `id` (string): The ID of the request. This parameter is optional. If not provided, the function will default to a random number.
+
 ### Sample Queries
 <details>
   <summary>Create eth_blockNumber Request</summary>
