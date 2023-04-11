@@ -90,7 +90,7 @@ livequery.live.udf_api(
 ```
 ### Arguments
 **Required**
-- `url` (string): The URL to call. If you are doing a GET request that does not require authentication, you can pass the URL directly. Otherwise, you may need to pass in some or all of the optional arguments below. You may also need to pass a secret value into the URL if you are using an API that requires authentication.
+- `url` (string): The URL to call. If you are doing a GET request that does not require authentication, you can pass the URL directly. Otherwise, you may need to pass in some or all of the optional arguments below. You may also need to pass a secret value into the URL if you are using an API that requires authentication. See the QuickNode example below for more information on this case.
 
 **Optional**
 - `method` (string): The HTTP method to use (GET, POST, etc.)
