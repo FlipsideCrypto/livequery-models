@@ -67,8 +67,8 @@
   - This means that if you run the same query twice, that API will be called twice. A future enhancement may address this need, but for now, please be mindful of this limitation.
 - Many APIs require authentication. 
   - Please see the [secret registration section](#registering-secrets) below for more information on how to register secrets for use with the `udf_api` function.
-  - Technically, you can pass keys into the `udf_api` function directly, but this is not recommended.
-    - If you do pass your keys without following the steps in the [secret registration section](#registering-secrets), your keys will be visible in the query history.
+  - Technically, you can pass secrets into the `udf_api` function directly, but this is not recommended.
+    - If you do pass your secrets without following the steps in the [secret registration section](#registering-secrets), your secrets will be visible in Flipside's internal query history.
 - These docs and this process will continue to evolve. More detailed examples and powerful use cases will continue to be added. We are just getting started!
 - Please be patient with us as we work to improve this process.
   - Upcoming enhancements include:
