@@ -74,7 +74,7 @@
   - Upcoming enhancements include:
     - Support for more APIs
     - Secret management improvements
-- If you build something that you believe is powerful enough to be included in this documentation, please reach out to us on Discord or Twitter! We would love to hear feedback and see what you are building.
+- If you build something that you believe is powerful enough to be included in this documentation, please reach out to us on [Discord](https://discord.com/channels/784442203187314689/1095714436599267409)! We would love to hear feedback and see what you are building.
 
 ## udf_api
 This function can be used to interact directly with approved APIs, including QuickNode, DeFi Llama, and more. Please see the [Approved APIs](#approved-apis) section below for a list of approved APIs.
@@ -116,7 +116,7 @@ livequery.live.udf_api(
 | IPFS                  | [Docs](https://docs.ipfs.tech/reference/http/api/)                                     | No                      |
 
 
-If you are interested in using an API that is not on this list, please reach out to us on [Discord]().
+If you are interested in using an API that is not on this list, please reach out to us on [Discord](https://discord.com/channels/784442203187314689/1095714436599267409).
 
 ---
 ### Sample Queries
