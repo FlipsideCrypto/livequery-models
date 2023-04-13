@@ -154,18 +154,29 @@ SELECT
        livequery.utils.udf_hex_to_int(hex_block) :: INT AS int_block
 FROM
        base;
+  ```
+<details>
+  <summary>Query Results</summary>
+
+Please note that the results below are just an example. Your results will be different.
+| INT_BLOCK | HEX_BLOCK |
+| --------- | --------- |
+| 0x104037e | 17040254  |
+
+</details>
 
 
+  ```sql
   -- Get the latest balance for a wallet, please note you will need to register your node secrets
   -- This is a general ETH call example, and can be used for any contract and function
   WITH inputs AS (
      -- input function_sig, token_address, wallet_address
      -- format data for eth call, should be 64 chars long (32 bytes) + 10 chars for function sig (including 0x)
      SELECT
-            LOWER('0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84') AS token_address,
-            -- stETH
-            LOWER('0x66B870dDf78c975af5Cd8EDC6De25eca81791DE1') AS wallet_address,
-            --a16Z
+            LOWER('0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48') AS token_address,
+            -- USDC
+            LOWER('0x39AA39c021dfbaE8faC545936693aC917d5E7563') AS wallet_address,
+            --cUSDC
             '0x70a08231' AS function_sig,
             --balanceOf(address)
             CONCAT(
@@ -195,10 +206,21 @@ from create_rpc_request
 )
 SELECT
     wallet_address,
-    livequery.utils.udf_hex_to_int(response:data:result::string) :: INT / pow(10,18) AS balance
+    livequery.utils.udf_hex_to_int(response:data:result::string) :: INT / pow(10,6) AS balance
 FROM
     base;
   ```
+
+<details>
+  <summary>Query Results</summary>
+
+Please note that the results below are just an example. Your results will be different.
+| WALLET_ADDRESS                             | BALANCE        |
+| ------------------------------------------ | -------------- |
+| 0x39aa39c021dfbae8fac545936693ac917d5e7563 | 184883230.2407 |
+
+</details>
+
 </details>
 <details>
   <summary>Subgraph Example</summary>
@@ -227,11 +249,23 @@ SELECT
 select 
 value:id::string as address,
 value:name::string as name,
-value:totalLiquidity::int as totalLiquidity
+value:totalLiquidity::int as total_Liquidity
 from base,
 lateral flatten (input => response:data:data:liquidityPools)
 ;
   ```
+
+<details>
+  <summary>Query Results</summary>
+
+Please note that the results below are just an example. Your results will be different.
+| ADDRESS                                    | NAME                                | TOTAL_LIQUIDITY        |
+| ------------------------------------------ | ----------------------------------- | ---------------------- |
+| 0x33b41dbe5ab0002e1c8638fe8cd03e1e5d8d4d0a | Uniswap V3 Wrapped Matic/USDC 0.05% | 1.1111358314578806e+33 |
+
+
+</details>
+
 </details>
 <details>
   <summary>DeFi Llama API Example</summary>
@@ -261,6 +295,18 @@ FROM
 
 
   ```
+
+
+<details>
+  <summary>Query Results</summary>
+
+Please note that the results below are just an example. Your results will be different.
+| CHAINID | CMCID | GECKOID  | NAME     | SYMBOL | TVL              |
+| ------- | ----- | -------- | -------- | ------ | ---------------- |
+| 1       | 1027  | ethereum | Ethereum | ETH    | 57827511207.4422 |
+</details>
+
+
 </details>
 
 </details>
@@ -272,6 +318,16 @@ FROM
      SELECT 
       livequery.live.udf_api('https://ipfs.io/ipfs/QmTFX3TopS8JsgpfBLKGDnTiaWrRcfStDWDQaREzD36sWW') AS response;
   ```
+
+<details>
+  <summary>Query Results</summary>
+
+Please note that the results below are just an example. Your results will be different.
+| RESPONSE                                                                    |
+| --------------------------------------------------------------------------- |
+| {"data":{"attributes":[{"trait_type":"Crust","value":"Regular"},{"trait_... |
+
+</details>
 </details>
 
 ---
@@ -308,6 +364,14 @@ livequery.utils.udf_hex_to_int(
     livequery.utils.udf_hex_to_int ('0x1E240')::int as int2,
     livequery.utils.udf_hex_to_int ('hex','0x1E240')::int as int3;
   ```
+<details>
+  <summary>Query Results</summary>
+
+Please note that the results below are just an example. Your results will be different.
+| INT1   | INT2   | INT3   |
+| ------ | ------ | ------ |
+| 123456 | 123456 | 123456 |
+</details>
 </details>
 <details>
   <summary>Convert Hex to Signed 2's Complement Integer</summary>
@@ -318,6 +382,13 @@ livequery.utils.udf_hex_to_int(
     livequery.utils.udf_hex_to_int ('s2c','FFFE1DC0')::int as int1,
     livequery.utils.udf_hex_to_int ('s2c','0xFFFE1DC0')::int as int2
   ```
+<details>
+  <summary>Query Results</summary>
+
+  | INT1    | INT2    |
+  | ------- | ------- |
+  | -123456 | -123456 |
+</details>
 </details>
 
 ---
@@ -342,8 +413,15 @@ livequery.utils.udf_hex_to_string(
 
   ```sql
   select 
-    livequery.utils.udf_hex_to_string('466C69707369646520726F636B73') as text1
+    livequery.utils.udf_hex_to_string('4469616D6F6E642048616E6473') as text1
   ```
+  <details>
+  <summary>Query Results</summary>
+  
+  | text1         |
+  | ------------- |
+  | Diamond Hands |
+</details>
 </details>
 
 ---
@@ -377,12 +455,24 @@ livequery.utils.udf_json_rpc_call(
      SELECT
         livequery.utils.udf_json_rpc_call('eth_blockNumber',[]) AS rpc_request;
   ```
+<details>
+  <summary>Query Results</summary>
+  
+```
+{
+  "id": "-8716917368792530493",
+  "jsonrpc": "2.0",
+  "method": "eth_blockNumber",
+  "params": []
+}
+```
+</details>
 </details>
 <details>
   <summary>Create eth_call Request</summary>
 
   ```sql
-  -- this will create a balanceOf request for a16Z's wallet on stETH. Make sure to format the data correctly for the function you are calling.
+  -- this will create a balanceOf request for cUSDC's USDC Balance. Make sure to format the data correctly for the function you are calling.
   WITH inputs AS (
        -- input function_sig, token_address, wallet_address
        -- format data for eth call, should be 64 chars long (32 bytes) + 10 chars for function sig (including 0x)
@@ -407,6 +497,24 @@ FROM
        inputs;
 
   ```
+<details>
+  <summary>Query Results</summary>
+  
+```
+{
+  "id": "-953214366441983548",
+  "jsonrpc": "2.0",
+  "method": "eth_call",
+  "params": [
+    {
+      "data": "0x70a0823100000000000000000000000066b870ddf78c975af5cd8edc6de25eca81791de1",
+      "to": "0xae7ab96520de3a18e5e111b5eaab095312d7fe84"
+    },
+    "latest"
+  ]
+}
+```
+</details>
 </details>
 
 ---
