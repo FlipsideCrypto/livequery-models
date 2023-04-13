@@ -164,7 +164,7 @@ Please note that the results below are just an example. Your results will be dif
 </details>
 
 
-  ```sql
+```sql
   -- Get the latest balance for a wallet, please note you will need to register your node secrets
   -- This is a general ETH call example, and can be used for any contract and function
   WITH inputs AS (
@@ -260,11 +260,9 @@ Please note that the results below are just an example. Your results will be dif
 | ADDRESS                                    | NAME                                | TOTAL_LIQUIDITY        |
 | ------------------------------------------ | ----------------------------------- | ---------------------- |
 | 0x33b41dbe5ab0002e1c8638fe8cd03e1e5d8d4d0a | Uniswap V3 Wrapped Matic/USDC 0.05% | 1.1111358314578806e+33 |
-
-
+</details>
 </details>
 
-</details>
 <details>
   <summary>DeFi Llama API Example</summary>
 
