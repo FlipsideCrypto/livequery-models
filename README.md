@@ -184,7 +184,7 @@ FROM
         wallet_address,
         livequery.live.udf_api(
             'POST',
-            'https://indulgent-smart-shape.discover.quiknode.pro/{url_key}/',{},rpc_request, --secret value in URL (URL Key). Your words will likely be different. This is just an example URL.
+            'https://indulgent-smart-shape.discover.quiknode.pro/{url_key}/',{},rpc_request, --secret value in URL (URL Key). Your subdomain will likely be different. This is just an example URL.
             'quicknode_eth' --registered secret name
         ) AS response
 from create_rpc_request
@@ -469,13 +469,13 @@ When False, none of the on-run-start macros are executed on model run
 Default values are False
 
 * Usage:
-dbt run --var 'UPDATE_UDFS_AND_SPS": True'  -m ...
+dbt run --var '{"UPDATE_UDFS_AND_SPS":True}' -m ...
 
 Dropping and creating udfs can also be done without running a model:
 
 ```sh
-dbt run-operation create_udfs --var 'UPDATE_UDFS_AND_SPS": True' --args 'drop_:false'
-dbt run-operation create_udfs --var 'UPDATE_UDFS_AND_SPS": True' --args 'drop_:true'
+dbt run-operation create_udfs --vars '{"UPDATE_UDFS_AND_SPS":True}' --args '{"drop_":false}'
+dbt run-operation create_udfs --vars '{"UPDATE_UDFS_AND_SPS":True}' --args '{"drop_":true}'
 ```
 
 ## Resources
