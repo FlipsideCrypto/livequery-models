@@ -617,15 +617,13 @@ To add/update a model's snowflake tags, add/modify the `meta` model property und
 
 ```jinja
 {{ config(
-    ...
     meta={
         'database_tags':{
             'table': {
                 'PURPOSE': 'SOME_PURPOSE'
             }
         }
-    },
-    ...
+    }
 ) }}
 ```
 
