@@ -93,10 +93,14 @@ livequery.live.udf_api(
 - `url` (string): The URL to call. If you are doing a GET request that does not require authentication, you can pass the URL directly. Otherwise, you may need to pass in some or all of the optional arguments below. You may also need to pass a secret value into the URL if you are using an API that requires authentication. See the QuickNode example below for more information on this case.
 
 **Optional**
-- `method` (string): The HTTP method to use (GET, POST, etc.)
-- `headers` (object): A JSON object containing the headers to send with the request
+- `method` (string): The HTTP method to use (GET, POST, etc.).
+  - Default: `GET`, unless `data` is passed, in which case it will default to `POST`.
+- `headers` (object): A JSON object containing the headers to send with the request.
+  -  Default: `{'Content-Type': 'application/json'}`
 - `data` (object): A JSON object containing the data to send with the request. Batched JSON RPC requests are supported by passing an array of JSON RPC requests.
+  - Default: `null`
 - `secret_name` (string): The name of the secret to use for authentication. Please see the [secret registration section](#registering-secrets) below for more information.
+  - Default: `null`
 
 
 ### Approved APIs
@@ -290,7 +294,8 @@ livequery.utils.udf_hex_to_int(
 - `hex` (string): The hex string to convert
 
 **Optional**
-- `encoding` (string): The encoding to use. Valid values are `s2c` and `hex`. This parameter is optional. If not provided, the function will default to `hex`.
+- `encoding` (string): The encoding to use. Valid values are `s2c` and `hex`. This parameter is optional.
+  - Default: `hex`
 
 ### Sample Queries
 <details>
@@ -360,7 +365,8 @@ livequery.utils.udf_json_rpc_call(
 - `params` (array, object): The parameters to pass to the method. This can be an array or an object.
 
 **Optional**
-- `id` (string): The ID of the request. This parameter is optional. If not provided, the function will default to a random number.
+- `id` (string): The ID of the request. This parameter is optional. 
+  - Default: `random number`
 
 ### Sample Queries
 <details>
