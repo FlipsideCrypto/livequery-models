@@ -1,7 +1,6 @@
 ---
 layout: default
 title: LiveQuery Documentation
-theme: jekyll-theme-minima
 ---
 
 # LiveQuery Functions Overview
