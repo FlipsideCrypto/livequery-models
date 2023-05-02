@@ -10,3 +10,4 @@ DeepNFT Value,https://api.deepnftvalue.com/v1,REST,https://deepnftvalue.readme.i
 Zapper,https://api.zapper.fi/v2/,REST,https://api.zapper.fi/api/static/index.html#/Apps/AppsController_getApps
 Helius,https://api.helius.xyz,REST,https://docs.helius.xyz/introduction/why-helius
 Stargaze Name Service,https://rest.stargaze-apis.com,REST,https://github.com/public-awesome/names/blob/main/API.md
+Pagoda,https://near-mainnet.api.pagoda.co/eapi/v1,REST,https://docs.near.org/api/rpc/introduction
