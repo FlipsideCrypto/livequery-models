@@ -66,7 +66,7 @@
     {% set func_type = config ["func_type"] %}
 
     {% if not drop_ -%}
-        {{ create_sql_function(
+        {{ reference_models.create_sql_function(
             name_ = name_,
             signature = signature,
             return_type = return_type,
