@@ -2,7 +2,7 @@
         func_name,
         signature
     ) %}
-    DROP FUNCTION IF EXISTS {{ func_name }}({{ compile_signature(signature, drop_ = True) }});
+    DROP FUNCTION IF EXISTS {{ func_name }}({{ reference_models.compile_signature(signature, drop_ = True) }});
 {% endmacro %}
 
 {%- macro construct_api_route(route) -%}
@@ -35,7 +35,7 @@
         func_type = none
     ) %}
     CREATE OR REPLACE {{ func_type }} FUNCTION {{ name_ }}(
-            {{- compile_signature(signature) }}
+            {{- reference_models.compile_signature(signature) }}
     )
     COPY GRANTS
     RETURNS {{ return_type }}
@@ -44,7 +44,7 @@
     {% endif %}
     {%- if api_integration -%}
     api_integration = {{ api_integration }}
-    AS {{ construct_api_route(sql_) ~ ";" }}
+    AS {{ reference_models.construct_api_route(sql_) ~ ";" }}
     {% else -%}
     AS
     $$
@@ -76,7 +76,7 @@
             func_type = func_type
         ) }}
     {%- else -%}
-        {{ drop_function(
+        {{ reference_models.drop_function(
             name_,
             signature = signature,
         ) }}
