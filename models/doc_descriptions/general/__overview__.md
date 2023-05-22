@@ -1,15 +1,15 @@
 {% docs __overview__ %}
 
-# Welcome to the Flipside Crypto LiveQuery Models Documentation!
+# Welcome to the Flipside Crypto Reference Models Documentation!
 
 ## **What does this documentation cover?**
-The documentation included here details the design of the LiveQuery functions available via [Flipside Crypto](https://flipsidecrypto.xyz/). For more information on how these functions are built, please see [the github repository.](https://github.com/FlipsideCrypto/livequery-models)
+The documentation included here details the design of the Reference functions available via [Flipside Crypto](https://flipsidecrypto.xyz/). For more information on how these functions are built, please see [the github repository.](https://github.com/FlipsideCrypto/reference-models)
 
 ### **Overview of Available Functions**
 
 #### **UTILS Functions**
 
-- `utils.hex_to_int`: Use this UDF to transform any hex string to integer
+- `utils.udf_hex_to_int`: Use this UDF to transform any hex string to integer
     ```
     ex: Curve Swaps
 
@@ -24,111 +24,23 @@ The documentation included here details the design of the LiveQuery functions av
             '0xd013ca23e77a65003c2c659c5442c00c805371b7fc1ebd4c206c41d1536bd90b'
         )
     ```
-- `utils.hex_encode_function` (coming soon)(Function VARCHAR): Use this UDF to hex encode any string
+- `utils.udf_hex_to_string`: Use this UDF to transform any hexadecimal string to a regular string. The function removes any non-printable or control characters from the resulting string.
     ```
-    ex: Decimals Function Signature
+    ex: Token Names
 
+    WITH base AS (
     SELECT
-        `decimals` AS function_name,
-        utils.hex_encode_function(`decimals()`) :: STRING AS text_sig, 
-        LEFT(text_sig,10) AS function_sig,
-        '0x313ce567' AS expected_sig
-    ```
-- `utils.evm_decode_logs` (coming soon)
-- `utils.udf_register_secret`
-
-#### **LIVE Functions & Examples**
-
-- `live.udf_api`(Method STRING, URL STRING, Headers OBJECT, Data OBJECT): Use this UDF to make a GET or POST request on any API
-    ```
-    ex: Defillama GET request -> working with the output (JSON flatten)
-
-    WITH chain_base AS (
-        SELECT
-            ethereum.streamline.udf_api(
-                'GET','https://api.llama.fi/chains',{},{}
-            ) AS read
-    )
-
-    SELECT
-        VALUE:chainId::STRING AS chain_id,
-        VALUE:name::STRING AS chain,
-        VALUE:tokenSymbol::STRING AS token_symbol
-    FROM chain_base,
-        LATERAL FLATTEN (input=> read:data)
-
-    ex: Solana Token Metadata
-
-    SELECT
-        live.udf_api(
-            'GET',
-            'https://public-api.solscan.io/token/meta?tokenAddress=SPraYi59a21jEhqvPBbWuwmjA4vdTaSLbiRTefcHJSR',
-            { },
-            { }
-        );
-
-    ex: Running with multiple token addresses at the same time
-
-    WITH solana_addresses AS (
-        SELECT
-            'SPraYi59a21jEhqvPBbWuwmjA4vdTaSLbiRTefcHJSR' AS address
-        UNION
-        SELECT
-            '4KbzSz2VF1LCvEaw8viq1335VgWzNjMd8rwQMsCkKHip'
-    )
-    SELECT
-        live.udf_api(
-            'GET',
-            concat(
-                'https://public-api.solscan.io/token/meta?tokenAddress=',
-                address
-            ),
-            { },
-            { }
+        '0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000005452617265202d204368616e74616c20486167656c202d20576f6d656e2773204575726f2032303232202d2032303232205371756164202d20576f6d656e2773204e6174696f6e616c205465616d202d2032303232000000000000000000000000' AS input_token_name
         )
-    FROM
-        solana_addresses;
 
-    ex: Hit Quicknode (see instructions below for how to register an API Key with Flipside securely)
-    
-    SELECT
-        live.udf_api(
-            'POST',
-            concat(
-                'http://sample-endpoint-name.network.quiknode.pro/',
-                '{my_key}'
-            ),
-            {},
-            { 'method' :'eth_blockNumber',
-              'params' :[],
-                'id' :1,
-                'jsonrpc' :'2.0' },
-            'quicknode'
-        );
+    SELECT 
+        utils.udf_hex_to_string(SUBSTR(input_token_name,(64+1),LEN(input_token_name))) AS output_token_name
+    FROM base;
+
+    NOTE: The expression 64 + 1 is used in the query to calculate the starting index for the SUBSTR function. In a hexadecimal representation, each character represents 4 bits. Therefore, to skip the first 256 bits in the hexadecimal string, we need to skip the first 64 characters (64 * 4 = 256). In Snowflake, the SUBSTR function expects the starting index to be 1-based rather than 0-based, which is why we add + 1. 
+
     ```
 
-##### **Registering and Using LiveQuery Credentials to Query Quicknode**
-With LiveQuery you can safely store encrypted credentials, such as an API key, with Flipside, and query blockchain nodes directly via our SQL interface. Here’s how:
-1. Sign up for a free [Quicknode API Account](https://www.quicknode.com/core-api)
-2. Navigate to ***Endpoints*** on the left hand side then click the ***Get Started*** tab and ***Copy*** the HTTP Provider Endpoint. Do not adjust the Setup or Security parameters.
-3. Visit [Ephit](https://science.flipsidecrypto.xyz/ephit) to obtain an Ephemeral query that will securely link your API Endpoint to Flipside's backend. This will allow you to refer to the URL securely in our application without referencing it or exposing keys directly.
-4. Fill out the form and click ***Submit this Credential***
-5. Paste the provided query into [Flipside](https://flipside.new) and query your node directly in the app with your submitted Credential (`{my_key}`).
-
-##### **API Endpoints available for use with LiveQuery:**
-Please visit the Flipside discord or open a ticket for questions, concerns or more information.
-
-- Snapshot: [https://hub.snapshot.org/graphql](https://docs.snapshot.org/graphql-api) 
-- Defillama: [https://api.llama.fi/](https://defillama.com/docs/api)
-- Defillama: [https://yields.llama.fi/](https://defillama.com/docs/api)
-- Defillama: [https://stablecoins.llama.fi/](https://defillama.com/docs/api)
-- Defillama: [https://bridges.llama.fi/](https://defillama.com/docs/api)
-- Defillama: [https://coins.llama.fi/](https://defillama.com/docs/api)
-- zkSync: [https://api.zksync.io/api/v0.2/](https://docs.zksync.io/apiv02-docs/)
-- DeepNFT Value: [https://api.deepnftvalue.com/v1](https://deepnftvalue.readme.io/reference/getting-started-with-deepnftvalue-api)
-- Zapper: [https://api.zapper.fi/v2/](https://api.zapper.fi/api/static/index.html#/Apps/AppsController_getApps)
-- Helius: [https://api.helius.xyz](https://docs.helius.xyz/introduction/why-helius)
-- Stargaze Name Service: [https://rest.stargaze-apis.com](https://github.com/public-awesome/names/blob/main/API.md)
 
 ## **Using dbt docs**
 ### Navigation
@@ -151,9 +63,8 @@ Note that you can also right-click on models to interactively filter and explore
 
 ### **More information**
 - [Flipside](https://flipsidecrypto.xyz/)
-- [Velocity](https://app.flipsidecrypto.com/velocity?nav=Discover)
 - [Tutorials](https://docs.flipsidecrypto.com/our-data/tutorials)
-- [Github](https://github.com/FlipsideCrypto/external-models)
+- [Github](https://github.com/FlipsideCrypto/reference-models)
 - [What is dbt?](https://docs.getdbt.com/docs/introduction)
 
 {% enddocs %}
