@@ -34,10 +34,10 @@ The documentation included here details the design of the Reference functions av
         )
 
     SELECT 
-        utils.udf_hex_to_string(SUBSTR(input_token_name,(64+1),LEN(input_token_name))) AS output_token_name
+        utils.udf_hex_to_string(SUBSTR(input_token_name,(64*2+3),LEN(input_token_name))) AS output_token_name
     FROM base;
 
-    NOTE: The expression 64 + 1 is used in the query to calculate the starting index for the SUBSTR function. In a hexadecimal representation, each character represents 4 bits. Therefore, to skip the first 256 bits in the hexadecimal string, we need to skip the first 64 characters (64 * 4 = 256). In Snowflake, the SUBSTR function expects the starting index to be 1-based rather than 0-based, which is why we add + 1. 
+    NOTE: The expression 64 * 2 + 3 in the query navigates to the 131st character of the hexadecimal string returned by an EVM blockchain contract's function, skipping metadata and adjusting for Snowflake's 1-based indexing. Keep in mind that the exact start of relevant data may vary between different contracts and functions.
 
     ```
 
