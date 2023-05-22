@@ -24,7 +24,7 @@ The documentation included here details the design of the Reference functions av
             '0xd013ca23e77a65003c2c659c5442c00c805371b7fc1ebd4c206c41d1536bd90b'
         )
     ```
-- `utils.udf_hex_to_string`: Use this UDF to transform any hexadecimal string to a regular string. The function removes any non-printable or control characters from the resulting string.
+- `utils.udf_hex_to_string`: Use this UDF to transform any hexadecimal string to a regular string, removing any non-printable or control characters from the resulting string.
     ```
     ex: Token Names
 
