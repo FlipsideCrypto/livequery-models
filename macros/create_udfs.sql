@@ -6,7 +6,6 @@
         {%  set udfs = fromyaml(name) %}
         {% set sql %}
         CREATE schema if NOT EXISTS silver;
-        CREATE schema if NOT EXISTS beta;
         CREATE schema if NOT EXISTS utils;
         CREATE schema if NOT EXISTS _utils;
         CREATE schema if NOT EXISTS _live;
