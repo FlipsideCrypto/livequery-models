@@ -13,7 +13,7 @@ reference:
       schema: SILVER
       threads: 4
       client_session_keep_alive: False
-      query_tag: livequery_curator
+      query_tag: reference_curator
     prod:
       type: snowflake
       account: "{{ env_var('ACCOUNT') }}"
@@ -26,4 +26,4 @@ reference:
       schema: SILVER
       threads: 4
       client_session_keep_alive: False
-      query_tag: livequery_curator
+      query_tag: reference_curator
