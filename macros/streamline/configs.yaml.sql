@@ -1,10 +1,10 @@
-{% macro udf_configs() %}
+{% macro udf_configs(schema) %}
 
 {#
   UTILITY SCHEMA
 #}
 
-- name: utils.udf_hex_to_int
+- name: {{ schema }}.udf_hex_to_int
   signature:
     - [hex, STRING]
   return_type: TEXT
@@ -16,7 +16,7 @@
     HANDLER = 'hex_to_int'
   sql: |
     {{ reference_models.python_hex_to_int() | indent(4) }}
-- name: utils.udf_hex_to_int
+- name: {{ schema }}.udf_hex_to_int
   signature:
     - [encoding, STRING]
     - [hex, STRING]
@@ -30,7 +30,7 @@
   sql: |
     {{ reference_models.python_udf_hex_to_int_with_encoding() | indent(4) }}
 
-- name: utils.udf_hex_to_string
+- name: {{ schema }}.udf_hex_to_string
   signature:
     - [hex, STRING]
   return_type: TEXT
