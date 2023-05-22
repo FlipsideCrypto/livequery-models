@@ -4,7 +4,7 @@
   UTILITY SCHEMA
 #}
 
-- name: utils.udf_hex_to_int
+{# - name: utils.udf_hex_to_int
   signature:
     - [hex, STRING]
   return_type: TEXT
@@ -28,7 +28,7 @@
     RUNTIME_VERSION = '3.8'
     HANDLER = 'hex_to_int'
   sql: |
-    {{ python_udf_hex_to_int_with_encoding() | indent(4) }}
+    {{ python_udf_hex_to_int_with_encoding() | indent(4) }} #}
 
 - name: utils.udf_hex_to_string
   signature:
