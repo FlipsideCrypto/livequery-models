@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: crosschain
-    database: "{{ 'crosschain' if target.database == 'REFERENCE' else 'crosschain_dev' }}"
+    database: crosschain
     schema: core
     tables:
       - name: dim_date_hours
