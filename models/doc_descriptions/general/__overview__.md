@@ -1,9 +1,9 @@
 {% docs __overview__ %}
 
-# Welcome to the Flipside Crypto Reference Models Documentation!
+# Welcome to the Flipside Crypto Utility Functions Documentation!
 
 ## **What does this documentation cover?**
-The documentation included here details the design of the Reference functions available via [Flipside Crypto](https://flipsidecrypto.xyz/). For more information on how these functions are built, please see [the github repository.](https://github.com/FlipsideCrypto/reference-models)
+The documentation included here details the design of the utility functions available via [Flipside Crypto](https://flipsidecrypto.xyz/). For more information on how these functions are built, please see [the github repository.](https://github.com/FlipsideCrypto/fsc-utils)
 
 ### **Overview of Available Functions**
 
@@ -64,7 +64,7 @@ Note that you can also right-click on models to interactively filter and explore
 ### **More information**
 - [Flipside](https://flipsidecrypto.xyz/)
 - [Tutorials](https://docs.flipsidecrypto.com/our-data/tutorials)
-- [Github](https://github.com/FlipsideCrypto/reference-models)
+- [Github](https://github.com/FlipsideCrypto/fsc-utils)
 - [What is dbt?](https://docs.getdbt.com/docs/introduction)
 
 {% enddocs %}

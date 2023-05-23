@@ -1,7 +1,7 @@
 # Name your project! Project names should contain only lowercase characters
 # and underscores. A good package name should reflect your organization's
 # name or the intended use of these models
-name: "reference_models"
+name: "fsc_utils"
 version: "1.0.0"
 config-version: 2
 
@@ -27,13 +27,6 @@ clean-targets: # directories to be removed by `dbt clean`
 tests:
   +store_failures: true # all tests
 
-on-run-start:
-  - "{{ create_sps() }}"
-  - "{{ create_udfs() }}"
-
-on-run-end:
-  - "{{ apply_meta_as_tags(results) }}"
-
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 
@@ -44,10 +37,4 @@ on-run-end:
 vars:
   "dbt_date:time_zone": GMT
   UPDATE_UDFS_AND_SPS: false
-  UPDATE_SNOWFLAKE_TAGS: true
-  STREAMLINE_INVOKE_STREAMS: False
-  STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES: False
-  REST_API_ID_PROD: hn8uqhku77
-  REST_API_ID_DEV: hn8uqhku77
-  API_INTEGRATION: AWS_LIVE_QUERY{{ '_DEV' if target.name != 'prod' else ''  }}
   AWS_REGION: us-east-1

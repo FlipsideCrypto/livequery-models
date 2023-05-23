@@ -15,7 +15,7 @@
     RUNTIME_VERSION = '3.8'
     HANDLER = 'hex_to_int'
   sql: |
-    {{ reference_models.python_hex_to_int() | indent(4) }}
+    {{ fsc_utils.python_hex_to_int() | indent(4) }}
 - name: {{ schema }}.udf_hex_to_int
   signature:
     - [encoding, STRING]
@@ -28,7 +28,7 @@
     RUNTIME_VERSION = '3.8'
     HANDLER = 'hex_to_int'
   sql: |
-    {{ reference_models.python_udf_hex_to_int_with_encoding() | indent(4) }}
+    {{ fsc_utils.python_udf_hex_to_int_with_encoding() | indent(4) }}
 
 - name: {{ schema }}.udf_hex_to_string
   signature:
