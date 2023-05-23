@@ -1,4 +1,4 @@
-reference:
+fsc_utils:
   target: prod
   outputs:
     dev:
