@@ -55,7 +55,7 @@
     RETURNS NULL ON NULL INPUT
     IMMUTABLE
   sql: |
-    {{ sql_udf_json_rpc_call() }}
+    {{ fsc_utils.sql_udf_json_rpc_call() }}
 - name: {{ schema }}.udf_json_rpc_call
   signature:
     - [method, STRING]
@@ -67,7 +67,7 @@
     RETURNS NULL ON NULL INPUT
     IMMUTABLE
   sql: |
-    {{ sql_udf_json_rpc_call() }}
+    {{ fsc_utils.sql_udf_json_rpc_call() }}
 - name: {{ schema }}.udf_json_rpc_call
   signature:
     - [method, STRING]
@@ -80,7 +80,7 @@
     RETURNS NULL ON NULL INPUT
     IMMUTABLE
   sql: |
-    {{ sql_udf_json_rpc_call(False) }}
+    {{ fsc_utils.sql_udf_json_rpc_call(False) }}
 - name: {{ schema }}.udf_json_rpc_call
   signature:
     - [method, STRING]
@@ -93,7 +93,7 @@
     RETURNS NULL ON NULL INPUT
     IMMUTABLE
   sql: |
-    {{ sql_udf_json_rpc_call(False) }}
+    {{ fsc_utils.sql_udf_json_rpc_call(False) }}
 
 
 {% endmacro %}
