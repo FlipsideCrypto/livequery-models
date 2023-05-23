@@ -37,6 +37,13 @@ packages:
 ```  
 7. Run dbt deps in the other dbt project to pull the specific version of the package or follow the steps on `adding the dbt package` below.
 
+Regarding Semantic Versioning;
+1. Semantic versioning is a versioning scheme for software that aims to convey meaning about the underlying changes with each new release.
+2. It's typically formatted as MAJOR.MINOR.PATCH (e.g. v1.2.3), where:
+- MAJOR version (first number) should increment when there are potential breaking or incompatible changes.
+- MINOR version (second number) should increment when functionality or features are added in a backwards-compatible manner.
+- PATCH version (third number) should increment when bug fixes are made without adding new features.
+3. Semantic versioning helps package users understand the degree of changes in a new release, and decide when to adopt new versions. With dbt packages, when you tag a release with a semantic version, users can specify the exact version they want to use in their projects.
 
 ## Adding the `fsc_utils` dbt package
 
