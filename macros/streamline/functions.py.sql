@@ -41,7 +41,7 @@ def hex_to_int(encoding, hex) -> str:
     return str(int(hex, 16))
 {% endmacro %}
 
-{% macro create_udf_keccak() %}
+{% macro create_udf_keccak256() %}
 from Crypto.Hash import keccak
 
 def udf_encode(event_name):
@@ -50,7 +50,7 @@ def udf_encode(event_name):
     return '0x' + keccak_hash.hexdigest()
 {% endmacro %}
 
-{% macro create_udf_simple_event_names() %}
+{% macro create_udf_evm_text_signature() %}
 
 def get_simplified_signature(abi):
     def generate_signature(inputs):

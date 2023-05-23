@@ -95,7 +95,7 @@
   sql: |
     {{ fsc_utils.sql_udf_json_rpc_call(False) }}
 
-- name: {{ schema }}.udf_simple_event_name
+- name: {{ schema }}.udf_evm_text_signature
   signature:
     - [abi, VARIANT]
   return_type: TEXT
@@ -104,9 +104,9 @@
     RUNTIME_VERSION = '3.8'
     HANDLER = 'get_simplified_signature'
   sql: |
-    {{ fsc_utils.create_udf_simple_event_names() | indent(4) }}
+    {{ fsc_utils.create_udf_evm_text_signature() | indent(4) }}
 
-- name: {{ schema }}.udf_keccak
+- name: {{ schema }}.udf_keccak256
   signature:
     - [event_name, VARCHAR(255)]
   return_type: TEXT
@@ -116,7 +116,7 @@
     PACKAGES = ('pycryptodome==3.15.0')
     HANDLER = 'udf_encode'
   sql: |
-    {{ fsc_utils.create_udf_keccak() | indent(4) }}  
+    {{ fsc_utils.create_udf_keccak256() | indent(4) }}  
 
 {% endmacro %}
 
