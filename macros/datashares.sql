@@ -1,4 +1,4 @@
-{%- macro fsc_utils.get_ancestors(node, include_depth=false, exclude_source=false) -%}
+{%- macro get_ancestors(node, include_depth=false, exclude_source=false) -%}
 {#
     Return a list of ancestors for a node in a DAG.
  #}
@@ -12,7 +12,7 @@
     {%- endfor %}
 {%- endmacro -%}
 
-{% macro fsc_utils.get_view_ddl() %}
+{% macro get_view_ddl() %}
 {#
     Return a dictionary of view names and their DDL statements.
     The DDL statements are escaped to be used in a Snowflake query.
@@ -36,7 +36,7 @@
     {%- endif -%}
 {%- endmacro -%}
 
-{% macro fsc_utils.replace_database_references(references_to_replace, ddl, new_database) %}
+{% macro replace_database_references(references_to_replace, ddl, new_database) %}
 {#
     Return the DDL statement for a view with the references replaced.
 
@@ -58,7 +58,7 @@
     {{- outer.replaced -}}
 {%- endmacro -%}
 
-{% macro fsc_utils.generate_view_ddl(dag, schema) %}
+{% macro generate_view_ddl(dag, schema) %}
 {#
     Return a list of DDL statements for views in a DAG.
 
@@ -85,7 +85,7 @@
     {{- toyaml(schema_ddl + final_text) -}}
 {%- endmacro -%}
 
-{% macro fsc_utils.generate_dag_and_schemas(node_paths, materializations) %}
+{% macro generate_dag_and_schemas(node_paths, materializations) %}
 {#
     Return a DAG of views and a list of schemas to create.
 
@@ -125,7 +125,7 @@
     {{- tojson(final) -}}
 {%- endmacro -%}
 
-{% macro fsc_utils.generate_table_views_ddl(tables, schema) %}
+{% macro generate_table_views_ddl(tables, schema) %}
 {#
     Return a list of DDL statements for views of tables from a list.
 
@@ -143,7 +143,7 @@
     {{- toyaml(schema_ddl + view_ddl) -}}
 {%- endmacro -%}
 
-{% macro fsc_utils.generate_datashare_ddl() %}
+{% macro generate_datashare_ddl() %}
 {#
     generate DDL for datashare
 
