@@ -104,7 +104,7 @@
     RUNTIME_VERSION = '3.8'
     HANDLER = 'get_simplified_signature'
   sql: |
-    {{ fsc_utils.create_udf_simple_event_names() }}
+    {{ fsc_utils.create_udf_simple_event_names() | indent(4) }}
 
 - name: {{ schema }}.udf_keccak
   signature:
@@ -116,7 +116,7 @@
     PACKAGES = ('pycryptodome==3.15.0')
     HANDLER = 'udf_encode'
   sql: |
-    {{ fsc_utils.create_udf_keccak() }}  
+    {{ fsc_utils.create_udf_keccak() | indent(4) }}  
 
 {% endmacro %}
 
