@@ -34,7 +34,7 @@ The `fsc_utils` dbt package is a centralized repository consisting of various db
 {% endset %}
 {% do run_query(sql) %}
 ``` 
-3. Note: fsc_utils.create_udfs() takes two parameters (drop_=False, schema=utils). Set `drop_` to `True` to drop existing functions or define `schema` for the functions (default set to `utils`). Params not required.
+3. Note: fsc_utils.create_udfs() takes two parameters (drop_=False, schema="utils"). Set `drop_` to `True` to drop existing functions or define `schema` for the functions (default set to `utils`). Params not required.
 4. Navigate to `packages.yml` in your respective repo.
 5. Add the following:
 ```
