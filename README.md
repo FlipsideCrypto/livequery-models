@@ -1,42 +1,6 @@
-# LiveQuery Models
+# Flipside Utility Functions
 
-Dbt repo for managing LiveQuery database.
-
-## Profile Set Up
-
-Use the following within profiles.yml
-
-```yml
-livequery:
-  target: dev
-  outputs:
-    dev:
-      type: snowflake
-      account: <ACCOUNT>
-      role: <ROLE>
-      user: <USERNAME>
-      password: <PASSWORD>
-      region: <REGION>
-      database: LIVEQUERY_DEV
-      warehouse: <WAREHOUSE>
-      schema: silver
-      threads: 12
-      client_session_keep_alive: False
-      query_tag: <TAG>
-    prod:
-      type: snowflake
-      account: <ACCOUNT>
-      role: <ROLE>
-      user: <USERNAME>
-      password: <PASSWORD>
-      region: <REGION>
-      database: LIVEQUERY_DEV
-      warehouse: <WAREHOUSE>
-      schema: silver
-      threads: 12
-      client_session_keep_alive: False
-      query_tag: <TAG>
-```
+Dbt repo for managing the Flipside Utility Functions (FSC_UTILS) dbt package.
 
 ## Variables
 
@@ -58,6 +22,27 @@ dbt run-operation create_udfs --var 'UPDATE_UDFS_AND_SPS": True' --args 'drop_:f
 dbt run-operation create_udfs --var 'UPDATE_UDFS_AND_SPS": True' --args 'drop_:true'
 ```
 
+## Adding the `fsc_utils` dbt package
+
+The `fsc_utils` dbt package is a centralized repository consisting of various dbt macros and snowflake functions that can be utilized across other repos.
+
+1. Navigate to the `create_udfs.sql` macro in your respective repo where you want to install the package.
+2. Add the following: 
+```
+{% set name %}
+{{- fsc_utils.create_udfs() -}}
+{% endset %}
+{% do run_query(sql) %}
+``` 
+3. Note: fsc_utils.create_udfs() takes two parameters (drop_=False, schema=utils). Set `drop_` to `True` to drop existing functions or define `schema` for the functions (default set to `utils`). Params not required.
+4. Navigate to `packages.yml` in your respective repo.
+5. Add the following:
+```
+- git: https://github.com/FlipsideCrypto/fsc-utils.git
+```
+6. Run `dbt deps` to install the package
+7. Run the macro `dbt run-operation create_udfs --var '{"UPDATE_UDFS_AND_SPS":True}'`
+
 ## Resources
 
 * Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
@@ -65,45 +50,3 @@ dbt run-operation create_udfs --var 'UPDATE_UDFS_AND_SPS": True' --args 'drop_:t
 * Join the [chat](https://community.getdbt.com/) on Slack for live discussions and support
 * Find [dbt events](https://events.getdbt.com) near you
 * Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
-
-## Applying Model Tags
-
-## Database / Schema level tags
-
-Database and schema tags are applied via the `add_database_or_schema_tags` macro.  These tags are inherited by their downstream objects.  To add/modify tags call the appropriate tag set function within the macro.
-
-```jinja
-{{ set_database_tag_value('SOME_DATABASE_TAG_KEY','SOME_DATABASE_TAG_VALUE') }}
-{{ set_schema_tag_value('SOME_SCHEMA_TAG_KEY','SOME_SCHEMA_TAG_VALUE') }}
-```
-
-### Model tags
-
-To add/update a model's snowflake tags, add/modify the `meta` model property under `config` .  Only table level tags are supported at this time via DBT.
-
-```jinja
-{{ config(
-    ...
-    meta={
-        'database_tags':{
-            'table': {
-                'PURPOSE': 'SOME_PURPOSE'
-            }
-        }
-    },
-    ...
-) }}
-```
-
-By default, model tags are pushed to Snowflake on each load. You can disable this by setting the `UPDATE_SNOWFLAKE_TAGS` project variable to `False` during a run.
-
-```sh
-dbt run --var '{"UPDATE_SNOWFLAKE_TAGS":False}' -s models/core/core__fact_blocks.sql
-```
-
-### Querying for existing tags on a model in snowflake
-
-```sql
-select *
-from table(livequery.information_schema.tag_references('livequery.core.fact_blocks', 'table'));
-```
