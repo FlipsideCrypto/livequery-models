@@ -1,18 +1,13 @@
-{% macro create_udfs(drop_=False) %}
+{% macro create_udfs(drop_=False,schema="utils") %}
     {% if var("UPDATE_UDFS_AND_SPS") %}
         {% set name %}
-        {{- udf_configs() -}}
+        {{- fsc_utils.udf_configs(schema) -}}
         {% endset %}
         {%  set udfs = fromyaml(name) %}
         {% set sql %}
-        CREATE schema if NOT EXISTS silver;
-        CREATE schema if NOT EXISTS beta;
-        CREATE schema if NOT EXISTS utils;
-        CREATE schema if NOT EXISTS _utils;
-        CREATE schema if NOT EXISTS _live;
-        CREATE schema if NOT EXISTS live;
+        CREATE schema if NOT EXISTS {{ schema }};
         {%- for udf in udfs -%}
-        {{- create_or_drop_function_from_config(udf, drop_=drop_) -}}
+        {{- fsc_utils.create_or_drop_function_from_config(udf, drop_=drop_) -}}
         {% endfor %}
         {% endset %}
         {% do run_query(sql) %}
