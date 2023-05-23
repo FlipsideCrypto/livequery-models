@@ -44,5 +44,57 @@
         try_hex_decode_string(hex),
           '[\x00-\x1F\x7F-\x9F\xAD]', '', 1))
 
+- name: {{ schema }}.udf_json_rpc_call
+  signature:
+    - [method, STRING]
+    - [params, ARRAY]
+  return_type: OBJECT
+  options: |
+    NULL
+    LANGUAGE SQL
+    RETURNS NULL ON NULL INPUT
+    IMMUTABLE
+  sql: |
+    {{ sql_udf_json_rpc_call() }}
+- name: {{ schema }}.udf_json_rpc_call
+  signature:
+    - [method, STRING]
+    - [params, OBJECT]
+  return_type: OBJECT
+  options: |
+    NULL
+    LANGUAGE SQL
+    RETURNS NULL ON NULL INPUT
+    IMMUTABLE
+  sql: |
+    {{ sql_udf_json_rpc_call() }}
+- name: {{ schema }}.udf_json_rpc_call
+  signature:
+    - [method, STRING]
+    - [params, OBJECT]
+    - [id, STRING]
+  return_type: OBJECT
+  options: |
+    NULL
+    LANGUAGE SQL
+    RETURNS NULL ON NULL INPUT
+    IMMUTABLE
+  sql: |
+    {{ sql_udf_json_rpc_call(False) }}
+- name: {{ schema }}.udf_json_rpc_call
+  signature:
+    - [method, STRING]
+    - [params, ARRAY]
+    - [id, STRING]
+  return_type: OBJECT
+  options: |
+    NULL
+    LANGUAGE SQL
+    RETURNS NULL ON NULL INPUT
+    IMMUTABLE
+  sql: |
+    {{ sql_udf_json_rpc_call(False) }}
+
+
 {% endmacro %}
 

@@ -1,29 +1,29 @@
-fsc_utils:
-  target: prod
-  outputs:
-    dev:
-      type: snowflake
-      account: "{{ env_var('ACCOUNT') }}"
-      role: "{{ env_var('ROLE') }}"
-      user: "{{ env_var('USER') }}"
-      password: "{{ env_var('PASSWORD') }}"
-      region: "{{ env_var('REGION') }}"
-      database: "{{ env_var('DATABASE') }}"
-      warehouse: "{{ env_var('WAREHOUSE') }}"
-      schema: SILVER
-      threads: 4
-      client_session_keep_alive: False
-      query_tag: fsc_utils_curator
-    prod:
-      type: snowflake
-      account: "{{ env_var('ACCOUNT') }}"
-      role: "{{ env_var('ROLE') }}"
-      user: "{{ env_var('USER') }}"
-      password: "{{ env_var('PASSWORD') }}"
-      region: "{{ env_var('REGION') }}"
-      database: "{{ env_var('DATABASE') }}"
-      warehouse: "{{ env_var('WAREHOUSE') }}"
-      schema: SILVER
-      threads: 4
-      client_session_keep_alive: False
-      query_tag: fsc_utils_curator
+# fsc_utils:
+#   target: prod
+#   outputs:
+#     dev:
+#       type: snowflake
+#       account: "{{ env_var('ACCOUNT') }}"
+#       role: "{{ env_var('ROLE') }}"
+#       user: "{{ env_var('USER') }}"
+#       password: "{{ env_var('PASSWORD') }}"
+#       region: "{{ env_var('REGION') }}"
+#       database: "{{ env_var('DATABASE') }}"
+#       warehouse: "{{ env_var('WAREHOUSE') }}"
+#       schema: SILVER
+#       threads: 4
+#       client_session_keep_alive: False
+#       query_tag: fsc_utils_curator
+#     prod:
+#       type: snowflake
+#       account: "{{ env_var('ACCOUNT') }}"
+#       role: "{{ env_var('ROLE') }}"
+#       user: "{{ env_var('USER') }}"
+#       password: "{{ env_var('PASSWORD') }}"
+#       region: "{{ env_var('REGION') }}"
+#       database: "{{ env_var('DATABASE') }}"
+#       warehouse: "{{ env_var('WAREHOUSE') }}"
+#       schema: SILVER
+#       threads: 4
+#       client_session_keep_alive: False
+#       query_tag: fsc_utils_curator
