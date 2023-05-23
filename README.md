@@ -34,7 +34,7 @@ dbt run-operation create_udfs --var 'UPDATE_UDFS_AND_SPS": True' --args 'drop_:t
 packages:
   - git: "https://github.com/FlipsideCrypto/fsc-utils.git"
     revision: "v1.1.0"
-``` 
+```  
 7. Run dbt deps in the other dbt project to pull the specific version of the package or follow the steps on `adding the dbt package` below.
 
 
