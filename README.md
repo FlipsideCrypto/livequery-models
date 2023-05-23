@@ -22,6 +22,22 @@ dbt run-operation create_udfs --var 'UPDATE_UDFS_AND_SPS": True' --args 'drop_:f
 dbt run-operation create_udfs --var 'UPDATE_UDFS_AND_SPS": True' --args 'drop_:true'
 ```
 
+## Adding Release Versions
+
+1. Make the necessary changes to your code in your dbt package repository (e.g., fsc-utils).
+2. Commit your changes with `git add .` and `git commit -m "Your commit message"`.
+3. Tag your commit with a version number using `git tag -a v1.1.0 -m "version 1.1.0"`.
+4. Push your commits to the remote repository with `git push origin ...`.
+5. Push your tags to the remote repository with `git push origin --tags`.
+6. In the packages.yml file of your other dbt project, specify the new version of the package with:
+```
+packages:
+  - git: "https://github.com/FlipsideCrypto/fsc-utils.git"
+    revision: "v1.1.0"
+```
+7. Run dbt deps in the other dbt project to pull the specific version of the package or follow the steps on `adding the dbt package` below.
+
+
 ## Adding the `fsc_utils` dbt package
 
 The `fsc_utils` dbt package is a centralized repository consisting of various dbt macros and snowflake functions that can be utilized across other repos.
