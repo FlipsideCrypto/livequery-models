@@ -26,10 +26,14 @@ title: LiveQuery Documentation
     - [Syntax](#syntax-2)
     - [Arguments](#arguments-2)
     - [Sample Queries](#sample-queries-2)
-  - [udf\_json\_rpc\_call](#udf_json_rpc_call)
+  - [udf\_keccak256](#udf_keccak256)
     - [Syntax](#syntax-3)
     - [Arguments](#arguments-3)
     - [Sample Queries](#sample-queries-3)
+  - [udf\_json\_rpc\_call](#udf_json_rpc_call)
+    - [Syntax](#syntax-4)
+    - [Arguments](#arguments-4)
+    - [Sample Queries](#sample-queries-4)
 - [Registering Secrets](#registering-secrets)
 
 
@@ -416,6 +420,39 @@ livequery.utils.udf_hex_to_string(
   | text1         |
   | ------------- |
   | Diamond Hands |
+</details>
+</details>
+
+---
+
+## udf_keccak256
+
+This function returns the keccak256 hash of the input string.
+
+### Syntax
+```sql
+livequery.utils.udf_keccak256(
+  text_signature
+)
+```
+### Arguments
+**Required**
+- `text_signature` (string): The text to hash
+
+### Sample Queries
+<details>
+  <summary>Encode Text to keccak256</summary>
+
+  ```sql
+  select 
+    livequery.utils.udf_keccak256('Transfer(address,address,uint256)') as hex_signature
+  ```
+  <details>
+  <summary>Query Results</summary>
+  
+  | hex_signature                                                      |
+  | ------------------------------------------------------------------ |
+  | 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef |
 </details>
 </details>
 
