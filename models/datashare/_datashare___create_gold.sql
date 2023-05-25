@@ -11,7 +11,7 @@ SELECT
 $${{- fsc_utils.generate_datashare_ddl() -}}$$ AS ddl,
 md5(ddl) AS ddl_hash,
 sysdate() as ddl_created_at,
-{{ fsc_utils.get_test_schema().replace('"',"'") }} as exclusion_schema
+{{ fsc_utils.get_exclusion_schema().replace('"',"'") }} as exclusion_schema
 {% else %}
 SELECT
 null as ddl,
