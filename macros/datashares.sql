@@ -158,3 +158,17 @@
     {{- "BEGIN\n" ~ (combined_ddl | join("\n")) ~ "\nEND" -}}
 {%- endmacro -%}
 
+{% macro get_exclusion_schema() %}
+{#
+    Return a list of schemas to exclude from the data shares
+ #}
+{% set schema = {} %}
+{% for key, value in graph.nodes.items() -%}
+    {%
+    if key.startswith("test.") or value.schema.startswith("_")
+    -%}
+    {% do schema.update({value.schema:None}) %}
+    {%- endif %}
+{%- endfor %}
+{{- schema.keys() | list | tojson  -}}
+{%- endmacro -%}
