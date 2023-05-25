@@ -22,7 +22,7 @@ Include a detailed step-by-step guide for reproducing the issue. This could incl
 Describe what you expected to happen when you took the actions above.
 
 **Screenshots or code snippets**
-If applicable, add screenshots or code snippets to help explain your problem. This could be a screenshot of an error message, or a snippet of code that is causing an issue.
+If applicable, add screenshots or code snippets to help explain your problem. This could be a screenshot of an error message, or a snippet of code that is causing an issue. If your problem is very complex, please record and submit a Loom to help us understand the issue better.
 
 **Additional context**
 Include any other details that may help us understand the issue better. This could be information about your environment, the frequency of the issue, or specific use cases where the issue arises.
