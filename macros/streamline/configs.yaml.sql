@@ -78,7 +78,27 @@
     HANDLER = 'hex_to_int'
   sql: |
     {{ python_udf_hex_to_int_with_encoding() | indent(4) }}
-
+- name: utils.udf_evm_text_signature
+  signature:
+    - [abi, VARIANT]
+  return_type: TEXT
+  options: |
+    LANGUAGE PYTHON
+    RUNTIME_VERSION = '3.8'
+    HANDLER = 'get_simplified_signature'
+  sql: |
+    {{ create_udf_evm_text_signature() | indent(4) }}
+- name: utils.udf_keccak256
+  signature:
+    - [event_name, VARCHAR(255)]
+  return_type: TEXT
+  options: |
+    LANGUAGE PYTHON
+    RUNTIME_VERSION = '3.8'
+    PACKAGES = ('pycryptodome==3.15.0')
+    HANDLER = 'udf_encode'
+  sql: |
+    {{ create_udf_keccak256() | indent(4) }}  
 - name: utils.udf_hex_to_string
   signature:
     - [hex, STRING]
