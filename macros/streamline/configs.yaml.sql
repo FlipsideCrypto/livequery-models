@@ -12,6 +12,32 @@
   sql: introspect
 
 
+- name: _utils.udf_user_tier
+  signature: []
+  func_type: SECURE
+  return_type: TEXT
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    IMMUTABLE
+    MEMOIZABLE
+  sql: |
+    SELECT
+      COALESCE(PARSE_JSON(GETVARIABLE('LIVEQUERY_CONTEXT')):userTier::STRING, 'community')
+
+- name: _utils.udf_provider
+  signature: []
+  func_type: SECURE
+  return_type: TEXT
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    IMMUTABLE
+    MEMOIZABLE
+  sql: |
+    SELECT
+      COALESCE(PARSE_JSON(GETVARIABLE('LIVEQUERY_CONTEXT')):provider::STRING, 'quicknode')
+
 - name: _utils.udf_whoami
   signature: []
   func_type: SECURE
@@ -23,7 +49,7 @@
     MEMOIZABLE
   sql: |
     SELECT
-      COALESCE(SPLIT_PART(GETVARIABLE('QUERY_TAG_SESSION'), ',',2), CURRENT_USER())
+      COALESCE(PARSE_JSON(GETVARIABLE('LIVEQUERY_CONTEXT')):userId::STRING, CURRENT_USER())
 
 - name: _utils.udf_register_secret
   signature:
@@ -98,7 +124,7 @@
     PACKAGES = ('pycryptodome==3.15.0')
     HANDLER = 'udf_encode'
   sql: |
-    {{ create_udf_keccak256() | indent(4) }}  
+    {{ create_udf_keccak256() | indent(4) }}
 - name: utils.udf_hex_to_string
   signature:
     - [hex, STRING]
