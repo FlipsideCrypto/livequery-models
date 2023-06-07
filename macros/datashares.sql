@@ -40,21 +40,18 @@
 {#
     Return the DDL statement for a view with the references replaced.
 
-    references_to_replace: a dictionary of references to replace
-    ddl: the DDL statement to replace the references in
-    new_database: the new database to replace the references with
+    references_to_replace: a list of references to replace
+    ddl: the DDL statement to be replaced
+    new_database: the new database name to replace the references with
 #}
+    {% set re = modules.re %}
     {% set outer = namespace(replaced=ddl) %}
     {% for key in references_to_replace %}
-        {%- set original = target.database ~ "." ~ key.upper() -%}
+        {%- set original = re.compile("\\b" ~ target.database ~ "." ~ key ~ "\\b", re.IGNORECASE) -%}
         {%- set replacement  =  new_database ~ "." ~ key -%}
-        {%- set outer.replaced = outer.replaced|replace(original, replacement) -%}
-        {%- set original = target.database ~ "." ~ key.lower() -%}
-        {%- set replacement  =  new_database ~ "." ~ key -%}
-        {%- set outer.replaced = outer.replaced|replace(original, replacement) -%}
+        {% set outer.replaced = original.sub(replacement, outer.replaced) %}
     {%- endfor -%}
     {% set outer.replaced = outer.replaced|replace(target.database.upper() ~ ".", "__SOURCE__.") %}
-    {% set outer.replaced = outer.replaced|replace(target.database.lower() ~ ".", "__SOURCE__.") %}
     {{- outer.replaced -}}
 {%- endmacro -%}
 
@@ -156,19 +153,4 @@
     {%- set combined_ddl = gold_views_ddl + gold_tables_ddl -%}
     {%- do combined_ddl.insert(0, "CREATE DATABASE IF NOT EXISTS __NEW__;") -%}
     {{- "BEGIN\n" ~ (combined_ddl | join("\n")) ~ "\nEND" -}}
-{%- endmacro -%}
-
-{% macro get_exclusion_schema() %}
-{#
-    Return a list of schemas to exclude from the data shares
- #}
-{% set schema = {} %}
-{% for key, value in graph.nodes.items() -%}
-    {%
-    if key.startswith("test.") or value.schema.startswith("_")
-    -%}
-    {% do schema.update({value.schema:None}) %}
-    {%- endif %}
-{%- endfor %}
-{{- schema.keys() | list | tojson  -}}
 {%- endmacro -%}
