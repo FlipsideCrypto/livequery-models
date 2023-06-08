@@ -36,22 +36,25 @@
     {%- endif -%}
 {%- endmacro -%}
 
-{% macro replace_database_references(references_to_replace, ddl, new_database) %}
+{% macro replace_database_references(references_to_replace, ddl) %}
 {#
     Return the DDL statement for a view with the references replaced.
+    All items in references_to_replace are replaced with __NEW__,
+    while all remaining references to the database are replaced with __SOURCE__.
 
-    references_to_replace: a list of references to replace
+    references_to_replace: a list of references to replace with __NEW__
     ddl: the DDL statement to be replaced
-    new_database: the new database name to replace the references with
+
 #}
     {% set re = modules.re %}
     {% set outer = namespace(replaced=ddl) %}
     {% for key in references_to_replace %}
         {%- set original = re.compile("\\b" ~ target.database ~ "." ~ key ~ "\\b", re.IGNORECASE) -%}
-        {%- set replacement  =  new_database ~ "." ~ key -%}
+        {%- set replacement  =  "__NEW__" ~ "." ~ key -%}
         {% set outer.replaced = original.sub(replacement, outer.replaced) %}
     {%- endfor -%}
-    {% set outer.replaced = outer.replaced|replace(target.database.upper() ~ ".", "__SOURCE__.") %}
+    {%- set original = re.compile("\\b" ~ target.database ~ "." ~ "\\b", re.IGNORECASE) -%}
+    {% set outer.replaced = original.sub("__SOURCE__.", outer.replaced) %}
     {{- outer.replaced -}}
 {%- endmacro -%}
 
@@ -69,7 +72,7 @@
         {%- for d in deps -%}
             {%- set table_name = d.split(".")[-1].replace("__", ".").upper() -%}
             {%- if ddl.get(table_name) and table_name not in created -%}
-                {%- set replaced = fsc_utils.replace_database_references(ddl.keys(), ddl[table_name], "__NEW__") -%}
+                {%- set replaced = fsc_utils.replace_database_references(ddl.keys(), ddl[table_name]) -%}
                 {%- do final_text.append(replaced) -%}
                 {%- do created.update({table_name:true}) -%}
             {%- endif -%}

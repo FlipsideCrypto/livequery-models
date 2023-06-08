@@ -1,7 +1,14 @@
 version: "0.2"
 language: en
 words:
+  - datashare
+  - elif
+  - endswith
+  - fromjson
   - fromyaml
   - GETVARIABLE
+  - IGNORECASE
   - livequery
+  - startswith
+  - toyaml
   - udfs
