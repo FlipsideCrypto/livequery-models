@@ -60,7 +60,7 @@
     ) -%}
     {% set name_ = config ["name"] %}
     {% set signature = config ["signature"] %}
-    {% set return_type = config ["return_type"][0] if config ["return_type"] is iterable else config ["return_type"]  %}
+    {% set return_type = config ["return_type"] if config ["return_type"] is string else config ["return_type"][0] %}
     {% set sql_ = config ["sql"] %}
     {% set options = config ["options"] %}
     {% set api_integration = config ["api_integration"] %}
