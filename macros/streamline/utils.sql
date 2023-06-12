@@ -13,8 +13,9 @@
         params,
         drop_ = False
     ) -%}
-    {% for name,
-        data_type in params -%}
+    {% for p in params -%}
+        {% set name = p.0 %}
+        {% set data_type = p.1 %}
         {% if drop_ %}
             {{ data_type -}}
         {% else %}

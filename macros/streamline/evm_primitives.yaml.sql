@@ -529,3 +529,4 @@
           ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum',network
           )
 
+{% endmacro %}

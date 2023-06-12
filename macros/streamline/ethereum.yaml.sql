@@ -9,7 +9,7 @@
   comment: |
     Returns the current balance of the account of given address.
   signature:
-    - [address, STRING]
+    - [address, STRING, foo bar]
   return_type: OBJECT
   options: |
     NOT NULL
@@ -33,3 +33,5 @@
     SELECT
         {# add check for valid block hex or valid tag  #}
         etheruem.rpc_eth_get_balance(address, block_or_tag, '{{ network }}')
+
+{% endmacro %}
