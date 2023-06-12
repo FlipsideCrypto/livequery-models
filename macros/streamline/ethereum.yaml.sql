@@ -6,7 +6,7 @@
 
 
 - name: etheruem_{{ network }}.udf_get_latest_account_balance
-  description: |
+  comment: |
     Returns the current balance of the account of given address.
   signature:
     - [address, STRING]
@@ -19,7 +19,7 @@
     SELECT
         etheruem.rpc_eth_get_balance(address, 'latest', '{{ network }}')
 - name: etheruem_{{ network }}.udf_get_latest_account_balance
-  description: |
+  comment: |
     Returns the balance of the account of given address at the given block.
   signature:
     - [address, STRING]
@@ -31,4 +31,5 @@
     VOLATILE
   sql: |
     SELECT
+        {# add check for valid block hex or valid tag  #}
         etheruem.rpc_eth_get_balance(address, block_or_tag, '{{ network }}')

@@ -18,7 +18,7 @@
  #}
 
 - name: {{ schema }}.rpc_eth_get_balance
-  description: |
+  comment: |
     Returns the balance of the account of given address.
   signature:
     - [address, STRING]
@@ -36,7 +36,7 @@
             ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
         )
 - name: {{ schema }}.rpc_eth_get_balance
-  description: |
+  comment: |
     Returns the balance of the account of given address.
   signature:
     - [address, STRING]
@@ -56,7 +56,7 @@
         )
 
 - name: eth_getBlockTransactionCountByHash
-  description: |
+  comment: |
     Returns the number of transactions in a block from a block matching the given block hash.
   signature:
     - [block_hash, STRING]
@@ -73,7 +73,7 @@
             ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
         )
 - name: eth_getBlockTransactionCountByHash
-  description: |
+  comment: |
     Returns the number of transactions in a block from a block matching the given block hash.
   signature:
     - [block_hash, STRING]
@@ -92,7 +92,7 @@
         )
 
 - name: eth_getBlockTransactionCountByNumber
-  description: |
+  comment: |
     Returns the number of transactions in a block matching the given block number.
   signature:
     - [block_number, STRING]
@@ -109,7 +109,7 @@
             ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
         )
 - name: eth_getBlockTransactionCountByNumber
-  description: |
+  comment: |
     Returns the number of transactions in a block matching the given block number.
   signature:
     - [block_number, STRING]
@@ -128,7 +128,7 @@
         )
 
 - name: eth_getUncleCountByBlockHash
-  description: |
+  comment: |
     Returns the number of uncles in a block from a block matching the given block hash.
   signature:
     - [block_hash, STRING]
@@ -145,7 +145,7 @@
             ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
         )
 - name: eth_getUncleCountByBlockHash
-  description: |
+  comment: |
     Returns the number of uncles in a block from a block matching the given block hash.
   signature:
     - [block_hash, STRING]
@@ -164,7 +164,7 @@
         )
 
 - name: eth_getUncleCountByBlockNumber
-  description: |
+  comment: |
     Returns the number of uncles in a block from a block matching the given block number.
   signature:
     - [block_number, STRING]
@@ -181,7 +181,7 @@
             ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
         )
 - name: eth_getUncleCountByBlockNumber
-  description: |
+  comment: |
     Returns the number of uncles in a block from a block matching the given block number.
   signature:
     - [block_number, STRING]
@@ -200,7 +200,7 @@
         )
 
 - name: eth_getBlockByHash
-  description: |
+  comment: |
     Returns information about a block by hash.
   signature:
     - [block_hash, STRING]
@@ -218,7 +218,7 @@
               ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
           )
 - name: eth_getBlockByHash
-  description: |
+  comment: |
     Returns information about a block by hash.
   signature:
     - [block_hash, STRING]
@@ -238,7 +238,7 @@
           )
 
 - name: eth_getBlockByNumber
-  description: |
+  comment: |
     Returns information about a block by block number.
   signature:
     - [block_number, STRING]
@@ -256,7 +256,7 @@
               ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
           )
 - name: eth_getBlockByNumber
-  description: |
+  comment: |
     Returns information about a block by block number.
   signature:
     - [block_number, STRING]
@@ -276,7 +276,7 @@
           )
 
 - name: eth_getTransactionByHash
-  description: |
+  comment: |
     Returns the information about a transaction requested by transaction hash.
   signature:
     - [transaction_hash, STRING]
@@ -293,7 +293,7 @@
               ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
           )
 - name: eth_getTransactionByHash
-  description: |
+  comment: |
     Returns the information about a transaction requested by transaction hash.
   signature:
     - [transaction_hash, STRING]
@@ -312,7 +312,7 @@
           )
 
 - name: eth_getTransactionByBlockHashAndIndex
-  description: |
+  comment: |
     Returns information about a transaction by block hash and transaction index position.
   signature:
     - [block_hash, STRING]
@@ -330,7 +330,7 @@
               ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
           )
 - name: eth_getTransactionByBlockHashAndIndex
-  description: |
+  comment: |
     Returns information about a transaction by block hash and transaction index position.
   signature:
     - [block_hash, STRING]
@@ -350,7 +350,7 @@
           )
 
 - name: eth_getTransactionByBlockNumberAndIndex
-  description: |
+  comment: |
     Returns information about a transaction by block number and transaction index position.
   signature:
     - [block_number, STRING]
@@ -368,7 +368,7 @@
               ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
           )
 - name: eth_getTransactionByBlockNumberAndIndex
-  description: |
+  comment: |
     Returns information about a transaction by block number and transaction index position.
   signature:
     - [block_number, STRING]
@@ -388,7 +388,7 @@
           )
 
 - name: eth_getTransactionReceipt
-  description: |
+  comment: |
     Returns the receipt of a transaction by transaction hash.
   signature:
     - [transaction_hash, STRING]
@@ -405,7 +405,7 @@
               ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
           )
 - name: eth_getTransactionReceipt
-  description: |
+  comment: |
     Returns the receipt of a transaction by transaction hash.
   signature:
     - [transaction_hash, STRING]
@@ -424,7 +424,7 @@
           )
 
 - name: eth_getUncleByBlockHashAndIndex
-  description: |
+  comment: |
     Returns information about a uncle of a block by hash and uncle index position.
   signature:
     - [block_hash, STRING]
@@ -442,7 +442,7 @@
               ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
           )
 - name: eth_getUncleByBlockHashAndIndex
-  description: |
+  comment: |
     Returns information about a uncle of a block by hash and uncle index position.
   signature:
     - [block_hash, STRING]
@@ -462,7 +462,7 @@
           )
 
 - name: eth_getUncleByBlockNumberAndIndex
-  description: |
+  comment: |
     Returns information about a uncle of a block by number and uncle index position.
   signature:
     - [block_number, STRING]
@@ -480,7 +480,7 @@
               ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
           )
 - name: eth_getUncleByBlockNumberAndIndex
-  description: |
+  comment: |
     Returns information about a uncle of a block by number and uncle index position.
   signature:
     - [block_number, STRING]
@@ -500,7 +500,7 @@
           )
 
 - name: eth_getUncleCountByBlockHash
-  description: |
+  comment: |
     Returns the number of uncles in a block from a block matching the given block hash.
   signature:
     - [block_hash, STRING]
@@ -513,7 +513,7 @@
       SELECT
           live.udf_json_rpc_call('eth_getUncleCountByBlockHash', [block_hash])
 - name: eth_getUncleCountByBlockHash
-  description: |
+  comment: |
     Returns the number of uncles in a block from a block matching the given block hash.
   signature:
     - [block_hash, STRING]
@@ -530,7 +530,7 @@
           )
 
 - name: eth_getUncleCountByBlockNumber
-  description: |
+  comment: |
     Returns the number of uncles in a block from a block matching the given block number.
   signature:
     - [block_number, STRING]
@@ -543,7 +543,7 @@
       SELECT
           live.udf_json_rpc_call('eth_getUncleCountByBlockNumber', [block_number])
 - name: eth_getUncleCountByBlockNumber
-  description: |
+  comment: |
     Returns the number of uncles in a block from a block matching the given block number.
   signature:
     - [block_number, STRING]
