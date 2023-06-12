@@ -15,12 +15,11 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns the current balance of the account of given address.$$
   sql: |
     SELECT
         etheruem.rpc_eth_get_balance(address, 'latest', '{{ network }}')
 - name: etheruem_{{ network }}.udf_get_latest_account_balance
-  comment: |
-    Returns the balance of the account of given address at the given block.
   signature:
     - [address, STRING]
     - [block_or_tag, STRING]
@@ -29,6 +28,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns the balance of the account of given address at the given block.$$
   sql: |
     SELECT
         {# add check for valid block hex or valid tag  #}

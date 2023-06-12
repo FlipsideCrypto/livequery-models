@@ -18,8 +18,6 @@
  #}
 
 - name: {{ schema }}.rpc_eth_get_balance
-  comment: |
-    Returns the balance of the account of given address.
   signature:
     - [address, STRING]
     - [block_or_tag, STRING]
@@ -28,6 +26,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns the balance of the account of given address.$$
   sql: |
     SELECT
         live.udf_api(
@@ -36,8 +35,6 @@
             ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
         )
 - name: {{ schema }}.rpc_eth_get_balance
-  comment: |
-    Returns the balance of the account of given address.
   signature:
     - [address, STRING]
     - [block_or_tag, STRING]
@@ -47,6 +44,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns the balance of the account of given address.$$
   sql: |
     SELECT
         live.udf_api(
@@ -56,8 +54,6 @@
         )
 
 - name: eth_getBlockTransactionCountByHash
-  comment: |
-    Returns the number of transactions in a block from a block matching the given block hash.
   signature:
     - [block_hash, STRING]
   return_type: OBJECT
@@ -65,6 +61,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns the number of transactions in a block from a block matching the given block hash.$$
   sql: |
     SELECT
         live.udf_api(
@@ -73,8 +70,6 @@
             ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
         )
 - name: eth_getBlockTransactionCountByHash
-  comment: |
-    Returns the number of transactions in a block from a block matching the given block hash.
   signature:
     - [block_hash, STRING]
     - [network, STRING]
@@ -83,6 +78,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns the number of transactions in a block from a block matching the given block hash.$$
   sql: |
     SELECT
         live.udf_api(
@@ -92,8 +88,6 @@
         )
 
 - name: eth_getBlockTransactionCountByNumber
-  comment: |
-    Returns the number of transactions in a block matching the given block number.
   signature:
     - [block_number, STRING]
   return_type: OBJECT
@@ -101,6 +95,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns the number of transactions in a block matching the given block number.$$
   sql: |
     SELECT
         live.udf_api(
@@ -109,8 +104,6 @@
             ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
         )
 - name: eth_getBlockTransactionCountByNumber
-  comment: |
-    Returns the number of transactions in a block matching the given block number.
   signature:
     - [block_number, STRING]
     - [network, STRING]
@@ -119,6 +112,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns the number of transactions in a block matching the given block number.$$
   sql: |
     SELECT
         live.udf_api(
@@ -128,8 +122,6 @@
         )
 
 - name: eth_getUncleCountByBlockHash
-  comment: |
-    Returns the number of uncles in a block from a block matching the given block hash.
   signature:
     - [block_hash, STRING]
   return_type: OBJECT
@@ -137,6 +129,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns the number of uncles in a block from a block matching the given block hash.$$
   sql: |
     SELECT
         live.udf_api(
@@ -145,8 +138,6 @@
             ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
         )
 - name: eth_getUncleCountByBlockHash
-  comment: |
-    Returns the number of uncles in a block from a block matching the given block hash.
   signature:
     - [block_hash, STRING]
     - [network, STRING]
@@ -155,6 +146,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns the number of uncles in a block from a block matching the given block hash.$$
   sql: |
     SELECT
         live.udf_api(
@@ -164,8 +156,6 @@
         )
 
 - name: eth_getUncleCountByBlockNumber
-  comment: |
-    Returns the number of uncles in a block from a block matching the given block number.
   signature:
     - [block_number, STRING]
   return_type: OBJECT
@@ -173,6 +163,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns the number of uncles in a block from a block matching the given block number.$$
   sql: |
     SELECT
         live.udf_api(
@@ -181,8 +172,6 @@
             ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
         )
 - name: eth_getUncleCountByBlockNumber
-  comment: |
-    Returns the number of uncles in a block from a block matching the given block number.
   signature:
     - [block_number, STRING]
     - [network, STRING]
@@ -191,6 +180,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns the number of uncles in a block from a block matching the given block number.$$
   sql: |
     SELECT
         live.udf_api(
@@ -200,8 +190,6 @@
         )
 
 - name: eth_getBlockByHash
-  comment: |
-    Returns information about a block by hash.
   signature:
     - [block_hash, STRING]
     - [full_transaction_objects, BOOLEAN]
@@ -210,6 +198,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns information about a block by hash.$$
   sql: |
       SELECT
           live.udf_api(
@@ -218,8 +207,6 @@
               ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
           )
 - name: eth_getBlockByHash
-  comment: |
-    Returns information about a block by hash.
   signature:
     - [block_hash, STRING]
     - [full_transaction_objects, BOOLEAN]
@@ -229,6 +216,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns information about a block by hash.$$
   sql: |
       SELECT
           live.udf_api(
@@ -238,8 +226,6 @@
           )
 
 - name: eth_getBlockByNumber
-  comment: |
-    Returns information about a block by block number.
   signature:
     - [block_number, STRING]
     - [full_transaction_objects, BOOLEAN]
@@ -248,6 +234,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns information about a block by block number.$$
   sql: |
       SELECT
           live.udf_api(
@@ -256,8 +243,6 @@
               ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
           )
 - name: eth_getBlockByNumber
-  comment: |
-    Returns information about a block by block number.
   signature:
     - [block_number, STRING]
     - [full_transaction_objects, BOOLEAN]
@@ -267,6 +252,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns information about a block by block number.$$
   sql: |
       SELECT
           live.udf_api(
@@ -276,8 +262,6 @@
           )
 
 - name: eth_getTransactionByHash
-  comment: |
-    Returns the information about a transaction requested by transaction hash.
   signature:
     - [transaction_hash, STRING]
   return_type: OBJECT
@@ -285,6 +269,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns the information about a transaction requested by transaction hash.$$
   sql: |
       SELECT
           live.udf_api(
@@ -293,8 +278,6 @@
               ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
           )
 - name: eth_getTransactionByHash
-  comment: |
-    Returns the information about a transaction requested by transaction hash.
   signature:
     - [transaction_hash, STRING]
     - [network, STRING]
@@ -303,6 +286,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns the information about a transaction requested by transaction hash.$$
   sql: |
       SELECT
           live.udf_api(
@@ -312,8 +296,6 @@
           )
 
 - name: eth_getTransactionByBlockHashAndIndex
-  comment: |
-    Returns information about a transaction by block hash and transaction index position.
   signature:
     - [block_hash, STRING]
     - [transaction_index, STRING]
@@ -322,6 +304,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns information about a transaction by block hash and transaction index position.$$
   sql: |
       SELECT
           live.udf_api(
@@ -330,8 +313,6 @@
               ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
           )
 - name: eth_getTransactionByBlockHashAndIndex
-  comment: |
-    Returns information about a transaction by block hash and transaction index position.
   signature:
     - [block_hash, STRING]
     - [transaction_index, STRING]
@@ -341,6 +322,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns information about a transaction by block hash and transaction index position.$$
   sql: |
       SELECT
           live.udf_api(
@@ -350,8 +332,6 @@
           )
 
 - name: eth_getTransactionByBlockNumberAndIndex
-  comment: |
-    Returns information about a transaction by block number and transaction index position.
   signature:
     - [block_number, STRING]
     - [transaction_index, STRING]
@@ -360,6 +340,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns information about a transaction by block number and transaction index position.$$
   sql: |
       SELECT
           live.udf_api(
@@ -368,8 +349,6 @@
               ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
           )
 - name: eth_getTransactionByBlockNumberAndIndex
-  comment: |
-    Returns information about a transaction by block number and transaction index position.
   signature:
     - [block_number, STRING]
     - [transaction_index, STRING]
@@ -379,6 +358,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns information about a transaction by block number and transaction index position.$$
   sql: |
       SELECT
           live.udf_api(
@@ -388,8 +368,6 @@
           )
 
 - name: eth_getTransactionReceipt
-  comment: |
-    Returns the receipt of a transaction by transaction hash.
   signature:
     - [transaction_hash, STRING]
   return_type: OBJECT
@@ -397,6 +375,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns the receipt of a transaction by transaction hash.$$
   sql: |
       SELECT
           live.udf_api(
@@ -405,8 +384,6 @@
               ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
           )
 - name: eth_getTransactionReceipt
-  comment: |
-    Returns the receipt of a transaction by transaction hash.
   signature:
     - [transaction_hash, STRING]
     - [network, STRING]
@@ -415,6 +392,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns the receipt of a transaction by transaction hash.$$
   sql: |
       SELECT
           live.udf_api(
@@ -424,8 +402,6 @@
           )
 
 - name: eth_getUncleByBlockHashAndIndex
-  comment: |
-    Returns information about a uncle of a block by hash and uncle index position.
   signature:
     - [block_hash, STRING]
     - [uncle_index, STRING]
@@ -434,6 +410,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns information about a uncle of a block by hash and uncle index position.$$
   sql: |
       SELECT
           live.udf_api(
@@ -442,8 +419,6 @@
               ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
           )
 - name: eth_getUncleByBlockHashAndIndex
-  comment: |
-    Returns information about a uncle of a block by hash and uncle index position.
   signature:
     - [block_hash, STRING]
     - [uncle_index, STRING]
@@ -453,6 +428,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns information about a uncle of a block by hash and uncle index position.$$
   sql: |
       SELECT
           live.udf_api(
@@ -462,8 +438,6 @@
           )
 
 - name: eth_getUncleByBlockNumberAndIndex
-  comment: |
-    Returns information about a uncle of a block by number and uncle index position.
   signature:
     - [block_number, STRING]
     - [uncle_index, STRING]
@@ -472,6 +446,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns information about a uncle of a block by number and uncle index position.$$
   sql: |
       SELECT
           live.udf_api(
@@ -480,8 +455,6 @@
               ,concat_ws('/', 'integration',_utils.udf_provider(),'ethereum','mainnet')
           )
 - name: eth_getUncleByBlockNumberAndIndex
-  comment: |
-    Returns information about a uncle of a block by number and uncle index position.
   signature:
     - [block_number, STRING]
     - [uncle_index, STRING]
@@ -491,6 +464,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns information about a uncle of a block by number and uncle index position.$$
   sql: |
       SELECT
           live.udf_api(
@@ -500,8 +474,6 @@
           )
 
 - name: eth_getUncleCountByBlockHash
-  comment: |
-    Returns the number of uncles in a block from a block matching the given block hash.
   signature:
     - [block_hash, STRING]
   return_type: STRING
@@ -509,12 +481,11 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns the number of uncles in a block from a block matching the given block hash.$$
   sql: |
       SELECT
           live.udf_json_rpc_call('eth_getUncleCountByBlockHash', [block_hash])
 - name: eth_getUncleCountByBlockHash
-  comment: |
-    Returns the number of uncles in a block from a block matching the given block hash.
   signature:
     - [block_hash, STRING]
     - [network, STRING]
@@ -523,6 +494,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns the number of uncles in a block from a block matching the given block hash.$$
   sql: |
       SELECT
           live.udf_json_rpc_call('eth_getUncleCountByBlockHash', [block_hash])
@@ -530,8 +502,6 @@
           )
 
 - name: eth_getUncleCountByBlockNumber
-  comment: |
-    Returns the number of uncles in a block from a block matching the given block number.
   signature:
     - [block_number, STRING]
   return_type: STRING
@@ -539,12 +509,11 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns the number of uncles in a block from a block matching the given block number.$$
   sql: |
       SELECT
           live.udf_json_rpc_call('eth_getUncleCountByBlockNumber', [block_number])
 - name: eth_getUncleCountByBlockNumber
-  comment: |
-    Returns the number of uncles in a block from a block matching the given block number.
   signature:
     - [block_number, STRING]
     - [network, STRING]
@@ -553,6 +522,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
+    COMMENT = $$Returns the number of uncles in a block from a block matching the given block number.$$
   sql: |
       SELECT
           live.udf_json_rpc_call('eth_getUncleCountByBlockNumber', [block_number])
