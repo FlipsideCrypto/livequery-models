@@ -6,11 +6,9 @@
 
 
 - name: etheruem_{{ network }}.udf_get_latest_account_balance
-  comment: |
-    Returns the current balance of the account of given address.
   signature:
     - [address, STRING, foo bar]
-  return_type: OBJECT
+  return_type: [OBJECT, foo bar]
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -23,7 +21,7 @@
   signature:
     - [address, STRING]
     - [block_or_tag, STRING]
-  return_type: OBJECT
+  return_type: [OBJECT, object with balance and block number]
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT

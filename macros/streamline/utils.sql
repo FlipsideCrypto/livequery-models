@@ -14,17 +14,17 @@
         drop_ = False
     ) -%}
     {% for p in params -%}
-        {% set name = p.0 %}
-        {% set data_type = p.1 %}
+        {%- set name = p.0 -%}
+        {%- set data_type = p.1 -%}
         {% if drop_ %}
             {{ data_type -}}
         {% else %}
             {{ name ~ " " ~ data_type -}}
-        {% endif -%}
+        {%- endif -%}
         {%-if not loop.last -%},
         {%- endif -%}
     {% endfor -%}
-{% endmacro %}
+{%- endmacro -%}
 
 {% macro create_sql_function(
         name_,
@@ -60,7 +60,7 @@
     ) -%}
     {% set name_ = config ["name"] %}
     {% set signature = config ["signature"] %}
-    {% set return_type = config ["return_type"] %}
+    {% set return_type = config ["return_type"][0] if config ["return_type"] is iterable else config ["return_type"]  %}
     {% set sql_ = config ["sql"] %}
     {% set options = config ["options"] %}
     {% set api_integration = config ["api_integration"] %}
