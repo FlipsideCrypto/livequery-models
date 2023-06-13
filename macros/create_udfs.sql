@@ -13,8 +13,6 @@
             {% endfor %}
 
             {{- crud_udfs_in_schema(config_evm_rpc_primitives, "ethereum", None, drop_) -}}
-            {{- crud_udfs_in_schema(config_evm_abstractions, "ethereum", "mainnet", drop_) -}}
-            {{- crud_udfs_in_schema(config_evm_abstractions, "ethereum", "testnet", drop_) -}}
         {% endset %}
         {% do run_query(sql) %}
     {% endif %}
