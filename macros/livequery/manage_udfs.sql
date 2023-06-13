@@ -13,17 +13,18 @@
         params,
         drop_ = False
     ) -%}
-    {% for name,
-        data_type in params -%}
+    {% for p in params -%}
+        {%- set name = p.0 -%}
+        {%- set data_type = p.1 -%}
         {% if drop_ %}
             {{ data_type -}}
         {% else %}
             {{ name ~ " " ~ data_type -}}
-        {% endif -%}
+        {%- endif -%}
         {%-if not loop.last -%},
         {%- endif -%}
     {% endfor -%}
-{% endmacro %}
+{%- endmacro -%}
 
 {% macro create_sql_function(
         name_,
@@ -59,7 +60,7 @@
     ) -%}
     {% set name_ = config ["name"] %}
     {% set signature = config ["signature"] %}
-    {% set return_type = config ["return_type"] %}
+    {% set return_type = config ["return_type"] if config ["return_type"] is string else config ["return_type"][0] %}
     {% set sql_ = config ["sql"] %}
     {% set options = config ["options"] %}
     {% set api_integration = config ["api_integration"] %}
@@ -82,3 +83,18 @@
         ) }}
     {%- endif %}
 {% endmacro %}
+
+{% macro crud_udfs_in_schema(config_func, blockchain, network, drop_) %}
+{#
+    config_func: function that returns a list of udf configs
+    blockchain: blockchain name
+    network: network name
+    drop_: whether to drop or create the udfs
+ #}
+  {% set schema = blockchain if not network else blockchain ~ "_" ~ network %}
+    CREATE SCHEMA IF NOT EXISTS {{ schema }};
+    {%-  set ethereum_rpc_udfs = fromyaml(config_func(blockchain, network)) if network else fromyaml(config_func(schema, blockchain)) -%}
+    {%- for udf in ethereum_rpc_udfs -%}
+        {{- create_or_drop_function_from_config(udf, drop_=drop_) -}}
+    {%- endfor -%}
+{%- endmacro -%}
