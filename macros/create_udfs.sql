@@ -12,26 +12,9 @@
                 {{- create_or_drop_function_from_config(udf, drop_=drop_) -}}
             {% endfor %}
 
-            {% set config, blockchain, schema = config_evm_rpc_primitives, "ethereum", "ethereum" %}
-            CREATE SCHEMA IF NOT EXISTS {{ schema }};
-            {%-  set ethereum_rpc_udfs = fromyaml(config(schema, blockchain)) -%}
-            {%- for udf in ethereum_rpc_udfs -%}
-                {{- create_or_drop_function_from_config(udf, drop_=drop_) -}}
-            {% endfor %}
-
-            {% set config, blockchain, network = config_evm_abstractions, "ethereum", "mainnet" %}
-            CREATE SCHEMA IF NOT EXISTS {{ blockchain }}_{{ network }};
-            {%-  set udfs = fromyaml(config(blockchain, network)) -%}
-            {%- for udf in udfs -%}
-                {{- create_or_drop_function_from_config(udf, drop_=drop_) -}}
-            {% endfor %}
-
-            {% set config, blockchain, network = config_evm_abstractions, "ethereum", "testnet" %}
-            CREATE SCHEMA IF NOT EXISTS {{ blockchain }}_{{ network }};
-            {%-  set udfs = fromyaml(config(blockchain, network)) -%}
-            {%- for udf in udfs -%}
-                {{- create_or_drop_function_from_config(udf, drop_=drop_) -}}
-            {% endfor %}
+            {{- crud_udfs_in_schema(config_evm_rpc_primitives, "ethereum", None, drop_) -}}
+            {{- crud_udfs_in_schema(config_evm_abstractions, "ethereum", "mainnet", drop_) -}}
+            {{- crud_udfs_in_schema(config_evm_abstractions, "ethereum", "testnet", drop_) -}}
         {% endset %}
         {% do run_query(sql) %}
     {% endif %}

@@ -83,3 +83,18 @@
         ) }}
     {%- endif %}
 {% endmacro %}
+
+{% macro crud_udfs_in_schema(config_func, blockchain, network, drop_) %}
+{#
+    config_func: function that returns a list of udf configs
+    blockchain: blockchain name
+    network: network name
+    drop_: whether to drop or create the udfs
+ #}
+  {% set schema = blockchain if not network else blockchain ~ "_" ~ network %}
+    CREATE SCHEMA IF NOT EXISTS {{ schema }};
+    {%-  set ethereum_rpc_udfs = fromyaml(config_func(blockchain, network)) if network else fromyaml(config_func(schema, blockchain)) -%}
+    {%- for udf in ethereum_rpc_udfs -%}
+        {{- create_or_drop_function_from_config(udf, drop_=drop_) -}}
+    {%- endfor -%}
+{%- endmacro -%}

@@ -8,7 +8,7 @@
 - name: {{ schema }}.udf_get_latest_account_balance
   signature:
     - [address, STRING, foo bar]
-  return_type: [OBJECT, foo bar]
+  return_type: [STRING, foo bar]
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -21,7 +21,7 @@
   signature:
     - [address, STRING]
     - [block_or_tag, STRING]
-  return_type: [OBJECT, object with balance and block number]
+  return_type: [STRING, object with balance and block number]
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
