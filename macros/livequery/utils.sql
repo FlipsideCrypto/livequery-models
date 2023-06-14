@@ -14,11 +14,11 @@
         SELECT
             live.udf_api(
                 '{endpoint}'
-                ,utils.udf_json_rpc_call('{{ method }}', {{ params }})
+                ,utils.udf_json_rpc_call({{ method }}, {{ params }})
                 ,concat_ws('/', 'integration', _utils.udf_provider(), '{{ blockchain }}', {{ network }})
             )::VARIANT:data AS data
     )
     SELECT
         COALESCE(data:result, {'error':data:error})
     FROM result
-{% -endmacro -%}
+{% endmacro -%}
