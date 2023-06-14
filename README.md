@@ -51,7 +51,7 @@
 # Live Functions
 
 ## Limits and Best Practices
-- The `udf_api` function is very powerful, but it is also very easy to abuse. Please be mindful of the following limits and best practices when using this function. 
+- The `udf_api` function is very powerful, but it is also very easy to abuse. Please be mindful of the following limits and best practices when using this function.
   - We reserve the right to disable the `udf_api` function for particular users, or as a whole, if we see it being abused.
 - Most APIs have rate limits. Please be mindful of these limits and do not abuse them.
 - Most of the limits you will encounter using this function will be on the API side. Please be sure to thoroughly read an API's documentation before using it.
@@ -60,12 +60,12 @@
   - API request (per row) response size limit: 6MB
   - API request timeout (per row) limit: 30 seconds
   - Data app query timeout limit: 15 minutes
-- Batching is supported for JSON RPC requests. 
+- Batching is supported for JSON RPC requests.
   - Again, this is very easy to abuse. Be mindful of the API's rate limits when using this functionality.
 - It is strongly recommended that you start small and test your queries before requesting large amounts of data.
-- Response data is not cached. 
+- Response data is not cached.
   - This means that if you run the same query twice, that API will be called twice. A future enhancement may address this need, but for now, please be mindful of this limitation.
-- Many APIs require authentication. 
+- Many APIs require authentication.
   - Please see the [secret registration section](#registering-secrets) below for more information on how to register secrets for use with the `udf_api` function.
   - Technically, you can pass secrets into the `udf_api` function directly, but this is not recommended.
     - If you do pass your secrets without following the steps in the [secret registration section](#registering-secrets), your secrets will be visible in Flipside's internal query history.
@@ -100,7 +100,7 @@ livequery.live.udf_api(
 
 
 ### Approved APIs
-  
+
 | API Name              | API Docs                                                                               | Authentication Required |
 | --------------------- | -------------------------------------------------------------------------------------- | ----------------------- |
 | QuickNode             | [Docs](https://www.quicknode.com/docs)                                                 | Yes                     |
@@ -220,7 +220,7 @@ SELECT
         }
     ) as response
 )
-select 
+select
 value:id::string as address,
 value:name::string as name,
 value:totalLiquidity::int as totalLiquidity
@@ -265,7 +265,7 @@ FROM
 
   ```sql
   -- you can use this function to retrieve data from IPFS. You can find the hash in the URL within several places onchain, including evm logs and traces.
-     SELECT 
+     SELECT
       livequery.live.udf_api('https://ipfs.io/ipfs/QmTFX3TopS8JsgpfBLKGDnTiaWrRcfStDWDQaREzD36sWW') AS response;
   ```
 </details>
@@ -276,7 +276,7 @@ FROM
 Utility functions are designed to make your life easier when interacting with blockchain data.
 
 ## udf_hex_to_int
-This function converts a hex string to an integer. 
+This function converts a hex string to an integer.
 
 ### Syntax
 ```sql
@@ -317,7 +317,7 @@ livequery.utils.udf_hex_to_int(
 
 ---
 
-## udf_hex_to_string 
+## udf_hex_to_string
 
 This function converts a hex string to a string of human readable characters. It will handle obscure characters like emojis and special characters.
 
@@ -336,7 +336,7 @@ livequery.utils.udf_hex_to_string(
   <summary>Convert Hex to Text</summary>
 
   ```sql
-  select 
+  select
     livequery.utils.udf_hex_to_string('466C69707369646520726F636B73') as text1
   ```
 </details>
@@ -411,7 +411,7 @@ To register a secret, follow these steps:
 1. Visit [Ephit](https://science.flipsidecrypto.xyz/ephit) to obtain an Ephemeral query that will securely link your API Endpoint to Flipside's backend. This will allow you to refer to the URL securely in our application without referencing it or exposing keys directly.
 2. Fill out the form and click ***Submit this Credential***
 3. Paste the provided query into [Flipside](https://flipside.new) and query your node directly in the app with your submitted Credential (`{my_key}`)
-   
+
 Registering a secret from Quicknode to query nodes directly in Flipside:
 
 1. Sign up for a free [Quicknode API Account](https://www.quicknode.com/core-api)
@@ -469,7 +469,7 @@ When False, none of the on-run-start macros are executed on model run
 Default values are False
 
 * Usage:
-dbt run --var '{"UPDATE_UDFS_AND_SPS":True}' -m ...
+`dbt run --var '{"UPDATE_UDFS_AND_SPS":True}' -m ...`
 
 Dropping and creating udfs can also be done without running a model:
 
