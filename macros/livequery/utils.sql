@@ -21,4 +21,4 @@
     SELECT
         COALESCE(data:result, {'error':data:error})
     FROM result
-{%- endmacro -%}
+{% -endmacro -%}
