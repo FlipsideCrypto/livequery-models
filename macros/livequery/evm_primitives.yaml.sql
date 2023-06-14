@@ -7,7 +7,7 @@
     - eth_getBalance
 
  -#}
-- name: {{ schema -}}.rpc_call
+- name: {{ schema -}}.rpc
   signature:
     - [method, STRING, RPC method to call]
     - [parameters, VARIANT, Parameters to pass to the RPC method]
@@ -19,7 +19,7 @@
     COMMENT = $$Executes a new message call immediately without creating a transaction on the block chain.$$
   sql: |
     {{ sql_live_rpc_call("method", "parameters", blockchain, "'mainnet'") | indent(4) -}}
-- name: {{ schema -}}.rpc_call
+- name: {{ schema -}}.rpc
   signature:
     - [method, STRING, RPC method to call]
     - [parameters, VARIANT, Parameters to pass to the RPC method]
@@ -45,6 +45,7 @@
     COMMENT = $$Executes a new message call immediately without creating a transaction on the block chain.$$
   sql: |
     {{ sql_live_rpc_call("'eth_call'", "[transaction, block_or_tag]", blockchain, "'mainnet'") | indent(4) -}}
+
 - name: {{ schema -}}.rpc_eth_call
   signature:
     - [transaction, OBJECT, The transaction object]
