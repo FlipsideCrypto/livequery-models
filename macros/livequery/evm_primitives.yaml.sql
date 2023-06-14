@@ -2,9 +2,10 @@
 {#-
     Generates a set of UDFs that call the Ethereum JSON RPC API
 
-    - eth_call
-    - eth_getLogs
-    - eth_getBalance
+    - rpc: Executes an RPC call on the {{ blockchain }} blockchain
+    - eth_call: Executes a new message call immediately without creating a transaction on the block chain
+    - eth_getLogs: Returns an array of all logs matching filter with given address
+    - eth_getBalance: Returns the balance of the account of given address
 
  -#}
 - name: {{ schema -}}.rpc
@@ -16,7 +17,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Executes a new message call immediately without creating a transaction on the block chain.$$
+    COMMENT = $$Executes an RPC call on the {{ blockchain }} blockchain.$$
   sql: |
     {{ sql_live_rpc_call("method", "parameters", blockchain, "'mainnet'") | indent(4) -}}
 - name: {{ schema -}}.rpc
@@ -29,7 +30,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Executes a new message call immediately without creating a transaction on the block chain.$$
+    COMMENT = $$Executes an RPC call on the {{ blockchain }} blockchain.$$
   sql: |
     {{ sql_live_rpc_call("method", "parameters", blockchain, "network") | indent(4) -}}
 
