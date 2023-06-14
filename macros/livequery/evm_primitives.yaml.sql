@@ -7,6 +7,32 @@
     - eth_getBalance
 
  -#}
+- name: {{ schema -}}.rpc_call
+  signature:
+    - [method, STRING, RPC method to call]
+    - [parameters, VARIANT, Parameters to pass to the RPC method]
+  return_type: [VARIANT, The return value of the RPC method]
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Executes a new message call immediately without creating a transaction on the block chain.$$
+  sql: |
+    {{ sql_live_rpc_call("method", "parameters", blockchain, "'mainnet'") | indent(4) -}}
+- name: {{ schema -}}.rpc_call
+  signature:
+    - [method, STRING, RPC method to call]
+    - [parameters, VARIANT, Parameters to pass to the RPC method]
+    - [network, STRING, The network to execute the call on]
+  return_type: [VARIANT, The return value of the RPC method]
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Executes a new message call immediately without creating a transaction on the block chain.$$
+  sql: |
+    {{ sql_live_rpc_call("method", "parameters", blockchain, "network") | indent(4) -}}
+
 - name: {{ schema -}}.rpc_eth_call
   signature:
     - [transaction, OBJECT, The transaction object]
@@ -31,7 +57,7 @@
     VOLATILE
     COMMENT = $$Executes a new message call immediately without creating a transaction on the block chain.$$
   sql: |
-    {{ sql_live_rpc_call('eth_call', '[transaction, block_or_tag]', blockchain, 'network') | indent(4) -}}
+    {{ sql_live_rpc_call('eth_call', '[transaction, block_or_tag]', blockchain, "network") | indent(4) -}}
 
 - name: {{ schema -}}.rpc_eth_get_logs
   signature:
@@ -55,7 +81,7 @@
     VOLATILE
     COMMENT = $$Returns an array of all logs matching filter with given address.$$
   sql: |
-    {{ sql_live_rpc_call('eth_getLogs', '[filter]', blockchain, 'network') | indent(4) -}}
+    {{ sql_live_rpc_call('eth_getLogs', '[filter]', blockchain, "network") | indent(4) -}}
 
 - name: {{ schema -}}.rpc_eth_get_balance
   signature:
@@ -81,6 +107,6 @@
     VOLATILE
     COMMENT = $$Returns the balance of the account of given address.$$
   sql: |
-    {{ sql_live_rpc_call('eth_getBalance', '[address, block_or_tag]', blockchain, 'network') | indent(4) -}}
+    {{ sql_live_rpc_call('eth_getBalance', '[address, block_or_tag]', blockchain, "network") | indent(4) -}}
 
 {%- endmacro -%}
