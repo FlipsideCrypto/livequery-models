@@ -1,4 +1,4 @@
-{% macro udf_configs() %}
+{% macro config_core_udfs() %}
 
 {#
   UTILITY SCHEMA

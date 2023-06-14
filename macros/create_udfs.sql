@@ -7,7 +7,7 @@
             CREATE SCHEMA IF NOT EXISTS _utils;
             CREATE SCHEMA IF NOT EXISTS _live;
             CREATE SCHEMA IF NOT EXISTS live;
-            {%-  set udfs = fromyaml(udf_configs()) -%}
+            {%-  set udfs = fromyaml(config_core_udfs()) -%}
             {%- for udf in udfs -%}
                 {{- create_or_drop_function_from_config(udf, drop_=drop_) -}}
             {% endfor %}
