@@ -2,7 +2,7 @@
 SELECT
     lower(wallet) AS wallet_address,
     '{{blockchain}}' AS blockchain,
-    CASE 
+    CASE
         WHEN '{{blockchain}}' ILIKE 'avalanche%' THEN 'AVAX'
         WHEN '{{blockchain}}' ILIKE 'polygon%' THEN 'MATIC'
         WHEN '{{blockchain}}' ILIKE 'binance%' THEN 'BNB'
@@ -14,7 +14,7 @@ SELECT
         WHEN '{{blockchain}}' ILIKE 'fantom%' THEN 'ETH'
         WHEN '{{blockchain}}' ILIKE 'harmony%' THEN 'ONE'
     END AS symbol,
-    utils.udf_hex_to_int({{schema}}.rpc_eth_get_balance(wallet_address,'latest')::string) AS raw_balance,
+    utils.udf_hex_to_int({{schema}}.udf_rpc_eth_get_balance(wallet_address,'latest')::string) AS raw_balance,
     (raw_balance / POW(10,18))::float AS balance
 {% endmacro %}
 
@@ -23,19 +23,19 @@ WITH address_inputs AS (
     SELECT wallets AS wallet_array
 ),
 flat_addresses AS (
-    SELECT lower(value::string) AS wallet_address 
-    FROM address_inputs a, 
+    SELECT lower(value::string) AS wallet_address
+    FROM address_inputs a,
     LATERAL FLATTEN(input => a.wallet_array)
 ),
 node_call AS (
-    SELECT wallet_address, 
-    {{schema}}.rpc_eth_get_balance(wallet_address,'latest')::string AS hex_balance 
+    SELECT wallet_address,
+    {{schema}}.udf_rpc_eth_get_balance(wallet_address,'latest')::string AS hex_balance
     FROM flat_addresses
 )
 SELECT
     wallet_address,
     '{{blockchain}}' AS blockchain,
-    CASE 
+    CASE
         WHEN '{{blockchain}}' ILIKE 'avalanche%' THEN 'AVAX'
         WHEN '{{blockchain}}' ILIKE 'polygon%' THEN 'MATIC'
         WHEN '{{blockchain}}' ILIKE 'binance%' THEN 'BNB'
@@ -49,7 +49,7 @@ SELECT
     END AS symbol,
     utils.udf_hex_to_int(hex_balance) AS raw_balance,
     (raw_balance / POW(10,18))::FLOAT AS balance
-FROM node_call 
+FROM node_call
 {% endmacro %}
 
 {% macro evm_latest_token_balance_ss(schema, blockchain) %}
@@ -68,14 +68,14 @@ node_call AS (
         wallet_address,
         token_address,
         symbol,
-        {{schema}}.rpc_eth_call(object_construct_keep_null('from', null, 'to', token_address, 'data', data),'latest')::string AS eth_call,
+        {{schema}}.udf_rpc_eth_call(object_construct_keep_null('from', null, 'to', token_address, 'data', data),'latest')::string AS eth_call,
         utils.udf_hex_to_int(eth_call::string) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
         inputs
     LEFT JOIN {{blockchain}}.core.dim_contracts ON token_address = address
 )
-SELECT 
+SELECT
     wallet_address,
     token_address,
     '{{blockchain}}' AS blockchain,
@@ -90,7 +90,7 @@ WITH inputs AS (
     SELECT tokens, wallet
 ),
 flat_rows AS (
-    SELECT 
+    SELECT
         lower(value::string) AS token_address,
         lower(wallet::string) AS wallet_address,
         '0x70a08231' AS function_sig,
@@ -106,14 +106,14 @@ final AS (
         wallet_address,
         token_address,
         symbol,
-        {{schema}}.rpc_eth_call(object_construct_keep_null('from', null, 'to', token_address, 'data', data),'latest')::string AS eth_call,
+        {{schema}}.udf_rpc_eth_call(object_construct_keep_null('from', null, 'to', token_address, 'data', data),'latest')::string AS eth_call,
         utils.udf_hex_to_int(eth_call::string) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
         flat_rows
     LEFT JOIN {{blockchain}}.core.dim_contracts ON token_address = address
 )
-SELECT 
+SELECT
     wallet_address,
     token_address,
     '{{blockchain}}' AS blockchain,
@@ -128,7 +128,7 @@ WITH inputs AS (
     SELECT token, wallets
 ),
 flat_rows AS (
-    SELECT 
+    SELECT
         lower(value::string) AS wallet_address,
         lower(token::string) AS token_address,
         '0x70a08231' AS function_sig,
@@ -144,14 +144,14 @@ final AS (
         wallet_address,
         token_address,
         symbol,
-        {{schema}}.rpc_eth_call(object_construct_keep_null('from', null, 'to', token_address, 'data', data),'latest')::string AS eth_call,
+        {{schema}}.udf_rpc_eth_call(object_construct_keep_null('from', null, 'to', token_address, 'data', data),'latest')::string AS eth_call,
         utils.udf_hex_to_int(eth_call::string) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
         flat_rows
     LEFT JOIN {{blockchain}}.core.dim_contracts ON token_address = address
 )
-SELECT 
+SELECT
     wallet_address,
     token_address,
     '{{blockchain}}' AS blockchain,
@@ -166,7 +166,7 @@ WITH inputs AS (
     SELECT tokens, wallets
 ),
 flat_rows AS (
-    SELECT 
+    SELECT
         lower(tokens.VALUE::STRING) AS token_address,
         lower(wallets.VALUE::STRING) AS wallet_address,
         '0x70a08231' AS function_sig,
@@ -184,14 +184,14 @@ final AS (
         wallet_address,
         token_address,
         symbol,
-        {{schema}}.rpc_eth_call(object_construct_keep_null('from', null, 'to', token_address, 'data', data),'latest')::string AS eth_call,
+        {{schema}}.udf_rpc_eth_call(object_construct_keep_null('from', null, 'to', token_address, 'data', data),'latest')::string AS eth_call,
         utils.udf_hex_to_int(eth_call::string) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
         flat_rows
     LEFT JOIN {{blockchain}}.core.dim_contracts ON token_address = address
 )
-SELECT 
+SELECT
     wallet_address,
     token_address,
     '{{blockchain}}' AS blockchain,
@@ -218,7 +218,7 @@ WITH inputs AS (
         token_address,
         symbol,
         block_number,
-        {{schema}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
+        {{schema}}.udf_rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
         utils.udf_hex_to_int(eth_call::STRING) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
@@ -226,7 +226,7 @@ WITH inputs AS (
     LEFT JOIN {{blockchain}}.core.dim_contracts
     ON token_address = address
 )
-SELECT 
+SELECT
     wallet_address,
     token_address,
     '{{blockchain}}' AS blockchain,
@@ -255,14 +255,14 @@ inputs AS (
             function_sig,
             LPAD(REPLACE(wallet_address, '0x', ''), 64, 0)
         ) AS data
-), 
+),
 final AS (
     SELECT
         wallet_address,
         token_address,
         symbol,
         blocks.block_number,
-        {{schema}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(blocks.block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
+        {{schema}}.udf_rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(blocks.block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
         utils.udf_hex_to_int(eth_call::STRING) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
@@ -271,7 +271,7 @@ final AS (
     LEFT JOIN {{blockchain}}.core.dim_contracts
     ON token_address = address
 )
-SELECT 
+SELECT
     wallet_address,
     token_address,
     '{{blockchain}}' AS blockchain,
@@ -301,14 +301,14 @@ inputs AS (
             LPAD(REPLACE(wallet, '0x', ''), 64, 0)
         ) AS data
     FROM wallets
-), 
+),
 final AS (
     SELECT
         wallet AS wallet_address,
         token_address,
         symbol,
         block_number,
-        {{schema}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
+        {{schema}}.udf_rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
         utils.udf_hex_to_int(eth_call::STRING) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
@@ -316,7 +316,7 @@ final AS (
     LEFT JOIN {{blockchain}}.core.dim_contracts
     ON token_address = address
 )
-SELECT 
+SELECT
     wallet_address,
     token_address,
     '{{blockchain}}' AS blockchain,
@@ -354,14 +354,14 @@ inputs AS (
             LPAD(REPLACE(wallet, '0x', ''), 64, '0')
         ) AS data
     FROM wallets
-), 
+),
 final AS (
     SELECT
         wallet AS wallet_address,
         token_address,
         symbol,
         blocks.block_number,
-        {{schema}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(blocks.block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
+        {{schema}}.udf_rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(blocks.block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
         utils.udf_hex_to_int(eth_call::STRING) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
@@ -370,7 +370,7 @@ final AS (
     LEFT JOIN {{blockchain}}.core.dim_contracts
     ON token_address = address
 )
-SELECT 
+SELECT
     wallet_address,
     token_address,
     '{{blockchain}}' AS blockchain,
@@ -401,14 +401,14 @@ inputs AS (
         ) AS data
     FROM
         tokens
-), 
+),
 final AS (
     SELECT
         wallet_address,
         token_address,
         symbol,
         block_number,
-        {{schema}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
+        {{schema}}.udf_rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
         utils.udf_hex_to_int(eth_call::STRING) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
@@ -416,7 +416,7 @@ final AS (
     LEFT JOIN {{blockchain}}.core.dim_contracts
     ON token_address = address
 )
-SELECT 
+SELECT
     wallet_address,
     token_address,
     '{{blockchain}}' AS blockchain,
@@ -455,14 +455,14 @@ inputs AS (
         ) AS data
     FROM
         tokens
-), 
+),
 final AS (
     SELECT
         wallet_address,
         token_address,
         symbol,
         blocks.block_number,
-        {{schema}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(blocks.block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
+        {{schema}}.udf_rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(blocks.block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
         utils.udf_hex_to_int(eth_call::STRING) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
@@ -471,7 +471,7 @@ final AS (
     LEFT JOIN {{blockchain}}.core.dim_contracts
     ON token_address = address
 )
-SELECT 
+SELECT
     wallet_address,
     token_address,
     '{{blockchain}}' AS blockchain,
@@ -511,14 +511,14 @@ inputs AS (
     FROM
         tokens,
         wallets
-), 
+),
 final AS (
     SELECT
         wallet_address,
         token_address,
         symbol,
         block_number,
-        {{schema}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
+        {{schema}}.udf_rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
         utils.udf_hex_to_int(eth_call::STRING) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
@@ -526,7 +526,7 @@ final AS (
     LEFT JOIN {{blockchain}}.core.dim_contracts
     ON token_address = address
 )
-SELECT 
+SELECT
     wallet_address,
     token_address,
     '{{blockchain}}' AS blockchain,
@@ -574,14 +574,14 @@ inputs AS (
     FROM
         wallets,
         tokens
-), 
+),
 final AS (
     SELECT
         wallet_address,
         token_address,
         symbol,
         blocks.block_number,
-        {{schema}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(blocks.block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
+        {{schema}}.udf_rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(blocks.block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
         utils.udf_hex_to_int(eth_call::STRING) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
@@ -590,7 +590,7 @@ final AS (
     LEFT JOIN {{blockchain}}.core.dim_contracts
     ON token_address = address
 )
-SELECT 
+SELECT
     wallet_address,
     token_address,
     '{{blockchain}}' AS blockchain,
@@ -605,7 +605,7 @@ FROM final
 SELECT
     lower(wallet) AS wallet_address,
     '{{blockchain}}' AS blockchain,
-    CASE 
+    CASE
         WHEN '{{blockchain}}' ILIKE 'avalanche%' THEN 'AVAX'
         WHEN '{{blockchain}}' ILIKE 'polygon%' THEN 'MATIC'
         WHEN '{{blockchain}}' ILIKE 'binance%' THEN 'BNB'
@@ -618,7 +618,7 @@ SELECT
         WHEN '{{blockchain}}' ILIKE 'harmony%' THEN 'ONE'
     END AS symbol,
     block_number,
-    utils.udf_hex_to_int({{schema}}.rpc_eth_get_balance(wallet_address,CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))))::string) AS raw_balance,
+    utils.udf_hex_to_int({{schema}}.udf_rpc_eth_get_balance(wallet_address,CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))))::string) AS raw_balance,
     (raw_balance / POW(10,18))::float AS balance
 {% endmacro %}
 
@@ -634,7 +634,7 @@ blocks AS (
 inputs AS (
     SELECT
         wallet AS wallet_address,
-        CASE 
+        CASE
         WHEN '{{blockchain}}' ILIKE 'avalanche%' THEN 'AVAX'
         WHEN '{{blockchain}}' ILIKE 'polygon%' THEN 'MATIC'
         WHEN '{{blockchain}}' ILIKE 'binance%' THEN 'BNB'
@@ -647,10 +647,10 @@ inputs AS (
         WHEN '{{blockchain}}' ILIKE 'harmony%' THEN 'ONE'
         END AS symbol,
         block_number,
-        utils.udf_hex_to_int({{schema}}.rpc_eth_get_balance(wallet, CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX')))))::STRING AS raw_balance
+        utils.udf_hex_to_int({{schema}}.udf_rpc_eth_get_balance(wallet, CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX')))))::STRING AS raw_balance
     FROM blocks
 )
-SELECT 
+SELECT
     wallet_address,
     '{{blockchain}}' AS blockchain,
     symbol,
@@ -672,7 +672,7 @@ flat_wallets AS (
 inputs AS (
     SELECT
         wallet AS wallet_address,
-        CASE 
+        CASE
         WHEN '{{blockchain}}' ILIKE 'avalanche%' THEN 'AVAX'
         WHEN '{{blockchain}}' ILIKE 'polygon%' THEN 'MATIC'
         WHEN '{{blockchain}}' ILIKE 'binance%' THEN 'BNB'
@@ -685,10 +685,10 @@ inputs AS (
         WHEN '{{blockchain}}' ILIKE 'harmony%' THEN 'ONE'
         END AS symbol,
         block_number,
-        utils.udf_hex_to_int({{schema}}.rpc_eth_get_balance(wallet, CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX')))))::STRING AS raw_balance
+        utils.udf_hex_to_int({{schema}}.udf_rpc_eth_get_balance(wallet, CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX')))))::STRING AS raw_balance
     FROM flat_wallets
 )
-SELECT 
+SELECT
     wallet_address,
     '{{blockchain}}' AS blockchain,
     symbol,
@@ -710,7 +710,7 @@ FROM inputs
     final AS (
         SELECT
             wallet AS wallet_address,
-            CASE 
+            CASE
                 WHEN '{{blockchain}}' ILIKE 'avalanche%' THEN 'AVAX'
                 WHEN '{{blockchain}}' ILIKE 'polygon%' THEN 'MATIC'
                 WHEN '{{blockchain}}' ILIKE 'binance%' THEN 'BNB'
@@ -723,10 +723,10 @@ FROM inputs
                 WHEN '{{blockchain}}' ILIKE 'harmony%' THEN 'ONE'
             END AS symbol,
             block_number,
-            utils.udf_hex_to_int({{schema}}.rpc_eth_get_balance(wallet, CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX')))))::STRING AS raw_balance
+            utils.udf_hex_to_int({{schema}}.udf_rpc_eth_get_balance(wallet, CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX')))))::STRING AS raw_balance
         FROM flat_wallets
     )
-    SELECT 
+    SELECT
         wallet_address,
         '{{blockchain}}' AS blockchain,
         symbol,
@@ -826,7 +826,7 @@ FROM inputs
             ) AS eth_getLogs
         FROM (
             SELECT value::STRING AS address
-            FROM LATERAL FLATTEN(input => addresses) 
+            FROM LATERAL FLATTEN(input => addresses)
         ) inputs, chainhead
     ),
     node_flat AS (
@@ -867,7 +867,7 @@ FROM inputs
             ) AS eth_getLogs
         FROM (
             SELECT value::STRING AS address
-            FROM LATERAL FLATTEN(input => addresses) 
+            FROM LATERAL FLATTEN(input => addresses)
         ) inputs, chainhead
     ),
     node_flat AS (

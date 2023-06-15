@@ -329,5 +329,20 @@
           secret_name
       )
 
+- name: live.udf_rpc
+  signature:
+    - [blockchain, STRING]
+    - [network, STRING]
+    - [method, STRING]
+    - [parameters, VARIANT]
+  return_type: VARIANT
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Executes an JSON RPC call on a blockchain.$$
+  sql: |
+    {{ sql_live_rpc_call("method", "parameters", "blockchain", "network") | indent(4) -}}
+
 {% endmacro %}
 

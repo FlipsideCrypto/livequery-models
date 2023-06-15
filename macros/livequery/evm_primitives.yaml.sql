@@ -10,7 +10,7 @@
  -#}
 {% set schema = blockchain ~ "_" ~ network -%}
 
-- name: {{ schema -}}.rpc
+- name: {{ schema -}}.udf_rpc
   signature:
     - [method, STRING, RPC method to call]
     - [parameters, VARIANT, Parameters to pass to the RPC method]
@@ -21,9 +21,9 @@
     VOLATILE
     COMMENT = $$Executes an RPC call on the {{ blockchain }} blockchain.$$
   sql: |
-    {{ sql_live_rpc_call("method", "parameters", blockchain, network) | indent(4) -}}
+    SELECT live.udf_rpc('{{ blockchain }}', '{{ network }}', method, parameters)
 
-- name: {{ schema -}}.rpc_eth_call
+- name: {{ schema -}}.udf_rpc_eth_call
   signature:
     - [transaction, OBJECT, The transaction object]
     - [block_or_tag, STRING, The block number or tag to execute the call on]
@@ -34,9 +34,9 @@
     VOLATILE
     COMMENT = $$Executes a new message call immediately without creating a transaction on the block chain.$$
   sql: |
-    SELECT {{ schema -}}.rpc('eth_call', [transaction, block_or_tag])
+    SELECT {{ schema -}}.udf_rpc('eth_call', [transaction, block_or_tag])
 
-- name: {{ schema -}}.rpc_eth_get_logs
+- name: {{ schema -}}.udf_rpc_eth_get_logs
   signature:
     - [filter, OBJECT, The filter object]
   return_type: [VARIANT, An array of all logs matching filter with given address]
@@ -46,9 +46,9 @@
     VOLATILE
     COMMENT = $$Returns an array of all logs matching filter with given address.$$
   sql: |
-    SELECT {{ schema -}}.rpc('eth_getLogs', [filter])
+    SELECT {{ schema -}}.udf_rpc('eth_getLogs', [filter])
 
-- name: {{ schema -}}.rpc_eth_get_balance
+- name: {{ schema -}}.udf_rpc_eth_get_balance
   signature:
     - [address, STRING, The address to get the balance of]
     - [block_or_tag, STRING, The block number or tag to execute the call on]
@@ -59,6 +59,6 @@
     VOLATILE
     COMMENT = $$Returns the balance of the account of given address.$$
   sql: |
-    SELECT {{ schema -}}.rpc('eth_getBalance', [address, block_or_tag])
+    SELECT {{ schema -}}.udf_rpc('eth_getBalance', [address, block_or_tag])
 
 {%- endmacro -%}
