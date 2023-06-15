@@ -15,7 +15,7 @@
             live.udf_api(
                 '{endpoint}'
                 ,utils.udf_json_rpc_call({{ method }}, {{ params }})
-                ,concat_ws('/', 'integration', _utils.udf_provider(), '{{ blockchain }}', {{ network }})
+                ,concat_ws('/', 'integration', _utils.udf_provider(), '{{ blockchain }}', '{{ network }}')
             )::VARIANT:data AS data
     )
     SELECT

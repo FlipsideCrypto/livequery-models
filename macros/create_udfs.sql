@@ -12,11 +12,11 @@
                 {{- create_or_drop_function_from_config(udf, drop_=drop_) -}}
             {% endfor %}
 
-            {{- crud_udfs_in_schema(config_evm_rpc_primitives, "ethereum", None, drop_) -}}
+            {{- crud_udfs_in_schema(config_evm_rpc_primitives, "ethereum", "mainnet", drop_) -}}
+            {{- crud_udfs_in_schema(config_evm_rpc_primitives, "ethereum", "testnet", drop_) -}}
 
-            {# TODO: Add udfs to macros/livequery/evm.yaml.sql then uncomment #}
             {{- crud_udfs_in_schema(config_evm_high_level_abstractions, "ethereum", "mainnet", drop_) -}}
-            {# {{- crud_udfs_in_schema(config_evm_high_level_abstractions, "ethereum", "testnet", drop_) -}} #}
+            {{- crud_udfs_in_schema(config_evm_high_level_abstractions, "ethereum", "testnet", drop_) -}}
         {% endset %}
         {% do run_query(sql) %}
     {% endif %}
