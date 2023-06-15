@@ -477,6 +477,104 @@
     COMMENT = $$Returns events in the last `lookback` blocks for the contracts.$$
   sql: |
     {{ evm_latest_contract_events_ai(schema,  blockchain) | indent(4) -}}
+
+- name: {{ schema -}}.latest_contract_events_decoded
+  signature:
+    - [address, STRING, The address of the contract to get the decoded events of]
+  return_type:
+    - "TABLE(blockchain STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, event_name STRING, contract_address STRING, event_topics ARRAY, event_data STRING, decoded_data OBJECT)"
+    - |
+        The table has the following columns:
+        * `blockchain` - The blockchain
+        * `tx_hash` - The transaction hash
+        * `block_number` - The block number
+        * `event_index` - The index of the event in the transaction
+        * `event_name` - The name of the event
+        * `contract_address` - The address of the contract
+        * `event_topics` - The topics of the event
+        * `event_data` - The data of the event
+        * `decoded_data` - The decoded data of the event
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns decoded events in the last 100 blocks for the contract.$$
+  sql: |
+    {{ evm_latest_contract_events_decoded_s(schema,  blockchain) | indent(4) -}}
+
+- name: {{ schema -}}.latest_contract_events_decoded
+  signature:
+    - [addresses, ARRAY, The addresses of the contracts to get the decoded events of]
+  return_type:
+    - "TABLE(blockchain STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, event_name STRING, contract_address STRING, event_topics ARRAY, event_data STRING, decoded_data OBJECT)"
+    - |
+        The table has the following columns:
+        * `blockchain` - The blockchain
+        * `tx_hash` - The transaction hash
+        * `block_number` - The block number
+        * `event_index` - The index of the event in the transaction
+        * `event_name` - The name of the event
+        * `contract_address` - The address of the contract
+        * `event_topics` - The topics of the event
+        * `event_data` - The data of the event
+        * `decoded_data` - The decoded data of the event
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns decoded events in the last 100 blocks for the contracts.$$
+  sql: |
+    {{ evm_latest_contract_events_decoded_a(schema,  blockchain) | indent(4) -}}
+
+- name: {{ schema -}}.latest_contract_events_decoded
+  signature:
+    - [address, STRING, The address of the contract to get the decoded events of]
+    - [lookback, INTEGER, The number of blocks to look back. Please note there are RPC limitations on this method.]
+  return_type:
+    - "TABLE(blockchain STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, event_name STRING, contract_address STRING, event_topics ARRAY, event_data STRING, decoded_data OBJECT)"
+    - |
+        The table has the following columns:
+        * `blockchain` - The blockchain
+        * `tx_hash` - The transaction hash
+        * `block_number` - The block number
+        * `event_index` - The index of the event in the transaction
+        * `event_name` - The name of the event
+        * `contract_address` - The address of the contract
+        * `event_topics` - The topics of the event
+        * `event_data` - The data of the event
+        * `decoded_data` - The decoded data of the event
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns decoded events in the last `lookback` blocks for the contract.$$
+  sql: |
+    {{ evm_latest_contract_events_decoded_si(schema,  blockchain) | indent(4) -}}
+
+- name: {{ schema -}}.latest_contract_events_decoded
+  signature:
+    - [addresses, ARRAY, The addresses of the contracts to get the decoded events of]
+    - [lookback, INTEGER, The number of blocks to look back. Please note there are RPC limitations on this method.]
+  return_type:
+    - "TABLE(blockchain STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, event_name STRING, contract_address STRING, event_topics ARRAY, event_data STRING, decoded_data OBJECT)"
+    - |
+        The table has the following columns:
+        * `blockchain` - The blockchain
+        * `tx_hash` - The transaction hash
+        * `block_number` - The block number
+        * `event_index` - The index of the event in the transaction
+        * `event_name` - The name of the event
+        * `contract_address` - The address of the contract
+        * `event_topics` - The topics of the event
+        * `event_data` - The data of the event
+        * `decoded_data` - The decoded data of the event
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns decoded events in the last `lookback` blocks for the contracts.$$
+  sql: |
+    {{ evm_latest_contract_events_decoded_ai(schema,  blockchain) | indent(4) -}}
 {%- endmacro -%}
 
 

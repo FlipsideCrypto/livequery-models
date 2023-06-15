@@ -893,3 +893,467 @@ FROM inputs
         event_data
     FROM node_flat
 {% endmacro %}
+
+{% macro evm_latest_contract_events_decoded_s(schema, blockchain) %}
+WITH inputs AS (
+    SELECT lower(address::STRING) AS contract_address
+),
+chainhead AS (
+    SELECT
+        {{ blockchain }}.rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
+        CONCAT('0x', TRIM(TO_CHAR(utils.udf_hex_to_int(chainhead_hex) - 100, 'XXXXXXXXXX'))) AS from_block_hex
+),
+abis AS (
+    SELECT
+        parent_contract_address,
+        event_name,
+        event_signature,
+        abi
+    FROM inputs
+    JOIN crosschain.core.dim_evm_event_abis
+        ON lower(contract_address) = parent_contract_address
+        AND blockchain = '{{blockchain}}'
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY contract_address, event_name ORDER BY end_block DESC) = 1
+),
+node_call AS (
+    SELECT
+        inputs.contract_address,
+        {{ blockchain }}.rpc_eth_get_logs(
+            OBJECT_CONSTRUCT('address', inputs.contract_address, 'fromBlock', from_block_hex, 'toBlock', chainhead_hex)
+        ) AS eth_getLogs
+    FROM inputs
+    JOIN chainhead ON 1=1
+),
+node_flat AS (
+    SELECT
+        contract_address,
+        utils.udf_hex_to_int(value:blockNumber::STRING)::INT AS block_number,
+        value:transactionHash::STRING AS tx_hash,
+        utils.udf_hex_to_int(value:transactionIndex::STRING)::INT AS tx_index,
+        utils.udf_hex_to_int(value:logIndex::STRING)::INT AS event_index,
+        value:removed::BOOLEAN AS event_removed,
+        value:data::STRING AS event_data,
+        value:topics::ARRAY AS event_topics
+    FROM node_call,
+    LATERAL FLATTEN(input => eth_getLogs)
+),
+decode_logs AS (
+    SELECT
+        contract_address,
+        block_number,
+        tx_hash,
+        tx_index,
+        event_index,
+        event_removed,
+        event_data,
+        event_topics,
+        ethereum.streamline.udf_decode(
+            abi,
+            OBJECT_CONSTRUCT(
+                'topics',
+                event_topics,
+                'data',
+                event_data,
+                'address',
+                contract_address
+            )
+        )[0] AS decoded_data,
+        decoded_data:name::STRING AS event_name,
+        ethereum.silver.udf_transform_logs(decoded_data) AS transformed
+    FROM node_flat
+    JOIN abis
+        ON contract_address = parent_contract_address
+        AND event_topics[0]::STRING = event_signature
+),
+final AS (
+    SELECT
+        b.tx_hash,
+        b.block_number,
+        b.event_index,
+        b.event_name,
+        b.contract_address,
+        b.event_topics,
+        b.event_data,
+        b.decoded_data,
+        transformed,
+        OBJECT_AGG(
+            DISTINCT CASE
+                WHEN v.value:name = '' THEN CONCAT('anonymous_', v.index)
+                ELSE v.value:name
+            END,
+            v.value:value
+        ) AS decoded_flat
+    FROM decode_logs b,
+    LATERAL FLATTEN(input => transformed:data) v
+    GROUP BY
+        b.tx_hash,
+        b.block_number,
+        b.event_index,
+        b.event_name,
+        b.contract_address,
+        b.event_topics,
+        b.event_data,
+        b.decoded_data,
+        transformed
+)
+SELECT
+    '{{blockchain}}' AS blockchain,
+    tx_hash,
+    block_number,
+    event_index,
+    event_name,
+    contract_address,
+    event_topics,
+    event_data,
+    decoded_flat AS decoded_data
+FROM final
+{% endmacro %}
+
+{% macro evm_latest_contract_events_decoded_si(schema, blockchain) %}
+WITH inputs AS (
+    SELECT lower(address::STRING) AS contract_address
+),
+chainhead AS (
+    SELECT
+        {{ blockchain }}.rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
+        CONCAT('0x', TRIM(TO_CHAR(utils.udf_hex_to_int(chainhead_hex) - lookback, 'XXXXXXXXXX'))) AS from_block_hex
+),
+abis AS (
+    SELECT
+        parent_contract_address,
+        event_name,
+        event_signature,
+        abi
+    FROM inputs
+    JOIN crosschain.core.dim_evm_event_abis
+        ON lower(contract_address) = parent_contract_address
+        AND blockchain = '{{blockchain}}'
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY contract_address, event_name ORDER BY end_block DESC) = 1
+),
+node_call AS (
+    SELECT
+        inputs.contract_address,
+        {{ blockchain }}.rpc_eth_get_logs(
+            OBJECT_CONSTRUCT('address', inputs.contract_address, 'fromBlock', from_block_hex, 'toBlock', chainhead_hex)
+        ) AS eth_getLogs
+    FROM inputs
+    JOIN chainhead ON 1=1
+),
+node_flat AS (
+    SELECT
+        contract_address,
+        utils.udf_hex_to_int(value:blockNumber::STRING)::INT AS block_number,
+        value:transactionHash::STRING AS tx_hash,
+        utils.udf_hex_to_int(value:transactionIndex::STRING)::INT AS tx_index,
+        utils.udf_hex_to_int(value:logIndex::STRING)::INT AS event_index,
+        value:removed::BOOLEAN AS event_removed,
+        value:data::STRING AS event_data,
+        value:topics::ARRAY AS event_topics
+    FROM node_call,
+    LATERAL FLATTEN(input => eth_getLogs)
+),
+decode_logs AS (
+    SELECT
+        contract_address,
+        block_number,
+        tx_hash,
+        tx_index,
+        event_index,
+        event_removed,
+        event_data,
+        event_topics,
+        ethereum.streamline.udf_decode(
+            abi,
+            OBJECT_CONSTRUCT(
+                'topics',
+                event_topics,
+                'data',
+                event_data,
+                'address',
+                contract_address
+            )
+        )[0] AS decoded_data,
+        decoded_data:name::STRING AS event_name,
+        ethereum.silver.udf_transform_logs(decoded_data) AS transformed
+    FROM node_flat
+    JOIN abis
+        ON contract_address = parent_contract_address
+        AND event_topics[0]::STRING = event_signature
+),
+final AS (
+    SELECT
+        b.tx_hash,
+        b.block_number,
+        b.event_index,
+        b.event_name,
+        b.contract_address,
+        b.event_topics,
+        b.event_data,
+        b.decoded_data,
+        transformed,
+        OBJECT_AGG(
+            DISTINCT CASE
+                WHEN v.value:name = '' THEN CONCAT('anonymous_', v.index)
+                ELSE v.value:name
+            END,
+            v.value:value
+        ) AS decoded_flat
+    FROM decode_logs b,
+    LATERAL FLATTEN(input => transformed:data) v
+    GROUP BY
+        b.tx_hash,
+        b.block_number,
+        b.event_index,
+        b.event_name,
+        b.contract_address,
+        b.event_topics,
+        b.event_data,
+        b.decoded_data,
+        transformed
+)
+SELECT
+    '{{blockchain}}' AS blockchain,
+    tx_hash,
+    block_number,
+    event_index,
+    event_name,
+    contract_address,
+    event_topics,
+    event_data,
+    decoded_flat AS decoded_data
+FROM final
+{% endmacro %}
+
+{% macro evm_latest_contract_events_decoded_a(schema, blockchain) %}
+WITH base AS (SELECT addresses),
+inputs AS (
+    SELECT lower(value::STRING) AS contract_address
+    FROM base, LATERAL FLATTEN(input => addresses)
+),
+chainhead AS (
+    SELECT
+        {{ blockchain }}.rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
+        CONCAT('0x', TRIM(TO_CHAR(utils.udf_hex_to_int(chainhead_hex) - 100, 'XXXXXXXXXX'))) AS from_block_hex
+),
+abis AS (
+    SELECT
+        parent_contract_address,
+        event_name,
+        event_signature,
+        abi
+    FROM inputs
+    JOIN crosschain.core.dim_evm_event_abis
+        ON lower(contract_address) = parent_contract_address
+        AND blockchain = '{{blockchain}}'
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY contract_address, event_name ORDER BY end_block DESC) = 1
+),
+node_call AS (
+    SELECT
+        inputs.contract_address,
+        {{ blockchain }}.rpc_eth_get_logs(
+            OBJECT_CONSTRUCT('address', inputs.contract_address, 'fromBlock', from_block_hex, 'toBlock', chainhead_hex)
+        ) AS eth_getLogs
+    FROM inputs
+    JOIN chainhead ON 1=1
+),
+node_flat AS (
+    SELECT
+        contract_address,
+        utils.udf_hex_to_int(value:blockNumber::STRING)::INT AS block_number,
+        value:transactionHash::STRING AS tx_hash,
+        utils.udf_hex_to_int(value:transactionIndex::STRING)::INT AS tx_index,
+        utils.udf_hex_to_int(value:logIndex::STRING)::INT AS event_index,
+        value:removed::BOOLEAN AS event_removed,
+        value:data::STRING AS event_data,
+        value:topics::ARRAY AS event_topics
+    FROM node_call,
+    LATERAL FLATTEN(input => eth_getLogs)
+),
+decode_logs AS (
+    SELECT
+        contract_address,
+        block_number,
+        tx_hash,
+        tx_index,
+        event_index,
+        event_removed,
+        event_data,
+        event_topics,
+        ethereum.streamline.udf_decode(
+            abi,
+            OBJECT_CONSTRUCT(
+                'topics',
+                event_topics,
+                'data',
+                event_data,
+                'address',
+                contract_address
+            )
+        )[0] AS decoded_data,
+        decoded_data:name::STRING AS event_name,
+        ethereum.silver.udf_transform_logs(decoded_data) AS transformed
+    FROM node_flat
+    JOIN abis
+        ON contract_address = parent_contract_address
+        AND event_topics[0]::STRING = event_signature
+),
+final AS (
+    SELECT
+        b.tx_hash,
+        b.block_number,
+        b.event_index,
+        b.event_name,
+        b.contract_address,
+        b.event_topics,
+        b.event_data,
+        b.decoded_data,
+        transformed,
+        OBJECT_AGG(
+            DISTINCT CASE
+                WHEN v.value:name = '' THEN CONCAT('anonymous_', v.index)
+                ELSE v.value:name
+            END,
+            v.value:value
+        ) AS decoded_flat
+    FROM decode_logs b,
+    LATERAL FLATTEN(input => transformed:data) v
+    GROUP BY
+        b.tx_hash,
+        b.block_number,
+        b.event_index,
+        b.event_name,
+        b.contract_address,
+        b.event_topics,
+        b.event_data,
+        b.decoded_data,
+        transformed
+)
+SELECT
+    '{{blockchain}}' AS blockchain,
+    tx_hash,
+    block_number,
+    event_index,
+    event_name,
+    contract_address,
+    event_topics,
+    event_data,
+    decoded_flat AS decoded_data
+FROM final
+{% endmacro %}
+
+{% macro evm_latest_contract_events_decoded_ai(schema, blockchain) %}
+WITH base AS (SELECT addresses),
+inputs AS (
+    SELECT lower(value::STRING) AS contract_address
+    FROM base, LATERAL FLATTEN(input => addresses)
+),
+chainhead AS (
+    SELECT
+        {{ blockchain }}.rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
+        CONCAT('0x', TRIM(TO_CHAR(utils.udf_hex_to_int(chainhead_hex) - lookback, 'XXXXXXXXXX'))) AS from_block_hex
+),
+abis AS (
+    SELECT
+        parent_contract_address,
+        event_name,
+        event_signature,
+        abi
+    FROM inputs
+    JOIN crosschain.core.dim_evm_event_abis
+        ON lower(contract_address) = parent_contract_address
+        AND blockchain = '{{blockchain}}'
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY contract_address, event_name ORDER BY end_block DESC) = 1
+),
+node_call AS (
+    SELECT
+        inputs.contract_address,
+        {{ blockchain }}.rpc_eth_get_logs(
+            OBJECT_CONSTRUCT('address', inputs.contract_address, 'fromBlock', from_block_hex, 'toBlock', chainhead_hex)
+        ) AS eth_getLogs
+    FROM inputs
+    JOIN chainhead ON 1=1
+),
+node_flat AS (
+    SELECT
+        contract_address,
+        utils.udf_hex_to_int(value:blockNumber::STRING)::INT AS block_number,
+        value:transactionHash::STRING AS tx_hash,
+        utils.udf_hex_to_int(value:transactionIndex::STRING)::INT AS tx_index,
+        utils.udf_hex_to_int(value:logIndex::STRING)::INT AS event_index,
+        value:removed::BOOLEAN AS event_removed,
+        value:data::STRING AS event_data,
+        value:topics::ARRAY AS event_topics
+    FROM node_call,
+    LATERAL FLATTEN(input => eth_getLogs)
+),
+decode_logs AS (
+    SELECT
+        contract_address,
+        block_number,
+        tx_hash,
+        tx_index,
+        event_index,
+        event_removed,
+        event_data,
+        event_topics,
+        ethereum.streamline.udf_decode(
+            abi,
+            OBJECT_CONSTRUCT(
+                'topics',
+                event_topics,
+                'data',
+                event_data,
+                'address',
+                contract_address
+            )
+        )[0] AS decoded_data,
+        decoded_data:name::STRING AS event_name,
+        ethereum.silver.udf_transform_logs(decoded_data) AS transformed
+    FROM node_flat
+    JOIN abis
+        ON contract_address = parent_contract_address
+        AND event_topics[0]::STRING = event_signature
+),
+final AS (
+    SELECT
+        b.tx_hash,
+        b.block_number,
+        b.event_index,
+        b.event_name,
+        b.contract_address,
+        b.event_topics,
+        b.event_data,
+        b.decoded_data,
+        transformed,
+        OBJECT_AGG(
+            DISTINCT CASE
+                WHEN v.value:name = '' THEN CONCAT('anonymous_', v.index)
+                ELSE v.value:name
+            END,
+            v.value:value
+        ) AS decoded_flat
+    FROM decode_logs b,
+    LATERAL FLATTEN(input => transformed:data) v
+    GROUP BY
+        b.tx_hash,
+        b.block_number,
+        b.event_index,
+        b.event_name,
+        b.contract_address,
+        b.event_topics,
+        b.event_data,
+        b.decoded_data,
+        transformed
+)
+SELECT
+    '{{blockchain}}' AS blockchain,
+    tx_hash,
+    block_number,
+    event_index,
+    event_name,
+    contract_address,
+    event_topics,
+    event_data,
+    decoded_flat AS decoded_data
+FROM final
+{% endmacro %}
