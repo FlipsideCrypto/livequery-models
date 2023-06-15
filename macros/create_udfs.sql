@@ -14,9 +14,13 @@
 
             {{- crud_udfs_in_schema(config_evm_rpc_primitives, "ethereum", "mainnet", drop_) -}}
             {{- crud_udfs_in_schema(config_evm_rpc_primitives, "ethereum", "testnet", drop_) -}}
+            {{- crud_udfs_in_schema(config_evm_rpc_primitives, "ethereum", "goerli", drop_) -}}
+            {{- crud_udfs_in_schema(config_evm_rpc_primitives, "polygon", "mainnet", drop_) -}}
 
             {{- crud_udfs_in_schema(config_evm_high_level_abstractions, "ethereum", "mainnet", drop_) -}}
             {{- crud_udfs_in_schema(config_evm_high_level_abstractions, "ethereum", "testnet", drop_) -}}
+            {{- crud_udfs_in_schema(config_evm_high_level_abstractions, "ethereum", "goerli", drop_) -}}
+            {{- crud_udfs_in_schema(config_evm_high_level_abstractions, "polygon", "mainnet", drop_) -}}
         {% endset %}
         {% do run_query(sql) %}
     {% endif %}
