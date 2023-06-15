@@ -14,7 +14,7 @@ SELECT
         WHEN '{{blockchain}}' ILIKE 'fantom%' THEN 'ETH'
         WHEN '{{blockchain}}' ILIKE 'harmony%' THEN 'ONE'
     END AS symbol,
-    utils.udf_hex_to_int({{blockchain}}.rpc_eth_get_balance(wallet_address,'latest')::string) AS raw_balance,
+    utils.udf_hex_to_int({{schema}}.rpc_eth_get_balance(wallet_address,'latest')::string) AS raw_balance,
     (raw_balance / POW(10,18))::float AS balance
 {% endmacro %}
 
@@ -29,7 +29,7 @@ flat_addresses AS (
 ),
 node_call AS (
     SELECT wallet_address, 
-    {{blockchain}}.rpc_eth_get_balance(wallet_address,'latest')::string AS hex_balance 
+    {{schema}}.rpc_eth_get_balance(wallet_address,'latest')::string AS hex_balance 
     FROM flat_addresses
 )
 SELECT
@@ -68,7 +68,7 @@ node_call AS (
         wallet_address,
         token_address,
         symbol,
-        {{blockchain}}.rpc_eth_call(object_construct_keep_null('from', null, 'to', token_address, 'data', data),'latest')::string AS eth_call,
+        {{schema}}.rpc_eth_call(object_construct_keep_null('from', null, 'to', token_address, 'data', data),'latest')::string AS eth_call,
         utils.udf_hex_to_int(eth_call::string) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
@@ -106,7 +106,7 @@ final AS (
         wallet_address,
         token_address,
         symbol,
-        {{blockchain}}.rpc_eth_call(object_construct_keep_null('from', null, 'to', token_address, 'data', data),'latest')::string AS eth_call,
+        {{schema}}.rpc_eth_call(object_construct_keep_null('from', null, 'to', token_address, 'data', data),'latest')::string AS eth_call,
         utils.udf_hex_to_int(eth_call::string) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
@@ -144,7 +144,7 @@ final AS (
         wallet_address,
         token_address,
         symbol,
-        {{blockchain}}.rpc_eth_call(object_construct_keep_null('from', null, 'to', token_address, 'data', data),'latest')::string AS eth_call,
+        {{schema}}.rpc_eth_call(object_construct_keep_null('from', null, 'to', token_address, 'data', data),'latest')::string AS eth_call,
         utils.udf_hex_to_int(eth_call::string) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
@@ -184,7 +184,7 @@ final AS (
         wallet_address,
         token_address,
         symbol,
-        {{blockchain}}.rpc_eth_call(object_construct_keep_null('from', null, 'to', token_address, 'data', data),'latest')::string AS eth_call,
+        {{schema}}.rpc_eth_call(object_construct_keep_null('from', null, 'to', token_address, 'data', data),'latest')::string AS eth_call,
         utils.udf_hex_to_int(eth_call::string) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
@@ -218,7 +218,7 @@ WITH inputs AS (
         token_address,
         symbol,
         block_number,
-        {{blockchain}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
+        {{schema}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
         utils.udf_hex_to_int(eth_call::STRING) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
@@ -262,7 +262,7 @@ final AS (
         token_address,
         symbol,
         blocks.block_number,
-        {{blockchain}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(blocks.block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
+        {{schema}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(blocks.block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
         utils.udf_hex_to_int(eth_call::STRING) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
@@ -308,7 +308,7 @@ final AS (
         token_address,
         symbol,
         block_number,
-        {{blockchain}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
+        {{schema}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
         utils.udf_hex_to_int(eth_call::STRING) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
@@ -361,7 +361,7 @@ final AS (
         token_address,
         symbol,
         blocks.block_number,
-        {{blockchain}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(blocks.block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
+        {{schema}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(blocks.block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
         utils.udf_hex_to_int(eth_call::STRING) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
@@ -408,7 +408,7 @@ final AS (
         token_address,
         symbol,
         block_number,
-        {{blockchain}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
+        {{schema}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
         utils.udf_hex_to_int(eth_call::STRING) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
@@ -462,7 +462,7 @@ final AS (
         token_address,
         symbol,
         blocks.block_number,
-        {{blockchain}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(blocks.block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
+        {{schema}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(blocks.block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
         utils.udf_hex_to_int(eth_call::STRING) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
@@ -518,7 +518,7 @@ final AS (
         token_address,
         symbol,
         block_number,
-        {{blockchain}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
+        {{schema}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
         utils.udf_hex_to_int(eth_call::STRING) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
@@ -581,7 +581,7 @@ final AS (
         token_address,
         symbol,
         blocks.block_number,
-        {{blockchain}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(blocks.block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
+        {{schema}}.rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', data), CONCAT('0x', TRIM(TO_CHAR(blocks.block_number, 'XXXXXXXXXX'))))::STRING AS eth_call,
         utils.udf_hex_to_int(eth_call::STRING) AS raw_balance,
         raw_balance::INT / POW(10, decimals) AS balance
     FROM
@@ -618,7 +618,7 @@ SELECT
         WHEN '{{blockchain}}' ILIKE 'harmony%' THEN 'ONE'
     END AS symbol,
     block_number,
-    utils.udf_hex_to_int({{blockchain}}.rpc_eth_get_balance(wallet_address,CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))))::string) AS raw_balance,
+    utils.udf_hex_to_int({{schema}}.rpc_eth_get_balance(wallet_address,CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))))::string) AS raw_balance,
     (raw_balance / POW(10,18))::float AS balance
 {% endmacro %}
 
@@ -647,7 +647,7 @@ inputs AS (
         WHEN '{{blockchain}}' ILIKE 'harmony%' THEN 'ONE'
         END AS symbol,
         block_number,
-        utils.udf_hex_to_int({{blockchain}}.rpc_eth_get_balance(wallet, CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX')))))::STRING AS raw_balance
+        utils.udf_hex_to_int({{schema}}.rpc_eth_get_balance(wallet, CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX')))))::STRING AS raw_balance
     FROM blocks
 )
 SELECT 
@@ -685,7 +685,7 @@ inputs AS (
         WHEN '{{blockchain}}' ILIKE 'harmony%' THEN 'ONE'
         END AS symbol,
         block_number,
-        utils.udf_hex_to_int({{blockchain}}.rpc_eth_get_balance(wallet, CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX')))))::STRING AS raw_balance
+        utils.udf_hex_to_int({{schema}}.rpc_eth_get_balance(wallet, CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX')))))::STRING AS raw_balance
     FROM flat_wallets
 )
 SELECT 
@@ -723,7 +723,7 @@ FROM inputs
                 WHEN '{{blockchain}}' ILIKE 'harmony%' THEN 'ONE'
             END AS symbol,
             block_number,
-            utils.udf_hex_to_int({{blockchain}}.rpc_eth_get_balance(wallet, CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX')))))::STRING AS raw_balance
+            utils.udf_hex_to_int({{schema}}.rpc_eth_get_balance(wallet, CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX')))))::STRING AS raw_balance
         FROM flat_wallets
     )
     SELECT 
