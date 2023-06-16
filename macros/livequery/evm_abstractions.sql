@@ -73,7 +73,7 @@ node_call AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         inputs
-    LEFT JOIN crosschain_dev.core.dim_evm_contracts 
+    LEFT JOIN {{ source('crosschain', 'dim_contracts') }}
     ON token_address = address
     and blockchain = '{{blockchain}}'
 )
@@ -113,7 +113,7 @@ final AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         flat_rows
-    LEFT JOIN crosschain_dev.core.dim_evm_contracts 
+    LEFT JOIN {{ source('crosschain', 'dim_contracts') }} 
     ON token_address = address
     and blockchain = '{{blockchain}}'
 )
@@ -153,7 +153,7 @@ final AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         flat_rows
-    LEFT JOIN crosschain_dev.core.dim_evm_contracts 
+    LEFT JOIN {{ source('crosschain', 'dim_contracts') }} 
     ON token_address = address
     and blockchain = '{{blockchain}}'
 )
@@ -195,7 +195,7 @@ final AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         flat_rows
-    LEFT JOIN crosschain_dev.core.dim_evm_contracts 
+    LEFT JOIN {{ source('crosschain', 'dim_contracts') }} 
     ON token_address = address
     and blockchain = '{{blockchain}}'
 )
@@ -231,7 +231,7 @@ WITH inputs AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         inputs
-    LEFT JOIN crosschain_dev.core.dim_evm_contracts
+    LEFT JOIN {{ source('crosschain', 'dim_contracts') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -277,7 +277,7 @@ final AS (
     FROM
         inputs
     CROSS JOIN blocks
-    LEFT JOIN crosschain_dev.core.dim_evm_contracts
+    LEFT JOIN {{ source('crosschain', 'dim_contracts') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -323,7 +323,7 @@ final AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         inputs
-    LEFT JOIN crosschain_dev.core.dim_evm_contracts
+    LEFT JOIN {{ source('crosschain', 'dim_contracts') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -378,7 +378,7 @@ final AS (
     FROM
         inputs
     CROSS JOIN blocks
-    LEFT JOIN crosschain_dev.core.dim_evm_contracts
+    LEFT JOIN {{ source('crosschain', 'dim_contracts') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -425,7 +425,7 @@ final AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         inputs
-    LEFT JOIN crosschain_dev.core.dim_evm_contracts
+    LEFT JOIN {{ source('crosschain', 'dim_contracts') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -481,7 +481,7 @@ final AS (
     FROM
         inputs
     CROSS JOIN blocks
-    LEFT JOIN crosschain_dev.core.dim_evm_contracts
+    LEFT JOIN {{ source('crosschain', 'dim_contracts') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -537,7 +537,7 @@ final AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         inputs
-    LEFT JOIN crosschain_dev.core.dim_evm_contracts
+    LEFT JOIN {{ source('crosschain', 'dim_contracts') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -602,7 +602,7 @@ final AS (
     FROM
         inputs
     CROSS JOIN blocks
-    LEFT JOIN crosschain_dev.core.dim_evm_contracts
+    LEFT JOIN {{ source('crosschain', 'dim_contracts') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -926,7 +926,7 @@ abis AS (
         event_signature,
         abi
     FROM inputs
-    JOIN crosschain.core.dim_evm_event_abis
+    JOIN {{ source('crosschain', 'dim_evm_event_abis') }}
         ON lower(contract_address) = parent_contract_address
         AND blockchain = '{{blockchain}}'
     QUALIFY ROW_NUMBER() OVER (PARTITION BY contract_address, event_name ORDER BY end_block DESC) = 1
@@ -1041,7 +1041,7 @@ abis AS (
         event_signature,
         abi
     FROM inputs
-    JOIN crosschain.core.dim_evm_event_abis
+    JOIN {{ source('crosschain', 'dim_evm_event_abis') }}
         ON lower(contract_address) = parent_contract_address
         AND blockchain = '{{blockchain}}'
     QUALIFY ROW_NUMBER() OVER (PARTITION BY contract_address, event_name ORDER BY end_block DESC) = 1
@@ -1158,7 +1158,7 @@ abis AS (
         event_signature,
         abi
     FROM inputs
-    JOIN crosschain.core.dim_evm_event_abis
+    JOIN {{ source('crosschain', 'dim_evm_event_abis') }}
         ON lower(contract_address) = parent_contract_address
         AND blockchain = '{{blockchain}}'
     QUALIFY ROW_NUMBER() OVER (PARTITION BY contract_address, event_name ORDER BY end_block DESC) = 1
@@ -1275,7 +1275,7 @@ abis AS (
         event_signature,
         abi
     FROM inputs
-    JOIN crosschain.core.dim_evm_event_abis
+    JOIN {{ source('crosschain', 'dim_evm_event_abis') }}
         ON lower(contract_address) = parent_contract_address
         AND blockchain = '{{blockchain}}'
     QUALIFY ROW_NUMBER() OVER (PARTITION BY contract_address, event_name ORDER BY end_block DESC) = 1
