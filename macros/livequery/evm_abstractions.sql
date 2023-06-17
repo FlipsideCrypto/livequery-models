@@ -1014,15 +1014,19 @@ final AS (
 )
 SELECT
     '{{blockchain}}' AS blockchain,
-    tx_hash,
-    block_number,
-    event_index,
-    event_name,
-    contract_address,
-    event_topics,
-    event_data,
-    decoded_flat AS decoded_data
-FROM final
+    n.tx_hash,
+    n.block_number,
+    n.event_index,
+    f.event_name,
+    n.contract_address,
+    n.event_topics,
+    n.event_data,
+    f.decoded_flat AS decoded_data
+FROM node_flat n
+left join final f
+on n.block_number = f.block_number
+and n.tx_hash = f.tx_hash
+and n.event_index = f.event_index
 {% endmacro %}
 
 {% macro evm_latest_contract_events_decoded_si(schema, blockchain) %}
@@ -1129,15 +1133,19 @@ final AS (
 )
 SELECT
     '{{blockchain}}' AS blockchain,
-    tx_hash,
-    block_number,
-    event_index,
-    event_name,
-    contract_address,
-    event_topics,
-    event_data,
-    decoded_flat AS decoded_data
-FROM final
+    n.tx_hash,
+    n.block_number,
+    n.event_index,
+    f.event_name,
+    n.contract_address,
+    n.event_topics,
+    n.event_data,
+    f.decoded_flat AS decoded_data
+FROM node_flat n
+left join final f
+on n.block_number = f.block_number
+and n.tx_hash = f.tx_hash
+and n.event_index = f.event_index
 {% endmacro %}
 
 {% macro evm_latest_contract_events_decoded_a(schema, blockchain) %}
@@ -1246,15 +1254,19 @@ final AS (
 )
 SELECT
     '{{blockchain}}' AS blockchain,
-    tx_hash,
-    block_number,
-    event_index,
-    event_name,
-    contract_address,
-    event_topics,
-    event_data,
-    decoded_flat AS decoded_data
-FROM final
+    n.tx_hash,
+    n.block_number,
+    n.event_index,
+    f.event_name,
+    n.contract_address,
+    n.event_topics,
+    n.event_data,
+    f.decoded_flat AS decoded_data
+FROM node_flat n
+left join final f
+on n.block_number = f.block_number
+and n.tx_hash = f.tx_hash
+and n.event_index = f.event_index
 {% endmacro %}
 
 {% macro evm_latest_contract_events_decoded_ai(schema, blockchain) %}
@@ -1363,13 +1375,17 @@ final AS (
 )
 SELECT
     '{{blockchain}}' AS blockchain,
-    tx_hash,
-    block_number,
-    event_index,
-    event_name,
-    contract_address,
-    event_topics,
-    event_data,
-    decoded_flat AS decoded_data
-FROM final
+    n.tx_hash,
+    n.block_number,
+    n.event_index,
+    f.event_name,
+    n.contract_address,
+    n.event_topics,
+    n.event_data,
+    f.decoded_flat AS decoded_data
+FROM node_flat n
+left join final f
+on n.block_number = f.block_number
+and n.tx_hash = f.tx_hash
+and n.event_index = f.event_index
 {% endmacro %}
