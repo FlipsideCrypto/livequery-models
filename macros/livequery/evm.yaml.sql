@@ -11,8 +11,9 @@
     - "TABLE(blockchain STRING, network STRING, wallet_address STRING, symbol STRING, raw_balance STRING, balance FLOAT)"
     - |
         The table has the following columns:
-        * `wallet_address` - The wallet address
         * `blockchain` - The blockchain
+        * `network` - The network
+        * `wallet_address` - The wallet address
         * `symbol` - The symbol of the native asset
         * `raw_balance` - The unadjusted native asset balance
         * `balance` - The adjusted native asset balance
@@ -20,7 +21,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns the native asset balance at the latest block for the address.$$
+    COMMENT = $$Returns the native asset balance at the latest block for a given address.$$
   sql: |
     {{ evm_latest_native_balance_string(schema,  blockchain, network) | indent(4) -}}
   
@@ -29,18 +30,11 @@
     - [wallets, ARRAY, An array of addresses string to get the balance of at the latest block]
   return_type:
     - "TABLE(blockchain STRING, network STRING, wallet_address STRING, symbol STRING, raw_balance STRING, balance FLOAT)"
-    - |
-        The table has the following columns:
-        * `wallet_address` - The wallet address
-        * `blockchain` - The blockchain
-        * `symbol` - The symbol of the native asset
-        * `raw_balance` - The unadjusted native asset balance
-        * `balance` - The adjusted native asset balance
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns the native asset balance at the latest block for the address.$$
+    COMMENT = $$Returns the native asset balances at the latest block for given addresses.$$
   sql: |
     {{ evm_latest_native_balance_array(schema,  blockchain, network) | indent(4) -}}
 
@@ -50,19 +44,11 @@
     - [token, STRING, The address of the token to get the balance of] 
   return_type:
     - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, raw_balance STRING, balance FLOAT)"
-    - |
-        The table has the following columns:
-        * `wallet_address` - The wallet address
-        * `token_address` - The token address
-        * `blockchain` - The blockchain
-        * `symbol` - The symbol of the token
-        * `raw_balance` - The unadjusted token balance
-        * `balance` - The adjusted token balance
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns the token balance at the latest block for the address. Supports ERC20 and ERC721.$$
+    COMMENT = $$Returns the token balance at the latest block for a given address and token address. Supports ERC20 and ERC721 tokens.$$
   sql: |
     {{ evm_latest_token_balance_ss(schema,  blockchain, network) | indent(4) -}}
 
@@ -72,19 +58,11 @@
     - [tokens, ARRAY, An array of address strings of the tokens to get the balance of] 
   return_type:
     - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, raw_balance STRING, balance FLOAT)"
-    - |
-        The table has the following columns:
-        * `wallet_address` - The wallet address
-        * `token_address` - The token address
-        * `blockchain` - The blockchain
-        * `symbol` - The symbol of the token
-        * `raw_balance` - The unadjusted token balance
-        * `balance` - The adjusted token balance
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns the token balance at the latest block for the address for multiple tokens. Supports ERC20 and ERC721.$$
+    COMMENT = $$Returns the token balances at the latest block for a given address and multiple token addresses. Supports ERC20 and ERC721 tokens.$$
   sql: |
     {{ evm_latest_token_balance_sa(schema,  blockchain, network) | indent(4) -}}
 
@@ -94,19 +72,11 @@
     - [token, STRING, The address of the token to get the balance of]
   return_type:
     - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, raw_balance STRING, balance FLOAT)"
-    - |
-        The table has the following columns:
-        * `wallet_address` - The wallet address
-        * `token_address` - The token address
-        * `blockchain` - The blockchain
-        * `symbol` - The symbol of the token
-        * `raw_balance` - The unadjusted token balance
-        * `balance` - The adjusted token balance
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns the balance at the latest block for the addresses for a given token. Supports ERC20 and ERC721.$$
+    COMMENT = $$Returns the token balances at the latest block for multiple addresses and a single token address. Supports ERC20 and ERC721 tokens.$$
   sql: |
     {{ evm_latest_token_balance_as(schema,  blockchain, network) | indent(4) -}}
 
@@ -116,19 +86,11 @@
     - [tokens, ARRAY, An array of address strings of the tokens to get the balance of] 
   return_type:
     - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, raw_balance STRING, balance FLOAT)"
-    - |
-        The table has the following columns:
-        * `wallet_address` - The wallet address
-        * `token_address` - The token address
-        * `blockchain` - The blockchain
-        * `symbol` - The symbol of the token
-        * `raw_balance` - The unadjusted token balance
-        * `balance` - The adjusted token balance
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns the balance at the latest block for multiple addresses for multiple tokens via cartesian product. Supports ERC20 and ERC721.$$
+    COMMENT = $$Returns the token balances at the latest block for multiple addresses and multiple token addresses. Supports ERC20 and ERC721 tokens.$$
   sql: |
     {{ evm_latest_token_balance_aa(schema,  blockchain, network) | indent(4) -}}
 
@@ -139,20 +101,11 @@
     - [block_number, INTEGER, The block number to get the balance at]
   return_type:
     - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT)"
-    - |
-        The table has the following columns:
-        * `wallet_address` - The wallet address
-        * `token_address` - The token address
-        * `blockchain` - The blockchain
-        * `symbol` - The symbol of the token
-        * `block_number` - The block number
-        * `raw_balance` - The unadjusted token balance
-        * `balance` - The adjusted token balance
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns the token balance at the input block for the address. Supports ERC20 and ERC721.$$
+    COMMENT = $$Returns the token balance for a given address and token address at a specific block. Supports ERC20 and ERC721 tokens.$$
   sql: |
     {{ evm_historical_token_balance_ssi(schema,  blockchain, network) | indent(4) -}}
 
@@ -163,20 +116,11 @@
     - [block_numbers, ARRAY, The block numbers to get the balance at]
   return_type:
     - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT)"
-    - |
-        The table has the following columns:
-        * `wallet_address` - The wallet address
-        * `token_address` - The token address
-        * `blockchain` - The blockchain
-        * `symbol` - The symbol of the token
-        * `block_number` - The block number
-        * `raw_balance` - The unadjusted token balance
-        * `balance` - The adjusted token balance
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns the token balance at the input blocks for the address. Supports ERC20 and ERC721.$$
+    COMMENT = $$Returns the token balances for a given address and token address at multiple specific blocks. Supports ERC20 and ERC721 tokens.$$
   sql: |
     {{ evm_historical_token_balance_ssa(schema,  blockchain, network) | indent(4) -}}
 
@@ -187,20 +131,11 @@
     - [block_number, INTEGER, The block number to get the balance at]
   return_type:
     - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT)"
-    - |
-        The table has the following columns:
-        * `wallet_address` - The wallet address
-        * `token_address` - The token address
-        * `blockchain` - The blockchain
-        * `symbol` - The symbol of the token
-        * `block_number` - The block number
-        * `raw_balance` - The unadjusted token balance
-        * `balance` - The adjusted token balance
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns the token balance at the input block for multiple addresses. Supports ERC20 and ERC721.$$
+    COMMENT = $$Returns the token balances for multiple addresses and a given token addresses at a specific block. Supports ERC20 and ERC721 tokens.$$
   sql: |
     {{ evm_historical_token_balance_asi(schema,  blockchain, network) | indent(4) -}}
 
@@ -211,20 +146,11 @@
     - [block_number, INTEGER, The block number to get the balance at]
   return_type:
     - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT)"
-    - |
-        The table has the following columns:
-        * `wallet_address` - The wallet address
-        * `token_address` - The token address
-        * `blockchain` - The blockchain
-        * `symbol` - The symbol of the token
-        * `block_number` - The block number
-        * `raw_balance` - The unadjusted token balance
-        * `balance` - The adjusted token balance
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns the token balance at the input block for the address for multiple tokens. Supports ERC20 and ERC721.$$
+    COMMENT = $$Returns the token balances for a given address and multiple token addresses at a specific block. Supports ERC20 and ERC721 tokens.$$
   sql: |
     {{ evm_historical_token_balance_sai(schema,  blockchain, network) | indent(4) -}}
 
@@ -235,20 +161,11 @@
     - [block_numbers, ARRAY, The block numbers to get the balance at]
   return_type:
     - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT)"
-    - |
-        The table has the following columns:
-        * `wallet_address` - The wallet address
-        * `token_address` - The token address
-        * `blockchain` - The blockchain
-        * `symbol` - The symbol of the token
-        * `block_number` - The block number
-        * `raw_balance` - The unadjusted token balance
-        * `balance` - The adjusted token balance
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns the token balance at the input blocks for the address for multiple tokens. Supports ERC20 and ERC721.$$
+    COMMENT = $$Returns the token balances for a given address and multiple token addresses at multiple specific blocks. Supports ERC20 and ERC721 tokens.$$
   sql: |
     {{ evm_historical_token_balance_saa(schema,  blockchain, network) | indent(4) -}}
 
@@ -259,20 +176,11 @@
     - [block_number, INTEGER, The block number to get the balance at]
   return_type:
     - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT)"
-    - |
-        The table has the following columns:
-        * `wallet_address` - The wallet address
-        * `token_address` - The token address
-        * `blockchain` - The blockchain
-        * `symbol` - The symbol of the token
-        * `block_number` - The block number
-        * `raw_balance` - The unadjusted token balance
-        * `balance` - The adjusted token balance
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns the token balance at the input block for multiple addresses for multiple tokens. Supports ERC20 and ERC721.$$
+    COMMENT = $$Returns the token balances for multiple addresses and multiple token addresses at a specific block. Supports ERC20 and ERC721 tokens.$$
   sql: |
     {{ evm_historical_token_balance_aai(schema,  blockchain, network) | indent(4) -}}
 
@@ -283,20 +191,11 @@
     - [block_numbers, ARRAY, The block numbers to get the balance at]
   return_type:
     - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT)"
-    - |
-        The table has the following columns:
-        * `wallet_address` - The wallet address
-        * `token_address` - The token address
-        * `blockchain` - The blockchain
-        * `symbol` - The symbol of the token
-        * `block_number` - The block number
-        * `raw_balance` - The unadjusted token balance
-        * `balance` - The adjusted token balance
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns the token balance at the input blocks for multiple addresses for multiple tokens. Supports ERC20 and ERC721.$$
+    COMMENT = $$Returns the token balances for multiple addresses and multiple token addresses at multiple specific blocks. Supports ERC20 and ERC721 tokens.$$
   sql: |
     {{ evm_historical_token_balance_aaa(schema,  blockchain, network) | indent(4) -}}
 
@@ -306,19 +205,11 @@
     - [block_number, INTEGER, The block number to get the balance at]
   return_type:
     - "TABLE(blockchain STRING, network STRING, wallet_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT)"
-    - |
-        The table has the following columns:
-        * `wallet_address` - The wallet address
-        * `blockchain` - The blockchain
-        * `symbol` - The symbol of the token
-        * `block_number` - The block number
-        * `raw_balance` - The unadjusted token balance
-        * `balance` - The adjusted token balance
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns the native balance at the input block for the address.$$
+    COMMENT = $$Returns the native asset balance for a given address at a specific block.$$
   sql: |
     {{ evm_historical_native_balance_si(schema,  blockchain, network) | indent(4) -}}
 
@@ -328,19 +219,11 @@
     - [block_numbers, ARRAY, The block numbers to get the balance at]
   return_type:
     - "TABLE(blockchain STRING, network STRING, wallet_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT)"
-    - |
-        The table has the following columns:
-        * `wallet_address` - The wallet address
-        * `blockchain` - The blockchain
-        * `symbol` - The symbol of the token
-        * `block_number` - The block number
-        * `raw_balance` - The unadjusted token balance
-        * `balance` - The adjusted token balance
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns the native balance at the input blocks for the address.$$
+    COMMENT = $$Returns the native asset balances for a given address at multiple specific blocks.$$
   sql: |
     {{ evm_historical_native_balance_sa(schema,  blockchain, network) | indent(4) -}}
 
@@ -350,19 +233,11 @@
     - [block_number, INTEGER, The block number to get the balance at]
   return_type:
     - "TABLE(blockchain STRING, network STRING, wallet_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT)"
-    - |
-        The table has the following columns:
-        * `wallet_address` - The wallet address
-        * `blockchain` - The blockchain
-        * `symbol` - The symbol of the token
-        * `block_number` - The block number
-        * `raw_balance` - The unadjusted token balance
-        * `balance` - The adjusted token balance
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns the native balance at the input block for multiple addresses.$$
+    COMMENT = $$Returns the native asset balances for multiple addresses at a specific block.$$
   sql: |
     {{ evm_historical_native_balance_ai(schema,  blockchain, network) | indent(4) -}}
 
@@ -372,19 +247,11 @@
     - [block_numbers, ARRAY, The block numbers to get the balance at]
   return_type:
     - "TABLE(blockchain STRING, network STRING, wallet_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT)"
-    - |
-        The table has the following columns:
-        * `wallet_address` - The wallet address
-        * `blockchain` - The blockchain
-        * `symbol` - The symbol of the token
-        * `block_number` - The block number
-        * `raw_balance` - The unadjusted token balance
-        * `balance` - The adjusted token balance
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns the native balance at the input blocks for multiple addresses.$$
+    COMMENT = $$Returns the native asset balances for multiple addresses at multiple specific blocks.$$
   sql: |
     {{ evm_historical_native_balance_aa(schema,  blockchain, network) | indent(4) -}}
 
@@ -393,20 +260,11 @@
     - [address, STRING, The address of the contract to get the events of]
   return_type:
     - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, contract_address STRING, event_topics ARRAY, event_data STRING)"
-    - |
-        The table has the following columns:
-        * `blockchain` - The blockchain
-        * `tx_hash` - The transaction hash
-        * `block_number` - The block number
-        * `event_index` - The index of the event in the transaction
-        * `contract_address` - The address of the contract
-        * `event_topics` - The topics of the event
-        * `event_data` - The data of the event
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns events in the last 100 blocks for the contract.$$
+    COMMENT = $$Returns the latest events emitted by a contract in the last 100 blocks.$$
   sql: |
     {{ evm_latest_contract_events_s(schema,  blockchain, network) | indent(4) -}}
 
@@ -416,20 +274,11 @@
     - [lookback, INTEGER, The number of blocks to look back. Please note there are RPC limitations on this method.]
   return_type:
     - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, contract_address STRING, event_topics ARRAY, event_data STRING)"
-    - |
-        The table has the following columns:
-        * `blockchain` - The blockchain
-        * `tx_hash` - The transaction hash
-        * `block_number` - The block number
-        * `event_index` - The index of the event in the transaction
-        * `contract_address` - The address of the contract
-        * `event_topics` - The topics of the event
-        * `event_data` - The data of the event
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns events in the last `lookback` blocks for the contract.$$
+    COMMENT = $$Returns the latest events emitted by a contract within the last `lookback` blocks. *Please note there are RPC limitations on this method.*$$
   sql: |
     {{ evm_latest_contract_events_si(schema,  blockchain, network) | indent(4) -}}
   
@@ -438,20 +287,11 @@
     - [addresses, ARRAY, The addresses of the contracts to get the events of]
   return_type:
     - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, contract_address STRING, event_topics ARRAY, event_data STRING)"
-    - |
-        The table has the following columns:
-        * `blockchain` - The blockchain
-        * `tx_hash` - The transaction hash
-        * `block_number` - The block number
-        * `event_index` - The index of the event in the transaction
-        * `contract_address` - The address of the contract
-        * `event_topics` - The topics of the event
-        * `event_data` - The data of the event
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns events in the last 100 blocks for the contracts.$$
+    COMMENT = $$Returns the latest events emitted by multiple contracts in the last 100 blocks.$$
   sql: |
     {{ evm_latest_contract_events_a(schema,  blockchain, network) | indent(4) -}}
 
@@ -461,20 +301,11 @@
     - [lookback, INTEGER, The number of blocks to look back. Please note there are RPC limitations on this method.]
   return_type:
     - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, contract_address STRING, event_topics ARRAY, event_data STRING)"
-    - |
-        The table has the following columns:
-        * `blockchain` - The blockchain
-        * `tx_hash` - The transaction hash
-        * `block_number` - The block number
-        * `event_index` - The index of the event in the transaction
-        * `contract_address` - The address of the contract
-        * `event_topics` - The topics of the event
-        * `event_data` - The data of the event
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns events in the last `lookback` blocks for the contracts.$$
+    COMMENT = $$Returns the latest events emitted by multiple contracts within the last `lookback` blocks. *Please note there are RPC limitations on this method.*$$
   sql: |
     {{ evm_latest_contract_events_ai(schema,  blockchain, network) | indent(4) -}}
 
@@ -483,22 +314,11 @@
     - [address, STRING, The address of the contract to get the decoded events of]
   return_type:
     - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, event_name STRING, contract_address STRING, event_topics ARRAY, event_data STRING, decoded_data OBJECT)"
-    - |
-        The table has the following columns:
-        * `blockchain` - The blockchain
-        * `tx_hash` - The transaction hash
-        * `block_number` - The block number
-        * `event_index` - The index of the event in the transaction
-        * `event_name` - The name of the event
-        * `contract_address` - The address of the contract
-        * `event_topics` - The topics of the event
-        * `event_data` - The data of the event
-        * `decoded_data` - The decoded data of the event
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns decoded events in the last 100 blocks for the contract.$$
+    COMMENT = $$RReturns the latest decoded events emitted by a contract in the last 100 blocks. Submit missing ABIs [here](https://science.flipsidecrypto.xyz/abi-requestor/).$$
   sql: |
     {{ evm_latest_contract_events_decoded_s(schema,  blockchain, network) | indent(4) -}}
 
@@ -507,22 +327,11 @@
     - [addresses, ARRAY, The addresses of the contracts to get the decoded events of]
   return_type:
     - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, event_name STRING, contract_address STRING, event_topics ARRAY, event_data STRING, decoded_data OBJECT)"
-    - |
-        The table has the following columns:
-        * `blockchain` - The blockchain
-        * `tx_hash` - The transaction hash
-        * `block_number` - The block number
-        * `event_index` - The index of the event in the transaction
-        * `event_name` - The name of the event
-        * `contract_address` - The address of the contract
-        * `event_topics` - The topics of the event
-        * `event_data` - The data of the event
-        * `decoded_data` - The decoded data of the event
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns decoded events in the last 100 blocks for the contracts.$$
+    COMMENT = $$Returns the latest decoded events emitted by multiple contracts in the last 100 blocks. Submit missing ABIs [here](https://science.flipsidecrypto.xyz/abi-requestor/).$$
   sql: |
     {{ evm_latest_contract_events_decoded_a(schema,  blockchain, network) | indent(4) -}}
 
@@ -532,22 +341,11 @@
     - [lookback, INTEGER, The number of blocks to look back. Please note there are RPC limitations on this method.]
   return_type:
     - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, event_name STRING, contract_address STRING, event_topics ARRAY, event_data STRING, decoded_data OBJECT)"
-    - |
-        The table has the following columns:
-        * `blockchain` - The blockchain
-        * `tx_hash` - The transaction hash
-        * `block_number` - The block number
-        * `event_index` - The index of the event in the transaction
-        * `event_name` - The name of the event
-        * `contract_address` - The address of the contract
-        * `event_topics` - The topics of the event
-        * `event_data` - The data of the event
-        * `decoded_data` - The decoded data of the event
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns decoded events in the last `lookback` blocks for the contract.$$
+    COMMENT = $$Returns the latest decoded events emitted by a contract within the last `lookback` blocks. Submit missing ABIs [here](https://science.flipsidecrypto.xyz/abi-requestor/). *Please note there are RPC limitations on this method.*$$
   sql: |
     {{ evm_latest_contract_events_decoded_si(schema,  blockchain, network) | indent(4) -}}
 
@@ -557,24 +355,11 @@
     - [lookback, INTEGER, The number of blocks to look back. Please note there are RPC limitations on this method.]
   return_type:
     - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, event_name STRING, contract_address STRING, event_topics ARRAY, event_data STRING, decoded_data OBJECT)"
-    - |
-        The table has the following columns:
-        * `blockchain` - The blockchain
-        * `tx_hash` - The transaction hash
-        * `block_number` - The block number
-        * `event_index` - The index of the event in the transaction
-        * `event_name` - The name of the event
-        * `contract_address` - The address of the contract
-        * `event_topics` - The topics of the event
-        * `event_data` - The data of the event
-        * `decoded_data` - The decoded data of the event
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns decoded events in the last `lookback` blocks for the contracts.$$
+    COMMENT = $$Returns the latest decoded events emitted by multiple contracts within the last `lookback` blocks. Submit missing ABIs [here](https://science.flipsidecrypto.xyz/abi-requestor/). *Please note there are RPC limitations on this method.* $$
   sql: |
     {{ evm_latest_contract_events_decoded_ai(schema,  blockchain, network) | indent(4) -}}
 {%- endmacro -%}
-
-
