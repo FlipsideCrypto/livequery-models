@@ -1,7 +1,8 @@
-{% macro evm_latest_native_balance_string(schema, blockchain) %}
+{% macro evm_latest_native_balance_string(schema, blockchain, network) %}
 SELECT
-    lower(wallet) AS wallet_address,
     '{{blockchain}}' AS blockchain,
+    '{{network}}' AS network,
+    lower(wallet) AS wallet_address,
     CASE
         WHEN '{{blockchain}}' ILIKE 'avalanche%' THEN 'AVAX'
         WHEN '{{blockchain}}' ILIKE 'polygon%' THEN 'MATIC'
@@ -18,7 +19,7 @@ SELECT
     (raw_balance / POW(10,18))::float AS balance
 {% endmacro %}
 
-{% macro evm_latest_native_balance_array(schema, blockchain) %}
+{% macro evm_latest_native_balance_array(schema, blockchain, network) %}
 WITH address_inputs AS (
     SELECT wallets AS wallet_array
 ),
@@ -33,8 +34,9 @@ node_call AS (
     FROM flat_addresses
 )
 SELECT
-    wallet_address,
     '{{blockchain}}' AS blockchain,
+    '{{network}}' AS network,
+    wallet_address,
     CASE
         WHEN '{{blockchain}}' ILIKE 'avalanche%' THEN 'AVAX'
         WHEN '{{blockchain}}' ILIKE 'polygon%' THEN 'MATIC'
@@ -52,7 +54,7 @@ SELECT
 FROM node_call
 {% endmacro %}
 
-{% macro evm_latest_token_balance_ss(schema, blockchain) %}
+{% macro evm_latest_token_balance_ss(schema, blockchain, network) %}
 WITH inputs AS (
      SELECT
         lower(token) AS token_address,
@@ -78,16 +80,17 @@ node_call AS (
     and blockchain = '{{blockchain}}'
 )
 SELECT
+    '{{blockchain}}' AS blockchain,
+    '{{network}}' AS network,
     wallet_address,
     token_address,
-    '{{blockchain}}' AS blockchain,
     symbol,
     raw_balance,
     balance
 FROM node_call
 {% endmacro %}
 
-{% macro evm_latest_token_balance_sa(schema, blockchain) %}
+{% macro evm_latest_token_balance_sa(schema, blockchain, network) %}
 WITH inputs AS (
     SELECT tokens, wallet
 ),
@@ -118,16 +121,17 @@ final AS (
     and blockchain = '{{blockchain}}'
 )
 SELECT
+    '{{blockchain}}' AS blockchain,
+    '{{network}}' AS network,
     wallet_address,
     token_address,
-    '{{blockchain}}' AS blockchain,
     symbol,
     raw_balance,
     balance
 FROM final
 {% endmacro %}
 
-{% macro evm_latest_token_balance_as(schema, blockchain) %}
+{% macro evm_latest_token_balance_as(schema, blockchain, network) %}
 WITH inputs AS (
     SELECT token, wallets
 ),
@@ -158,16 +162,17 @@ final AS (
     and blockchain = '{{blockchain}}'
 )
 SELECT
+    '{{blockchain}}' AS blockchain,
+    '{{network}}' AS network,
     wallet_address,
     token_address,
-    '{{blockchain}}' AS blockchain,
     symbol,
     raw_balance,
     balance
 FROM final
 {% endmacro %}
 
-{% macro evm_latest_token_balance_aa(schema, blockchain) %}
+{% macro evm_latest_token_balance_aa(schema, blockchain, network) %}
 WITH inputs AS (
     SELECT tokens, wallets
 ),
@@ -200,16 +205,17 @@ final AS (
     and blockchain = '{{blockchain}}'
 )
 SELECT
+    '{{blockchain}}' AS blockchain,
+    '{{network}}' AS network,
     wallet_address,
     token_address,
-    '{{blockchain}}' AS blockchain,
     symbol,
     raw_balance,
     balance
 FROM final
 {% endmacro %}
 
-{% macro evm_historical_token_balance_ssi(schema, blockchain) %}
+{% macro evm_historical_token_balance_ssi(schema, blockchain, network) %}
 WITH inputs AS (
     SELECT
         LOWER(token) AS token_address,
@@ -236,9 +242,10 @@ WITH inputs AS (
     AND blockchain = '{{blockchain}}'
 )
 SELECT
+    '{{blockchain}}' AS blockchain,
+    '{{network}}' AS network,
     wallet_address,
     token_address,
-    '{{blockchain}}' AS blockchain,
     symbol,
     block_number,
     raw_balance,
@@ -246,7 +253,7 @@ SELECT
 FROM final
 {% endmacro %}
 
-{% macro evm_historical_token_balance_ssa(schema, blockchain) %}
+{% macro evm_historical_token_balance_ssa(schema, blockchain, network) %}
 WITH block_inputs AS (
     SELECT block_numbers
 ),
@@ -282,9 +289,10 @@ final AS (
     AND blockchain = '{{blockchain}}'
 )
 SELECT
+    '{{blockchain}}' AS blockchain,
+    '{{network}}' AS network,
     wallet_address,
     token_address,
-    '{{blockchain}}' AS blockchain,
     symbol,
     block_number,
     raw_balance,
@@ -292,7 +300,7 @@ SELECT
 FROM final
 {% endmacro %}
 
-{% macro evm_historical_token_balance_asi(schema, blockchain) %}
+{% macro evm_historical_token_balance_asi(schema, blockchain, network) %}
 WITH wallet_inputs AS (
     SELECT wallets
 ),
@@ -328,9 +336,10 @@ final AS (
     AND blockchain = '{{blockchain}}'
 )
 SELECT
+    '{{blockchain}}' AS blockchain,
+    '{{network}}' AS network,
     wallet_address,
     token_address,
-    '{{blockchain}}' AS blockchain,
     symbol,
     block_number,
     raw_balance,
@@ -338,7 +347,7 @@ SELECT
 FROM final
 {% endmacro %}
 
-{% macro evm_historical_token_balance_asa(schema, blockchain) %}
+{% macro evm_historical_token_balance_asa(schema, blockchain, network) %}
 WITH block_inputs AS (
     SELECT block_numbers
 ),
@@ -383,9 +392,10 @@ final AS (
     AND blockchain = '{{blockchain}}'
 )
 SELECT
+    '{{blockchain}}' AS blockchain,
+    '{{network}}' AS network,
     wallet_address,
     token_address,
-    '{{blockchain}}' AS blockchain,
     symbol,
     block_number,
     raw_balance,
@@ -393,7 +403,7 @@ SELECT
 FROM final
 {% endmacro %}
 
-{% macro evm_historical_token_balance_sai(schema, blockchain) %}
+{% macro evm_historical_token_balance_sai(schema, blockchain, network) %}
 WITH token_inputs AS (
     SELECT tokens
 ),
@@ -430,9 +440,10 @@ final AS (
     AND blockchain = '{{blockchain}}'
 )
 SELECT
+    '{{blockchain}}' AS blockchain,
+    '{{network}}' AS network,
     wallet_address,
     token_address,
-    '{{blockchain}}' AS blockchain,
     symbol,
     block_number,
     raw_balance,
@@ -440,7 +451,7 @@ SELECT
 FROM final
 {% endmacro %}
 
-{% macro evm_historical_token_balance_saa(schema, blockchain) %}
+{% macro evm_historical_token_balance_saa(schema, blockchain, network) %}
 WITH block_inputs AS (
     SELECT block_numbers
 ),
@@ -486,9 +497,10 @@ final AS (
     AND blockchain = '{{blockchain}}'
 )
 SELECT
+    '{{blockchain}}' AS blockchain,
+    '{{network}}' AS network,
     wallet_address,
     token_address,
-    '{{blockchain}}' AS blockchain,
     symbol,
     block_number,
     raw_balance,
@@ -496,7 +508,7 @@ SELECT
 FROM final
 {% endmacro %}
 
-{% macro evm_historical_token_balance_aai(schema, blockchain) %}
+{% macro evm_historical_token_balance_aai(schema, blockchain, network) %}
 WITH token_inputs AS (
     SELECT tokens
 ),
@@ -542,9 +554,10 @@ final AS (
     AND blockchain = '{{blockchain}}'
 )
 SELECT
+    '{{blockchain}}' AS blockchain,
+    '{{network}}' AS network,
     wallet_address,
     token_address,
-    '{{blockchain}}' AS blockchain,
     symbol,
     block_number,
     raw_balance,
@@ -552,7 +565,7 @@ SELECT
 FROM final
 {% endmacro %}
 
-{% macro evm_historical_token_balance_aaa(schema, blockchain) %}
+{% macro evm_historical_token_balance_aaa(schema, blockchain, network) %}
 WITH block_inputs AS (
     SELECT block_numbers
 ),
@@ -607,9 +620,10 @@ final AS (
     AND blockchain = '{{blockchain}}'
 )
 SELECT
+    '{{blockchain}}' AS blockchain,
+    '{{network}}' AS network,
     wallet_address,
     token_address,
-    '{{blockchain}}' AS blockchain,
     symbol,
     block_number,
     raw_balance,
@@ -617,10 +631,11 @@ SELECT
 FROM final
 {% endmacro %}
 
-{% macro evm_historical_native_balance_si(schema, blockchain) %}
+{% macro evm_historical_native_balance_si(schema, blockchain, network) %}
 SELECT
-    lower(wallet) AS wallet_address,
     '{{blockchain}}' AS blockchain,
+    '{{network}}' AS network,
+    lower(wallet) AS wallet_address,
     CASE
         WHEN '{{blockchain}}' ILIKE 'avalanche%' THEN 'AVAX'
         WHEN '{{blockchain}}' ILIKE 'polygon%' THEN 'MATIC'
@@ -638,7 +653,7 @@ SELECT
     (raw_balance / POW(10,18))::float AS balance
 {% endmacro %}
 
-{% macro evm_historical_native_balance_sa(schema, blockchain) %}
+{% macro evm_historical_native_balance_sa(schema, blockchain, network) %}
 WITH block_inputs AS (
     SELECT block_numbers
 ),
@@ -667,8 +682,9 @@ inputs AS (
     FROM blocks
 )
 SELECT
-    wallet_address,
     '{{blockchain}}' AS blockchain,
+    '{{network}}' AS network,
+    wallet_address,
     symbol,
     block_number,
     raw_balance,
@@ -676,7 +692,7 @@ SELECT
 FROM inputs
 {% endmacro %}
 
-{% macro evm_historical_native_balance_ai(schema, blockchain) %}
+{% macro evm_historical_native_balance_ai(schema, blockchain, network) %}
 WITH wallet_inputs AS (
     SELECT wallets
 ),
@@ -705,15 +721,17 @@ inputs AS (
     FROM flat_wallets
 )
 SELECT
-    wallet_address,
     '{{blockchain}}' AS blockchain,
+    '{{network}}' AS network,
+    wallet_address,
     symbol,
     block_number,
     raw_balance,
     (raw_balance::int / pow(10,18)) ::float as balance
 FROM inputs
 {% endmacro %}
-{% macro evm_historical_native_balance_aa(schema, blockchain) %}
+
+{% macro evm_historical_native_balance_aa(schema, blockchain, network) %}
     WITH inputs AS (
         SELECT wallets, block_numbers
     ),
@@ -743,8 +761,9 @@ FROM inputs
         FROM flat_wallets
     )
     SELECT
-        wallet_address,
         '{{blockchain}}' AS blockchain,
+        '{{network}}' AS network,
+        wallet_address,
         symbol,
         block_number,
         raw_balance,
@@ -752,7 +771,7 @@ FROM inputs
     FROM final
 {% endmacro %}
 
-{% macro evm_latest_contract_events_s(schema, blockchain) %}
+{% macro evm_latest_contract_events_s(schema, blockchain, network) %}
     WITH chainhead AS (
         SELECT
             {{ schema }}.rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
@@ -781,6 +800,7 @@ FROM inputs
     )
     SELECT
         '{{blockchain}}' AS blockchain,
+        '{{network}}' AS network,
         tx_hash,
         block_number,
         event_index,
@@ -790,7 +810,7 @@ FROM inputs
     FROM node_flat
 {% endmacro %}
 
-{% macro evm_latest_contract_events_si(schema, blockchain) %}
+{% macro evm_latest_contract_events_si(schema, blockchain, network) %}
     WITH chainhead AS (
         SELECT
             {{ schema }}.rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
@@ -819,6 +839,7 @@ FROM inputs
     )
     SELECT
         '{{blockchain}}' AS blockchain,
+        '{{network}}' AS network,
         tx_hash,
         block_number,
         event_index,
@@ -828,7 +849,7 @@ FROM inputs
     FROM node_flat
 {% endmacro %}
 
-{% macro evm_latest_contract_events_a(schema, blockchain) %}
+{% macro evm_latest_contract_events_a(schema, blockchain, network) %}
     WITH chainhead AS (
         SELECT
             {{ schema }}.rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
@@ -860,6 +881,7 @@ FROM inputs
     )
     SELECT
         '{{blockchain}}' AS blockchain,
+        '{{network}}' AS network,
         tx_hash,
         block_number,
         event_index,
@@ -869,7 +891,7 @@ FROM inputs
     FROM node_flat
 {% endmacro %}
 
-{% macro evm_latest_contract_events_ai(schema, blockchain) %}
+{% macro evm_latest_contract_events_ai(schema, blockchain, network) %}
     WITH chainhead AS (
         SELECT
             {{schema }}.rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
@@ -901,6 +923,7 @@ FROM inputs
     )
     SELECT
         '{{blockchain}}' AS blockchain,
+        '{{network}}' AS network,
         tx_hash,
         block_number,
         event_index,
@@ -910,7 +933,7 @@ FROM inputs
     FROM node_flat
 {% endmacro %}
 
-{% macro evm_latest_contract_events_decoded_s(schema, blockchain) %}
+{% macro evm_latest_contract_events_decoded_s(schema, blockchain, network) %}
 WITH inputs AS (
     SELECT lower(address::STRING) AS contract_address
 ),
@@ -1014,6 +1037,7 @@ final AS (
 )
 SELECT
     '{{blockchain}}' AS blockchain,
+    '{{network}}' AS network,
     n.tx_hash,
     n.block_number,
     n.event_index,
@@ -1029,7 +1053,7 @@ and n.tx_hash = f.tx_hash
 and n.event_index = f.event_index
 {% endmacro %}
 
-{% macro evm_latest_contract_events_decoded_si(schema, blockchain) %}
+{% macro evm_latest_contract_events_decoded_si(schema, blockchain, network) %}
 WITH inputs AS (
     SELECT lower(address::STRING) AS contract_address
 ),
@@ -1133,6 +1157,7 @@ final AS (
 )
 SELECT
     '{{blockchain}}' AS blockchain,
+    '{{network}}' AS network,
     n.tx_hash,
     n.block_number,
     n.event_index,
@@ -1148,7 +1173,7 @@ and n.tx_hash = f.tx_hash
 and n.event_index = f.event_index
 {% endmacro %}
 
-{% macro evm_latest_contract_events_decoded_a(schema, blockchain) %}
+{% macro evm_latest_contract_events_decoded_a(schema, blockchain, network) %}
 WITH base AS (SELECT addresses),
 inputs AS (
     SELECT lower(value::STRING) AS contract_address
@@ -1254,6 +1279,7 @@ final AS (
 )
 SELECT
     '{{blockchain}}' AS blockchain,
+    '{{network}}' AS network,
     n.tx_hash,
     n.block_number,
     n.event_index,
@@ -1269,7 +1295,7 @@ and n.tx_hash = f.tx_hash
 and n.event_index = f.event_index
 {% endmacro %}
 
-{% macro evm_latest_contract_events_decoded_ai(schema, blockchain) %}
+{% macro evm_latest_contract_events_decoded_ai(schema, blockchain, network) %}
 WITH base AS (SELECT addresses),
 inputs AS (
     SELECT lower(value::STRING) AS contract_address
@@ -1375,6 +1401,7 @@ final AS (
 )
 SELECT
     '{{blockchain}}' AS blockchain,
+    '{{network}}' AS network,
     n.tx_hash,
     n.block_number,
     n.event_index,
