@@ -75,7 +75,7 @@ node_call AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         inputs
-    LEFT JOIN {{ source('crosschain', 'dim_contracts') }}
+    LEFT JOIN {{ ref('_internal__contracts_map') }}
     ON token_address = address
     and blockchain = '{{blockchain}}'
 )
@@ -116,7 +116,7 @@ final AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         flat_rows
-    LEFT JOIN {{ source('crosschain', 'dim_contracts') }} 
+    LEFT JOIN {{ ref('_internal__contracts_map') }} 
     ON token_address = address
     and blockchain = '{{blockchain}}'
 )
@@ -157,7 +157,7 @@ final AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         flat_rows
-    LEFT JOIN {{ source('crosschain', 'dim_contracts') }} 
+    LEFT JOIN {{ ref('_internal__contracts_map') }} 
     ON token_address = address
     and blockchain = '{{blockchain}}'
 )
@@ -200,7 +200,7 @@ final AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         flat_rows
-    LEFT JOIN {{ source('crosschain', 'dim_contracts') }} 
+    LEFT JOIN {{ ref('_internal__contracts_map') }} 
     ON token_address = address
     and blockchain = '{{blockchain}}'
 )
@@ -237,7 +237,7 @@ WITH inputs AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         inputs
-    LEFT JOIN {{ source('crosschain', 'dim_contracts') }}
+    LEFT JOIN {{ ref('_internal__contracts_map') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -284,7 +284,7 @@ final AS (
     FROM
         inputs
     CROSS JOIN blocks
-    LEFT JOIN {{ source('crosschain', 'dim_contracts') }}
+    LEFT JOIN {{ ref('_internal__contracts_map') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -331,7 +331,7 @@ final AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         inputs
-    LEFT JOIN {{ source('crosschain', 'dim_contracts') }}
+    LEFT JOIN {{ ref('_internal__contracts_map') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -387,7 +387,7 @@ final AS (
     FROM
         inputs
     CROSS JOIN blocks
-    LEFT JOIN {{ source('crosschain', 'dim_contracts') }}
+    LEFT JOIN {{ ref('_internal__contracts_map') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -435,7 +435,7 @@ final AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         inputs
-    LEFT JOIN {{ source('crosschain', 'dim_contracts') }}
+    LEFT JOIN {{ ref('_internal__contracts_map') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -492,7 +492,7 @@ final AS (
     FROM
         inputs
     CROSS JOIN blocks
-    LEFT JOIN {{ source('crosschain', 'dim_contracts') }}
+    LEFT JOIN {{ ref('_internal__contracts_map') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -549,7 +549,7 @@ final AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         inputs
-    LEFT JOIN {{ source('crosschain', 'dim_contracts') }}
+    LEFT JOIN {{ ref('_internal__contracts_map') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -615,7 +615,7 @@ final AS (
     FROM
         inputs
     CROSS JOIN blocks
-    LEFT JOIN {{ source('crosschain', 'dim_contracts') }}
+    LEFT JOIN {{ ref('_internal__contracts_map') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -774,13 +774,13 @@ FROM inputs
 {% macro evm_latest_contract_events_s(schema, blockchain, network) %}
     WITH chainhead AS (
         SELECT
-            {{ schema }}.rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
+            {{ schema }}.udf_rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
             CONCAT('0x', TRIM(TO_CHAR(utils.udf_hex_to_int(chainhead_hex) - 100, 'XXXXXXXXXX'))) AS from_block_hex
     ),
     node_call AS (
         SELECT
             lower(address) AS contract_address,
-            {{ schema }}.rpc_eth_get_logs(
+            {{ schema }}.udf_rpc_eth_get_logs(
                 OBJECT_CONSTRUCT('address', address, 'fromBlock', from_block_hex, 'toBlock', chainhead_hex)
             ) AS eth_getLogs
         FROM chainhead
@@ -813,13 +813,13 @@ FROM inputs
 {% macro evm_latest_contract_events_si(schema, blockchain, network) %}
     WITH chainhead AS (
         SELECT
-            {{ schema }}.rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
+            {{ schema }}.udf_rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
             CONCAT('0x', TRIM(TO_CHAR(utils.udf_hex_to_int(chainhead_hex) - lookback, 'XXXXXXXXXX'))) AS from_block_hex
     ),
     node_call AS (
         SELECT
             lower(address) AS contract_address,
-            {{ schema }}.rpc_eth_get_logs(
+            {{ schema }}.udf_rpc_eth_get_logs(
                 OBJECT_CONSTRUCT('address', address, 'fromBlock', from_block_hex, 'toBlock', chainhead_hex)
             ) AS eth_getLogs
         FROM chainhead
@@ -852,13 +852,13 @@ FROM inputs
 {% macro evm_latest_contract_events_a(schema, blockchain, network) %}
     WITH chainhead AS (
         SELECT
-            {{ schema }}.rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
+            {{ schema }}.udf_rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
             CONCAT('0x', TRIM(TO_CHAR(utils.udf_hex_to_int(chainhead_hex) - 100, 'XXXXXXXXXX'))) AS from_block_hex
     ),
     node_call AS (
         SELECT
             lower(address) AS contract_address,
-            {{ schema }}.rpc_eth_get_logs(
+            {{ schema }}.udf_rpc_eth_get_logs(
                 OBJECT_CONSTRUCT('address', address, 'fromBlock', from_block_hex, 'toBlock', chainhead_hex)
             ) AS eth_getLogs
         FROM (
@@ -894,13 +894,13 @@ FROM inputs
 {% macro evm_latest_contract_events_ai(schema, blockchain, network) %}
     WITH chainhead AS (
         SELECT
-            {{schema }}.rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
+            {{schema }}.udf_rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
             CONCAT('0x', TRIM(TO_CHAR(utils.udf_hex_to_int(chainhead_hex) - lookback, 'XXXXXXXXXX'))) AS from_block_hex
     ),
     node_call AS (
         SELECT
             lower(address) AS contract_address,
-            {{ schema }}.rpc_eth_get_logs(
+            {{ schema }}.udf_rpc_eth_get_logs(
                 OBJECT_CONSTRUCT('address', address, 'fromBlock', from_block_hex, 'toBlock', chainhead_hex)
             ) AS eth_getLogs
         FROM (
@@ -939,7 +939,7 @@ WITH inputs AS (
 ),
 chainhead AS (
     SELECT
-        {{ schema }}.rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
+        {{ schema }}.udf_rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
         CONCAT('0x', TRIM(TO_CHAR(utils.udf_hex_to_int(chainhead_hex) - 100, 'XXXXXXXXXX'))) AS from_block_hex
 ),
 abis AS (
@@ -949,7 +949,7 @@ abis AS (
         event_signature,
         abi
     FROM inputs
-    JOIN {{ source('crosschain', 'dim_evm_event_abis') }}
+    JOIN {{ ref('_internal__abi_map') }}
         ON lower(contract_address) = parent_contract_address
         AND blockchain = '{{blockchain}}'
     QUALIFY ROW_NUMBER() OVER (PARTITION BY contract_address, event_name ORDER BY end_block DESC) = 1
@@ -957,7 +957,7 @@ abis AS (
 node_call AS (
     SELECT
         inputs.contract_address,
-        {{ schema }}.rpc_eth_get_logs(
+        {{ schema }}.udf_rpc_eth_get_logs(
             OBJECT_CONSTRUCT('address', inputs.contract_address, 'fromBlock', from_block_hex, 'toBlock', chainhead_hex)
         ) AS eth_getLogs
     FROM inputs
@@ -1059,7 +1059,7 @@ WITH inputs AS (
 ),
 chainhead AS (
     SELECT
-        {{ schema }}.rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
+        {{ schema }}.udf_rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
         CONCAT('0x', TRIM(TO_CHAR(utils.udf_hex_to_int(chainhead_hex) - lookback, 'XXXXXXXXXX'))) AS from_block_hex
 ),
 abis AS (
@@ -1069,7 +1069,7 @@ abis AS (
         event_signature,
         abi
     FROM inputs
-    JOIN {{ source('crosschain', 'dim_evm_event_abis') }}
+    JOIN {{ ref('_internal__abi_map') }}
         ON lower(contract_address) = parent_contract_address
         AND blockchain = '{{blockchain}}'
     QUALIFY ROW_NUMBER() OVER (PARTITION BY contract_address, event_name ORDER BY end_block DESC) = 1
@@ -1077,7 +1077,7 @@ abis AS (
 node_call AS (
     SELECT
         inputs.contract_address,
-        {{ schema }}.rpc_eth_get_logs(
+        {{ schema }}.udf_rpc_eth_get_logs(
             OBJECT_CONSTRUCT('address', inputs.contract_address, 'fromBlock', from_block_hex, 'toBlock', chainhead_hex)
         ) AS eth_getLogs
     FROM inputs
@@ -1181,7 +1181,7 @@ inputs AS (
 ),
 chainhead AS (
     SELECT
-        {{ schema }}.rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
+        {{ schema }}.udf_rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
         CONCAT('0x', TRIM(TO_CHAR(utils.udf_hex_to_int(chainhead_hex) - 100, 'XXXXXXXXXX'))) AS from_block_hex
 ),
 abis AS (
@@ -1191,7 +1191,7 @@ abis AS (
         event_signature,
         abi
     FROM inputs
-    JOIN {{ source('crosschain', 'dim_evm_event_abis') }}
+    JOIN {{ ref('_internal__abi_map') }}
         ON lower(contract_address) = parent_contract_address
         AND blockchain = '{{blockchain}}'
     QUALIFY ROW_NUMBER() OVER (PARTITION BY contract_address, event_name ORDER BY end_block DESC) = 1
@@ -1199,7 +1199,7 @@ abis AS (
 node_call AS (
     SELECT
         inputs.contract_address,
-        {{ schema }}.rpc_eth_get_logs(
+        {{ schema }}.udf_rpc_eth_get_logs(
             OBJECT_CONSTRUCT('address', inputs.contract_address, 'fromBlock', from_block_hex, 'toBlock', chainhead_hex)
         ) AS eth_getLogs
     FROM inputs
@@ -1303,7 +1303,7 @@ inputs AS (
 ),
 chainhead AS (
     SELECT
-        {{ schema }}.rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
+        {{ schema }}.udf_rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
         CONCAT('0x', TRIM(TO_CHAR(utils.udf_hex_to_int(chainhead_hex) - lookback, 'XXXXXXXXXX'))) AS from_block_hex
 ),
 abis AS (
@@ -1313,7 +1313,7 @@ abis AS (
         event_signature,
         abi
     FROM inputs
-    JOIN {{ source('crosschain', 'dim_evm_event_abis') }}
+    JOIN {{ ref('_internal__abi_map') }}
         ON lower(contract_address) = parent_contract_address
         AND blockchain = '{{blockchain}}'
     QUALIFY ROW_NUMBER() OVER (PARTITION BY contract_address, event_name ORDER BY end_block DESC) = 1
@@ -1321,7 +1321,7 @@ abis AS (
 node_call AS (
     SELECT
         inputs.contract_address,
-        {{ schema }}.rpc_eth_get_logs(
+        {{ schema }}.udf_rpc_eth_get_logs(
             OBJECT_CONSTRUCT('address', inputs.contract_address, 'fromBlock', from_block_hex, 'toBlock', chainhead_hex)
         ) AS eth_getLogs
     FROM inputs
