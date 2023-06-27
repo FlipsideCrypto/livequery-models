@@ -8,7 +8,7 @@
   signature:
     - [wallet, STRING, The address to get the balance of at the latest block]
   return_type:
-    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, symbol STRING, raw_balance STRING, balance FLOAT)"
+    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, symbol STRING, raw_balance STRING, balance FLOAT, error STRING)"
     - |
         The table has the following columns:
         * `blockchain` - The blockchain
@@ -29,7 +29,7 @@
   signature:
     - [wallets, ARRAY, An array of addresses string to get the balance of at the latest block]
   return_type:
-    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, symbol STRING, raw_balance STRING, balance FLOAT)"
+    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, symbol STRING, raw_balance STRING, balance FLOAT, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -43,7 +43,7 @@
     - [wallet, STRING, The address to get the balance of at the latest block]
     - [token, STRING, The address of the token to get the balance of] 
   return_type:
-    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, raw_balance STRING, balance FLOAT)"
+    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, raw_balance STRING, balance FLOAT, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -57,7 +57,7 @@
     - [wallet, STRING, The address to get the balance of at the latest block]
     - [tokens, ARRAY, An array of address strings of the tokens to get the balance of] 
   return_type:
-    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, raw_balance STRING, balance FLOAT)"
+    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, raw_balance STRING, balance FLOAT, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -71,7 +71,7 @@
     - [wallets, ARRAY, An array of addresses string to get the balance of at the latest block]
     - [token, STRING, The address of the token to get the balance of]
   return_type:
-    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, raw_balance STRING, balance FLOAT)"
+    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, raw_balance STRING, balance FLOAT, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -85,7 +85,7 @@
     - [wallets, ARRAY, An array of addresses string to get the balance of at the latest block]
     - [tokens, ARRAY, An array of address strings of the tokens to get the balance of] 
   return_type:
-    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, raw_balance STRING, balance FLOAT)"
+    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, raw_balance STRING, balance FLOAT, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -100,7 +100,7 @@
     - [token, STRING, The address of the token to get the balance of]
     - [block_number, INTEGER, The block number to get the balance at]
   return_type:
-    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT)"
+    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -115,7 +115,7 @@
     - [token, STRING, The address of the token to get the balance of]
     - [block_numbers, ARRAY, The block numbers to get the balance at]
   return_type:
-    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT)"
+    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -130,7 +130,7 @@
     - [token, STRING, The address of the token to get the balance of]
     - [block_number, INTEGER, The block number to get the balance at]
   return_type:
-    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT)"
+    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -145,7 +145,7 @@
     - [tokens, ARRAY, An array of address strings of the tokens to get the balance of]
     - [block_number, INTEGER, The block number to get the balance at]
   return_type:
-    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT)"
+    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -160,7 +160,7 @@
     - [tokens, ARRAY, An array of address strings of the tokens to get the balance of]
     - [block_numbers, ARRAY, The block numbers to get the balance at]
   return_type:
-    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT)"
+    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -175,7 +175,7 @@
     - [tokens, ARRAY, An array of address strings of the tokens to get the balance of]
     - [block_number, INTEGER, The block number to get the balance at]
   return_type:
-    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT)"
+    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -190,7 +190,7 @@
     - [tokens, ARRAY, An array of address strings of the tokens to get the balance of]
     - [block_numbers, ARRAY, The block numbers to get the balance at]
   return_type:
-    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT)"
+    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -204,7 +204,7 @@
     - [wallet, STRING, The address to get the balance of at the input block]
     - [block_number, INTEGER, The block number to get the balance at]
   return_type:
-    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT)"
+    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -218,7 +218,7 @@
     - [wallet, STRING, The address to get the balance of at the input block]
     - [block_numbers, ARRAY, The block numbers to get the balance at]
   return_type:
-    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT)"
+    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -232,7 +232,7 @@
     - [wallets, ARRAY, An array of address strings to get the balance of at the input block]
     - [block_number, INTEGER, The block number to get the balance at]
   return_type:
-    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT)"
+    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -246,7 +246,7 @@
     - [wallets, ARRAY, An array of address strings to get the balance of at the input block]
     - [block_numbers, ARRAY, The block numbers to get the balance at]
   return_type:
-    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT)"
+    - "TABLE(blockchain STRING, network STRING, wallet_address STRING, symbol STRING, block_number INTEGER, raw_balance STRING, balance FLOAT, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -259,7 +259,7 @@
   signature:
     - [address, STRING, The address of the contract to get the events of]
   return_type:
-    - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, contract_address STRING, event_topics ARRAY, event_data STRING)"
+    - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, contract_address STRING, event_topics ARRAY, event_data STRING, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -273,7 +273,7 @@
     - [address, STRING, The address of the contract to get the events of]
     - [lookback, INTEGER, The number of blocks to look back. Please note there are RPC limitations on this method.]
   return_type:
-    - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, contract_address STRING, event_topics ARRAY, event_data STRING)"
+    - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, contract_address STRING, event_topics ARRAY, event_data STRING, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -286,7 +286,7 @@
   signature:
     - [addresses, ARRAY, The addresses of the contracts to get the events of]
   return_type:
-    - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, contract_address STRING, event_topics ARRAY, event_data STRING)"
+    - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, contract_address STRING, event_topics ARRAY, event_data STRING, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -300,7 +300,7 @@
     - [addresses, ARRAY, The addresses of the contracts to get the events of]
     - [lookback, INTEGER, The number of blocks to look back. Please note there are RPC limitations on this method.]
   return_type:
-    - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, contract_address STRING, event_topics ARRAY, event_data STRING)"
+    - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, contract_address STRING, event_topics ARRAY, event_data STRING, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -313,7 +313,7 @@
   signature:
     - [address, STRING, The address of the contract to get the decoded events of]
   return_type:
-    - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, event_name STRING, contract_address STRING, event_topics ARRAY, event_data STRING, decoded_data OBJECT)"
+    - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, event_name STRING, contract_address STRING, event_topics ARRAY, event_data STRING, decoded_data OBJECT, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -326,7 +326,7 @@
   signature:
     - [addresses, ARRAY, The addresses of the contracts to get the decoded events of]
   return_type:
-    - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, event_name STRING, contract_address STRING, event_topics ARRAY, event_data STRING, decoded_data OBJECT)"
+    - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, event_name STRING, contract_address STRING, event_topics ARRAY, event_data STRING, decoded_data OBJECT, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -340,7 +340,7 @@
     - [address, STRING, The address of the contract to get the decoded events of]
     - [lookback, INTEGER, The number of blocks to look back. Please note there are RPC limitations on this method.]
   return_type:
-    - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, event_name STRING, contract_address STRING, event_topics ARRAY, event_data STRING, decoded_data OBJECT)"
+    - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, event_name STRING, contract_address STRING, event_topics ARRAY, event_data STRING, decoded_data OBJECT, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -354,7 +354,7 @@
     - [addresses, ARRAY, The addresses of the contracts to get the decoded events of]
     - [lookback, INTEGER, The number of blocks to look back. Please note there are RPC limitations on this method.]
   return_type:
-    - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, event_name STRING, contract_address STRING, event_topics ARRAY, event_data STRING, decoded_data OBJECT)"
+    - "TABLE(blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, event_name STRING, contract_address STRING, event_topics ARRAY, event_data STRING, decoded_data OBJECT, error STRING)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT

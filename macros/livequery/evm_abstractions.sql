@@ -16,7 +16,8 @@ SELECT
         WHEN '{{blockchain}}' ILIKE 'harmony%' THEN 'ONE'
     END AS symbol,
     utils.udf_hex_to_int({{schema}}.udf_rpc_eth_get_balance(wallet_address,'latest')::string) AS raw_balance,
-    (raw_balance / POW(10,18))::float AS balance
+    (raw_balance / POW(10,18))::float AS balance,
+    case when raw_balance is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
 {% endmacro %}
 
 {% macro evm_latest_native_balance_array(schema, blockchain, network) %}
@@ -50,7 +51,8 @@ SELECT
         WHEN '{{blockchain}}' ILIKE 'harmony%' THEN 'ONE'
     END AS symbol,
     utils.udf_hex_to_int(hex_balance) AS raw_balance,
-    (raw_balance / POW(10,18))::FLOAT AS balance
+    (raw_balance / POW(10,18))::FLOAT AS balance,
+    case when raw_balance is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
 FROM node_call
 {% endmacro %}
 
@@ -86,7 +88,8 @@ SELECT
     token_address,
     symbol,
     raw_balance,
-    balance
+    balance,
+    case when raw_balance is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
 FROM node_call
 {% endmacro %}
 
@@ -127,7 +130,8 @@ SELECT
     token_address,
     symbol,
     raw_balance,
-    balance
+    balance,
+    case when raw_balance is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
 FROM final
 {% endmacro %}
 
@@ -168,7 +172,8 @@ SELECT
     token_address,
     symbol,
     raw_balance,
-    balance
+    balance,
+    case when raw_balance is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
 FROM final
 {% endmacro %}
 
@@ -211,7 +216,8 @@ SELECT
     token_address,
     symbol,
     raw_balance,
-    balance
+    balance,
+    case when raw_balance is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
 FROM final
 {% endmacro %}
 
@@ -249,7 +255,8 @@ SELECT
     symbol,
     block_number,
     raw_balance,
-    balance
+    balance,
+    case when raw_balance is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
 FROM final
 {% endmacro %}
 
@@ -296,7 +303,8 @@ SELECT
     symbol,
     block_number,
     raw_balance,
-    balance
+    balance,
+    case when raw_balance is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
 FROM final
 {% endmacro %}
 
@@ -343,7 +351,8 @@ SELECT
     symbol,
     block_number,
     raw_balance,
-    balance
+    balance,
+    case when raw_balance is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
 FROM final
 {% endmacro %}
 
@@ -399,7 +408,8 @@ SELECT
     symbol,
     block_number,
     raw_balance,
-    balance
+    balance,
+    case when raw_balance is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
 FROM final
 {% endmacro %}
 
@@ -447,7 +457,8 @@ SELECT
     symbol,
     block_number,
     raw_balance,
-    balance
+    balance,
+    case when raw_balance is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
 FROM final
 {% endmacro %}
 
@@ -504,7 +515,8 @@ SELECT
     symbol,
     block_number,
     raw_balance,
-    balance
+    balance,
+    case when raw_balance is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
 FROM final
 {% endmacro %}
 
@@ -561,7 +573,8 @@ SELECT
     symbol,
     block_number,
     raw_balance,
-    balance
+    balance,
+    case when raw_balance is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
 FROM final
 {% endmacro %}
 
@@ -627,7 +640,8 @@ SELECT
     symbol,
     block_number,
     raw_balance,
-    balance
+    balance,
+    case when raw_balance is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
 FROM final
 {% endmacro %}
 
@@ -650,7 +664,8 @@ SELECT
     END AS symbol,
     block_number,
     utils.udf_hex_to_int({{schema}}.udf_rpc_eth_get_balance(wallet_address,CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))))::string) AS raw_balance,
-    (raw_balance / POW(10,18))::float AS balance
+    (raw_balance / POW(10,18))::float AS balance,
+    case when raw_balance is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
 {% endmacro %}
 
 {% macro evm_historical_native_balance_sa(schema, blockchain, network) %}
@@ -688,7 +703,8 @@ SELECT
     symbol,
     block_number,
     raw_balance,
-    (raw_balance::int / pow(10,18)) ::float as balance
+    (raw_balance::int / pow(10,18)) ::float as balance,
+    case when raw_balance is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
 FROM inputs
 {% endmacro %}
 
@@ -727,7 +743,8 @@ SELECT
     symbol,
     block_number,
     raw_balance,
-    (raw_balance::int / pow(10,18)) ::float as balance
+    (raw_balance::int / pow(10,18)) ::float as balance,
+    case when raw_balance is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
 FROM inputs
 {% endmacro %}
 
@@ -767,7 +784,8 @@ FROM inputs
         symbol,
         block_number,
         raw_balance,
-        (raw_balance::int / pow(10,18))::float as balance
+        (raw_balance::int / pow(10,18))::float as balance,
+        case when raw_balance is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
     FROM final
 {% endmacro %}
 
@@ -806,7 +824,8 @@ FROM inputs
         event_index,
         contract_address,
         event_topics,
-        event_data
+        event_data,
+        case when tx_hash is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
     FROM node_flat
 {% endmacro %}
 
@@ -845,7 +864,8 @@ FROM inputs
         event_index,
         contract_address,
         event_topics,
-        event_data
+        event_data,
+        case when tx_hash is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
     FROM node_flat
 {% endmacro %}
 
@@ -887,7 +907,8 @@ FROM inputs
         event_index,
         contract_address,
         event_topics,
-        event_data
+        event_data,
+        case when tx_hash is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
     FROM node_flat
 {% endmacro %}
 
@@ -929,7 +950,8 @@ FROM inputs
         event_index,
         contract_address,
         event_topics,
-        event_data
+        event_data,
+        case when tx_hash is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
     FROM node_flat
 {% endmacro %}
 
@@ -1045,7 +1067,8 @@ SELECT
     n.contract_address,
     n.event_topics,
     n.event_data,
-    f.decoded_flat AS decoded_data
+    f.decoded_flat AS decoded_data,
+    case when n.tx_hash is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
 FROM node_flat n
 left join final f
 on n.block_number = f.block_number
@@ -1165,7 +1188,8 @@ SELECT
     n.contract_address,
     n.event_topics,
     n.event_data,
-    f.decoded_flat AS decoded_data
+    f.decoded_flat AS decoded_data,
+    case when n.tx_hash is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
 FROM node_flat n
 left join final f
 on n.block_number = f.block_number
@@ -1287,7 +1311,8 @@ SELECT
     n.contract_address,
     n.event_topics,
     n.event_data,
-    f.decoded_flat AS decoded_data
+    f.decoded_flat AS decoded_data,
+    case when n.tx_hash is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
 FROM node_flat n
 left join final f
 on n.block_number = f.block_number
@@ -1409,7 +1434,8 @@ SELECT
     n.contract_address,
     n.event_topics,
     n.event_data,
-    f.decoded_flat AS decoded_data
+    f.decoded_flat AS decoded_data,
+    case when n.tx_hash is null then concat('No integration found for ','{{blockchain}}','_', '{{network}}') else null end as error
 FROM node_flat n
 left join final f
 on n.block_number = f.block_number
