@@ -19,6 +19,6 @@
             )::VARIANT:data AS data
     )
     SELECT
-        NULLIF(COALESCE(data:result, {'error':data:error}), '{}')::variant
+        COALESCE(data:result, {'error':data:error})
     FROM result
 {% endmacro -%}
