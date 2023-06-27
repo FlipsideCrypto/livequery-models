@@ -6,3 +6,5 @@ sources:
     schema: core
     tables:
       - name: dim_date_hours
+      - name: dim_contracts
+      - name: dim_evm_event_abis
