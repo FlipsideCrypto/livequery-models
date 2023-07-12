@@ -74,3 +74,20 @@ def get_simplified_signature(abi):
     signature_parts[-1] = signature_parts[-1].rstrip(",") + ")"
     return "".join(signature_parts)
 {% endmacro %}
+
+
+{% macro python_object_to_url_query_string() %}
+import urllib.parse
+import json
+
+def object_to_url_query_string(variant_object):
+    query_string = '?'
+    for key, value in variant_object.items():
+        if query_string != '?':
+            query_string += '&'
+        query_string += key + '=' + urllib.parse.quote(str(value))
+    if query_string == '?':
+        return ''
+    return query_string
+
+{% endmacro %}

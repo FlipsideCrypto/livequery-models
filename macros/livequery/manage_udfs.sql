@@ -98,3 +98,16 @@
         {{- create_or_drop_function_from_config(udf, drop_=drop_) -}}
     {%- endfor -%}
 {%- endmacro -%}
+
+{% macro crud_marketplace_udfs(config_func, schemaName, base_api_schema_name, drop_) %}
+{#
+    config_func: function that returns a list of udf configs
+    schemaName: the target schema to build the udfs
+    base_api_schema_name: the schema that contains base api functions
+    drop_: whether to drop or create the udfs
+ #}
+  {%-  set udfs = fromyaml(config_func(schemaName, base_api_schema_name)) -%}
+  {%- for udf in udfs -%}
+    {{- create_or_drop_function_from_config(udf, drop_=drop_) -}}
+  {%- endfor -%}
+{%- endmacro -%}
