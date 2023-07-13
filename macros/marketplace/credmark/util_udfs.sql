@@ -13,7 +13,7 @@
     COMMENT = $$Used to issue a 'GET' request to the Credmark API.$$
   sql: |
     SELECT
-      livequery.live.udf_api(
+      live.udf_api(
         'GET',
         concat(
            'https://gateway.credmark.com', PATH, 
@@ -34,7 +34,7 @@
     COMMENT = $$Used to issue a 'POST' request to the Credmark API.$$
   sql: |
     SELECT
-      livequery.live.udf_api(
+      live.udf_api(
         'POST',
         concat('https://gateway.credmark.com', PATH),
         {'Authorization': 'Bearer {API_KEY}'},
