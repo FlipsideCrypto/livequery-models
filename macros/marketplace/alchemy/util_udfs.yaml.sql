@@ -14,7 +14,7 @@
     COMMENT = $$Used to issue a 'GET' request to the Alchemy NFT API.$$
   sql: |
     SELECT 
-      livequery.live.udf_api(
+      live.udf_api(
         concat(
             'https://', NETWORK,'.g.alchemy.com/nft/v2/{',NETWORK,'}', PATH, 
             utils.udf_object_to_url_query_string(QUERY_ARGS)
@@ -33,7 +33,7 @@
     COMMENT = $$Used to issue a 'POST' request to the Alchemy NFT API.$$
   sql: |
     SELECT 
-      livequery.live.udf_api(
+      live.udf_api(
         'POST',
         concat('https://', NETWORK,'.g.alchemy.com/nft/v2/{',NETWORK,'}', PATH),
         {},
@@ -51,7 +51,7 @@
   options: |
     COMMENT = $$Used to issue an RPC call to Alchemy.$$
   sql: |
-    SELECT livequery.live.udf_api(
+    SELECT live.udf_api(
       'POST',
       concat('https://', NETWORK,'.g.alchemy.com/v2/{',NETWORK,'}'),
       {},

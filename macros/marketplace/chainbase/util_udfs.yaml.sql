@@ -13,7 +13,7 @@
     COMMENT = $$Used to issue a 'GET' request to the Chainbase API. [Chainbase Docs](https://docs.chainbase.com/reference/supported-chains)$$
   sql: |
     SELECT
-      livequery.live.udf_api(
+      live.udf_api(
         'GET',
         concat(
            'https://api.chainbase.online', PATH, 
@@ -34,7 +34,7 @@
     COMMENT = $$Used to issue a 'POST' request to the Chainbase API. [Chainbase Docs](https://docs.chainbase.com/reference/supported-chains)$$
   sql: |
     SELECT 
-      livequery.live.udf_api(
+      live.udf_api(
         'POST',
         concat('https://api.chainbase.online', PATH),
         {'x-api-key': '{API_KEY}'},
@@ -51,7 +51,7 @@
   options: |
     COMMENT = $$Used to issue an RPC call to Chainbase. [Chainbase Docs](https://docs.chainbase.com/reference/supported-chains)$$
   sql: |
-    SELECT livequery.live.udf_api(
+    SELECT live.udf_api(
       'POST',
       concat('https://api.chainbase.online'),
       {'x-api-key': '{API_KEY}'},

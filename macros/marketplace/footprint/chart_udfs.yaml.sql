@@ -12,7 +12,7 @@
     COMMENT = $$Returns your Footprint chart data by a chart ID. [Footprint docs here](https://docs.footprint.network/reference/post_dataapi-card-chart-id-query).$$
   sql: |
     SELECT 
-      livequery.live.udf_api(
+      live.udf_api(
         'POST',
         concat(
            'https://footprint.network/api/v1/dataApi/card/', CHART_ID, '/query'

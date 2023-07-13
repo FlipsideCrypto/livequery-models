@@ -13,7 +13,7 @@
     COMMENT = $$Used to issue a 'GET' request to the Chainbase API.$$
   sql: |
     SELECT 
-      livequery.live.udf_api(
+      live.udf_api(
         'GET',
         concat(
            'https://api.footprint.network/api', PATH, 
@@ -34,7 +34,7 @@
     COMMENT = $$Used to issue a 'POST' request to the Chainbase API.$$
   sql: |
     SELECT
-      livequery.live.udf_api(
+      live.udf_api(
         'POST',
         concat('https://api.footprint.network/api', PATH),
         {'api-key': '{API_KEY}'},
@@ -52,7 +52,7 @@
   options: |
     COMMENT = $$Used to issue an RPC call to Chainbase.$$
   sql: |
-    SELECT livequery.live.udf_api(
+    SELECT live.udf_api(
       'POST',
       concat('https://api.footprint.network/api'),
       {'api-key': '{API_KEY}'},

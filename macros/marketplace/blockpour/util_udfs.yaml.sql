@@ -13,7 +13,7 @@
     COMMENT = $$Used to issue a 'GET' request to the Blockpour API.$$
   sql: |
     SELECT 
-      livequery.live.udf_api(
+      live.udf_api(
         'GET',
         concat(
            'https://services.blockpour.com/api', PATH, 
@@ -34,7 +34,7 @@
     COMMENT = $$Used to issue a 'POST' request to the BlockPour API.$$
   sql: |
     SELECT 
-      livequery.live.udf_api(
+      live.udf_api(
         'POST',
         concat('https://services.blockpour.com/api', PATH),
         {'api-key': '{API_KEY}'},
