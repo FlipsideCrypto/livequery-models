@@ -43,6 +43,7 @@ on-run-end:
 
 vars:
   "dbt_date:time_zone": GMT
+  UPDATE_MARKETPLACE_UDFS: false
   UPDATE_UDFS_AND_SPS: false
   UPDATE_SNOWFLAKE_TAGS: true
   STREAMLINE_INVOKE_STREAMS: False
