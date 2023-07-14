@@ -98,7 +98,7 @@
   options: |
     NULL
     LANGUAGE PYTHON
-    RETURNS STRING
+    RETURNS NULL ON NULL INPUT
     IMMUTABLE
     RUNTIME_VERSION = '3.8'
     HANDLER = 'object_to_url_query_string'
