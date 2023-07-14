@@ -84,8 +84,26 @@
     {%- endif %}
 {% endmacro %}
 
-{% macro crud_udfs_in_schema(config_func, blockchain, network, drop_) %}
+{% macro crud_udfs(config_func, schema, drop_) %}
 {#
+    Generate create or drop statements for a list of udf configs for a given schema
+
+    config_func: function that returns a list of udf configs
+    drop_: whether to drop or create the udfs
+ #}
+    {% set udfs = fromyaml(config_func())%}
+    {%- for udf in udfs -%}
+        {% if udf["name"].split(".") | first == schema %}
+            CREATE SCHEMA IF NOT EXISTS {{ schema }};
+            {{- create_or_drop_function_from_config(udf, drop_=drop_) -}}
+        {%- endif -%}
+    {%- endfor -%}
+{%- endmacro -%}
+
+{% macro crud_udfs_by_chain(config_func, blockchain, network, drop_) %}
+{#
+    Generate create or drop statements for a list of udf configs for a given blockchain and network
+
     config_func: function that returns a list of udf configs
     blockchain: blockchain name
     network: network name
@@ -101,6 +119,8 @@
 
 {% macro crud_marketplace_udfs(config_func, schemaName, base_api_schema_name, drop_) %}
 {#
+    Generate create or drop statements for a list of udf configs for a given schema and api
+
     config_func: function that returns a list of udf configs
     schemaName: the target schema to build the udfs
     base_api_schema_name: the schema that contains base api functions
@@ -110,4 +130,33 @@
   {%- for udf in udfs -%}
     {{- create_or_drop_function_from_config(udf, drop_=drop_) -}}
   {%- endfor -%}
+{%- endmacro -%}
+
+{% macro ephemeral_deploy_core() %}
+{#
+    This macro is used to deploy functions using ephemeral models.
+    It should only be used within an ephemeral model.
+ #}
+    {% set sql %}
+        {{- crud_udfs(config_core_udfs, this.schema, var("DROP_UDFS_AND_SPS")) -}}
+    {%- endset -%}
+    {% if var("UPDATE_UDFS_AND_SPS") %}
+        {%- do run_query(sql) -%}
+    {%- endif -%}
+{%- endmacro -%}
+
+{% macro ephemeral_deploy() %}
+{#
+    This macro is used to deploy functions using ephemeral models.
+    It should only be used within an ephemeral model.
+ #}
+    {%- set blockchain = this.schema -%}
+    {%- set network = this.identifier -%}
+    {% set sql %}
+        {{- crud_udfs_by_chain(config_evm_rpc_primitives, blockchain, network, var("DROP_UDFS_AND_SPS")) -}}
+        {{- crud_udfs_by_chain(config_evm_high_level_abstractions, blockchain, network, var("DROP_UDFS_AND_SPS")) -}}
+    {%- endset -%}
+    {% if var("UPDATE_UDFS_AND_SPS") %}
+        {%- do run_query(sql) -%}
+    {%- endif -%}
 {%- endmacro -%}

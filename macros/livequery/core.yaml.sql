@@ -20,7 +20,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     IMMUTABLE
-    MEMOIZABLEg
+    MEMOIZABLE
   sql: |
     SELECT
       COALESCE(PARSE_JSON(GETVARIABLE('LIVEQUERY_CONTEXT')):userTier::STRING, 'community')
@@ -98,7 +98,6 @@
   options: |
     NULL
     LANGUAGE PYTHON
-    RETURNS STRING
     IMMUTABLE
     RUNTIME_VERSION = '3.8'
     HANDLER = 'object_to_url_query_string'

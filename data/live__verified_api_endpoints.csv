@@ -1,5 +1,5 @@
 Project,Endpoint,Type,Documentation
-Snapshot,https://hub.snapshot.org/graphql,GraphQL,https://docs.snapshot.org/graphql-api 
+Snapshot,https://hub.snapshot.org/graphql,GraphQL,https://docs.snapshot.org/graphql-api
 Defillama,https://api.llama.fi/,REST,https://defillama.com/docs/api
 Defillama,https://yields.llama.fi/,REST,https://defillama.com/docs/api
 Defillama,https://stablecoins.llama.fi/,REST,https://defillama.com/docs/api
