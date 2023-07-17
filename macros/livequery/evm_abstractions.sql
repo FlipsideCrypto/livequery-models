@@ -1,22 +1,21 @@
 {% macro evm_latest_native_balance_string(schema, blockchain, network) %}
+with base as (lower(wallet) AS wallet_address)
 SELECT
+    case 
+    when REGEXP_LIKE(wallet_address, '^0x([a-fA-F0-9]{40})$') 
+    then 'Success'
+    else 'Error - Invalid Input' 
+    end as status,
     '{{blockchain}}' AS blockchain,
     '{{network}}' AS network,
-    lower(wallet) AS wallet_address,
-    CASE
-        WHEN '{{blockchain}}' ILIKE 'avalanche%' THEN 'AVAX'
-        WHEN '{{blockchain}}' ILIKE 'polygon%' THEN 'MATIC'
-        WHEN '{{blockchain}}' ILIKE 'binance%' THEN 'BNB'
-        WHEN '{{blockchain}}' ILIKE 'gnosis%' THEN 'xDAI'
-        WHEN '{{blockchain}}' ILIKE 'ethereum%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'arbitrum%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'optimism%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'base%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'fantom%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'harmony%' THEN 'ONE'
-    END AS symbol,
+    wallet_address,
+    symbol,
     utils.udf_hex_to_int({{schema}}.udf_rpc_eth_get_balance(wallet_address,'latest')::string) AS raw_balance,
     (raw_balance / POW(10,18))::float AS balance
+FROM base
+LEFT JOIN {{ ref('_internal__contracts_map') }}
+on '{{blockchain}}' = blockchain
+and '{{network}}' = network
 {% endmacro %}
 
 {% macro evm_latest_native_balance_array(schema, blockchain, network) %}
@@ -34,24 +33,21 @@ node_call AS (
     FROM flat_addresses
 )
 SELECT
+    case 
+    when REGEXP_LIKE(wallet_address, '^0x([a-fA-F0-9]{40})$') 
+    then 'Success' 
+    else 'Error - Invalid Input' 
+    end as status,
     '{{blockchain}}' AS blockchain,
     '{{network}}' AS network,
     wallet_address,
-    CASE
-        WHEN '{{blockchain}}' ILIKE 'avalanche%' THEN 'AVAX'
-        WHEN '{{blockchain}}' ILIKE 'polygon%' THEN 'MATIC'
-        WHEN '{{blockchain}}' ILIKE 'binance%' THEN 'BNB'
-        WHEN '{{blockchain}}' ILIKE 'gnosis%' THEN 'xDAI'
-        WHEN '{{blockchain}}' ILIKE 'ethereum%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'arbitrum%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'optimism%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'base%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'fantom%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'harmony%' THEN 'ONE'
-    END AS symbol,
+    symbol,
     utils.udf_hex_to_int(hex_balance) AS raw_balance,
     (raw_balance / POW(10,18))::FLOAT AS balance
 FROM node_call
+LEFT JOIN {{ ref('_internal__contracts_map') }}
+on '{{blockchain}}' = blockchain
+and '{{network}}' = network
 {% endmacro %}
 
 {% macro evm_latest_token_balance_ss(schema, blockchain, network) %}
@@ -80,6 +76,12 @@ node_call AS (
     and blockchain = '{{blockchain}}'
 )
 SELECT
+    case 
+    when REGEXP_LIKE(wallet_address, '^0x([a-fA-F0-9]{40})$') 
+    and REGEXP_LIKE(token_address, '^0x([a-fA-F0-9]{40})$') 
+    then 'Success' 
+    else 'Error - Invalid Input' 
+    end as status,
     '{{blockchain}}' AS blockchain,
     '{{network}}' AS network,
     wallet_address,
@@ -121,6 +123,12 @@ final AS (
     and blockchain = '{{blockchain}}'
 )
 SELECT
+    case 
+    when REGEXP_LIKE(wallet_address, '^0x([a-fA-F0-9]{40})$') 
+    and REGEXP_LIKE(token_address, '^0x([a-fA-F0-9]{40})$') 
+    then 'Success' 
+    else 'Error - Invalid Input' 
+    end as status,
     '{{blockchain}}' AS blockchain,
     '{{network}}' AS network,
     wallet_address,
@@ -162,6 +170,12 @@ final AS (
     and blockchain = '{{blockchain}}'
 )
 SELECT
+    case 
+    when REGEXP_LIKE(wallet_address, '^0x([a-fA-F0-9]{40})$') 
+    and REGEXP_LIKE(token_address, '^0x([a-fA-F0-9]{40})$') 
+    then 'Success' 
+    else 'Error - Invalid Input' 
+    end as status,
     '{{blockchain}}' AS blockchain,
     '{{network}}' AS network,
     wallet_address,
@@ -205,6 +219,12 @@ final AS (
     and blockchain = '{{blockchain}}'
 )
 SELECT
+    case 
+    when REGEXP_LIKE(wallet_address, '^0x([a-fA-F0-9]{40})$') 
+    and REGEXP_LIKE(token_address, '^0x([a-fA-F0-9]{40})$') 
+    then 'Success' 
+    else 'Error - Invalid Input' 
+    end as status,
     '{{blockchain}}' AS blockchain,
     '{{network}}' AS network,
     wallet_address,
@@ -242,6 +262,13 @@ WITH inputs AS (
     AND blockchain = '{{blockchain}}'
 )
 SELECT
+    case 
+    when REGEXP_LIKE(wallet_address, '^0x([a-fA-F0-9]{40})$') 
+    and REGEXP_LIKE(token_address, '^0x([a-fA-F0-9]{40})$')
+    and is_integer(block_number)
+    then 'Success' 
+    else 'Error - Invalid Input' 
+    end as status,
     '{{blockchain}}' AS blockchain,
     '{{network}}' AS network,
     wallet_address,
@@ -289,6 +316,13 @@ final AS (
     AND blockchain = '{{blockchain}}'
 )
 SELECT
+    case 
+    when REGEXP_LIKE(wallet_address, '^0x([a-fA-F0-9]{40})$') 
+    and REGEXP_LIKE(token_address, '^0x([a-fA-F0-9]{40})$')
+    and is_integer(block_number)
+    then 'Success' 
+    else 'Error - Invalid Input' 
+    end as status,
     '{{blockchain}}' AS blockchain,
     '{{network}}' AS network,
     wallet_address,
@@ -336,6 +370,13 @@ final AS (
     AND blockchain = '{{blockchain}}'
 )
 SELECT
+    case 
+    when REGEXP_LIKE(wallet_address, '^0x([a-fA-F0-9]{40})$') 
+    and REGEXP_LIKE(token_address, '^0x([a-fA-F0-9]{40})$')
+    and is_integer(block_number)
+    then 'Success' 
+    else 'Error - Invalid Input' 
+    end as status,
     '{{blockchain}}' AS blockchain,
     '{{network}}' AS network,
     wallet_address,
@@ -392,6 +433,13 @@ final AS (
     AND blockchain = '{{blockchain}}'
 )
 SELECT
+    case 
+    when REGEXP_LIKE(wallet_address, '^0x([a-fA-F0-9]{40})$') 
+    and REGEXP_LIKE(token_address, '^0x([a-fA-F0-9]{40})$')
+    and is_integer(block_number)
+    then 'Success' 
+    else 'Error - Invalid Input' 
+    end as status,
     '{{blockchain}}' AS blockchain,
     '{{network}}' AS network,
     wallet_address,
@@ -440,6 +488,13 @@ final AS (
     AND blockchain = '{{blockchain}}'
 )
 SELECT
+    case 
+    when REGEXP_LIKE(wallet_address, '^0x([a-fA-F0-9]{40})$') 
+    and REGEXP_LIKE(token_address, '^0x([a-fA-F0-9]{40})$')
+    and is_integer(block_number)
+    then 'Success' 
+    else 'Error - Invalid Input' 
+    end as status,
     '{{blockchain}}' AS blockchain,
     '{{network}}' AS network,
     wallet_address,
@@ -497,6 +552,13 @@ final AS (
     AND blockchain = '{{blockchain}}'
 )
 SELECT
+    case 
+    when REGEXP_LIKE(wallet_address, '^0x([a-fA-F0-9]{40})$') 
+    and REGEXP_LIKE(token_address, '^0x([a-fA-F0-9]{40})$')
+    and is_integer(block_number)
+    then 'Success' 
+    else 'Error - Invalid Input' 
+    end as status,
     '{{blockchain}}' AS blockchain,
     '{{network}}' AS network,
     wallet_address,
@@ -554,6 +616,13 @@ final AS (
     AND blockchain = '{{blockchain}}'
 )
 SELECT
+    case 
+    when REGEXP_LIKE(wallet_address, '^0x([a-fA-F0-9]{40})$') 
+    and REGEXP_LIKE(token_address, '^0x([a-fA-F0-9]{40})$')
+    and is_integer(block_number)
+    then 'Success' 
+    else 'Error - Invalid Input' 
+    end as status,
     '{{blockchain}}' AS blockchain,
     '{{network}}' AS network,
     wallet_address,
@@ -620,6 +689,13 @@ final AS (
     AND blockchain = '{{blockchain}}'
 )
 SELECT
+    case 
+    when REGEXP_LIKE(wallet_address, '^0x([a-fA-F0-9]{40})$') 
+    and REGEXP_LIKE(token_address, '^0x([a-fA-F0-9]{40})$')
+    and is_integer(block_number)
+    then 'Success' 
+    else 'Error - Invalid Input' 
+    end as status,
     '{{blockchain}}' AS blockchain,
     '{{network}}' AS network,
     wallet_address,
@@ -632,25 +708,25 @@ FROM final
 {% endmacro %}
 
 {% macro evm_historical_native_balance_si(schema, blockchain, network) %}
+with base as (lower(wallet) AS wallet_address, CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))) as hex_block)
 SELECT
+    case 
+    when REGEXP_LIKE(wallet_address, '^0x([a-fA-F0-9]{40})$') 
+    and is_integer(block_number)
+    then 'Success' 
+    else 'Error - Invalid Input' 
+    end as status,
     '{{blockchain}}' AS blockchain,
     '{{network}}' AS network,
-    lower(wallet) AS wallet_address,
-    CASE
-        WHEN '{{blockchain}}' ILIKE 'avalanche%' THEN 'AVAX'
-        WHEN '{{blockchain}}' ILIKE 'polygon%' THEN 'MATIC'
-        WHEN '{{blockchain}}' ILIKE 'binance%' THEN 'BNB'
-        WHEN '{{blockchain}}' ILIKE 'gnosis%' THEN 'xDAI'
-        WHEN '{{blockchain}}' ILIKE 'ethereum%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'arbitrum%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'optimism%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'base%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'fantom%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'harmony%' THEN 'ONE'
-    END AS symbol,
+    wallet_address,
+    symbol,
     block_number,
-    utils.udf_hex_to_int({{schema}}.udf_rpc_eth_get_balance(wallet_address,CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))))::string) AS raw_balance,
+    utils.udf_hex_to_int({{schema}}.udf_rpc_eth_get_balance(wallet_address,hex_block)::string) AS raw_balance,
     (raw_balance / POW(10,18))::float AS balance
+FROM base 
+LEFT JOIN {{ ref('_internal__contracts_map') }}
+on '{{blockchain}}' = blockchain
+and '{{network}}' = network
 {% endmacro %}
 
 {% macro evm_historical_native_balance_sa(schema, blockchain, network) %}
@@ -665,23 +741,17 @@ blocks AS (
 inputs AS (
     SELECT
         wallet AS wallet_address,
-        CASE
-        WHEN '{{blockchain}}' ILIKE 'avalanche%' THEN 'AVAX'
-        WHEN '{{blockchain}}' ILIKE 'polygon%' THEN 'MATIC'
-        WHEN '{{blockchain}}' ILIKE 'binance%' THEN 'BNB'
-        WHEN '{{blockchain}}' ILIKE 'gnosis%' THEN 'xDAI'
-        WHEN '{{blockchain}}' ILIKE 'ethereum%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'arbitrum%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'optimism%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'base%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'fantom%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'harmony%' THEN 'ONE'
-        END AS symbol,
         block_number,
         utils.udf_hex_to_int({{schema}}.udf_rpc_eth_get_balance(wallet, CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX')))))::STRING AS raw_balance
     FROM blocks
 )
 SELECT
+    case 
+    when REGEXP_LIKE(wallet_address, '^0x([a-fA-F0-9]{40})$') 
+    and is_integer(block_number)
+    then 'Success' 
+    else 'Error - Invalid Input' 
+    end as status,
     '{{blockchain}}' AS blockchain,
     '{{network}}' AS network,
     wallet_address,
@@ -690,6 +760,9 @@ SELECT
     raw_balance,
     (raw_balance::int / pow(10,18)) ::float as balance
 FROM inputs
+LEFT JOIN {{ ref('_internal__contracts_map') }}
+on '{{blockchain}}' = blockchain
+and '{{network}}' = network
 {% endmacro %}
 
 {% macro evm_historical_native_balance_ai(schema, blockchain, network) %}
@@ -704,23 +777,17 @@ flat_wallets AS (
 inputs AS (
     SELECT
         wallet AS wallet_address,
-        CASE
-        WHEN '{{blockchain}}' ILIKE 'avalanche%' THEN 'AVAX'
-        WHEN '{{blockchain}}' ILIKE 'polygon%' THEN 'MATIC'
-        WHEN '{{blockchain}}' ILIKE 'binance%' THEN 'BNB'
-        WHEN '{{blockchain}}' ILIKE 'gnosis%' THEN 'xDAI'
-        WHEN '{{blockchain}}' ILIKE 'ethereum%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'arbitrum%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'optimism%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'base%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'fantom%' THEN 'ETH'
-        WHEN '{{blockchain}}' ILIKE 'harmony%' THEN 'ONE'
-        END AS symbol,
         block_number,
         utils.udf_hex_to_int({{schema}}.udf_rpc_eth_get_balance(wallet, CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX')))))::STRING AS raw_balance
     FROM flat_wallets
 )
 SELECT
+    case 
+    when REGEXP_LIKE(wallet_address, '^0x([a-fA-F0-9]{40})$') 
+    and is_integer(block_number)
+    then 'Success' 
+    else 'Error - Invalid Input' 
+    end as status,
     '{{blockchain}}' AS blockchain,
     '{{network}}' AS network,
     wallet_address,
@@ -729,6 +796,9 @@ SELECT
     raw_balance,
     (raw_balance::int / pow(10,18)) ::float as balance
 FROM inputs
+LEFT JOIN {{ ref('_internal__contracts_map') }}
+on '{{blockchain}}' = blockchain
+and '{{network}}' = network
 {% endmacro %}
 
 {% macro evm_historical_native_balance_aa(schema, blockchain, network) %}
@@ -744,23 +814,17 @@ FROM inputs
     final AS (
         SELECT
             wallet AS wallet_address,
-            CASE
-                WHEN '{{blockchain}}' ILIKE 'avalanche%' THEN 'AVAX'
-                WHEN '{{blockchain}}' ILIKE 'polygon%' THEN 'MATIC'
-                WHEN '{{blockchain}}' ILIKE 'binance%' THEN 'BNB'
-                WHEN '{{blockchain}}' ILIKE 'gnosis%' THEN 'xDAI'
-                WHEN '{{blockchain}}' ILIKE 'ethereum%' THEN 'ETH'
-                WHEN '{{blockchain}}' ILIKE 'arbitrum%' THEN 'ETH'
-                WHEN '{{blockchain}}' ILIKE 'optimism%' THEN 'ETH'
-                WHEN '{{blockchain}}' ILIKE 'base%' THEN 'ETH'
-                WHEN '{{blockchain}}' ILIKE 'fantom%' THEN 'ETH'
-                WHEN '{{blockchain}}' ILIKE 'harmony%' THEN 'ONE'
-            END AS symbol,
             block_number,
             utils.udf_hex_to_int({{schema}}.udf_rpc_eth_get_balance(wallet, CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX')))))::STRING AS raw_balance
         FROM flat_wallets
     )
     SELECT
+        case 
+        when REGEXP_LIKE(wallet_address, '^0x([a-fA-F0-9]{40})$') 
+        and is_integer(block_number)
+        then 'Success' 
+        else 'Error - Invalid Input' 
+        end as status,
         '{{blockchain}}' AS blockchain,
         '{{network}}' AS network,
         wallet_address,
@@ -769,6 +833,9 @@ FROM inputs
         raw_balance,
         (raw_balance::int / pow(10,18))::float as balance
     FROM final
+    LEFT JOIN {{ ref('_internal__contracts_map') }}
+    on '{{blockchain}}' = blockchain
+    and '{{network}}' = network
 {% endmacro %}
 
 {% macro evm_latest_contract_events_s(schema, blockchain, network) %}
@@ -799,6 +866,11 @@ FROM inputs
         LATERAL FLATTEN(input => eth_getLogs)
     )
     SELECT
+        case 
+        when REGEXP_LIKE(contract_address, '^0x([a-fA-F0-9]{40})$') 
+        then 'Success' 
+        else 'Error - Invalid Input' 
+        end as status,
         '{{blockchain}}' AS blockchain,
         '{{network}}' AS network,
         tx_hash,
@@ -838,6 +910,12 @@ FROM inputs
         LATERAL FLATTEN(input => eth_getLogs)
     )
     SELECT
+        case 
+        when REGEXP_LIKE(contract_address, '^0x([a-fA-F0-9]{40})$') 
+        and is_integer(lookback)
+        then 'Success' 
+        else 'Error - Invalid Input' 
+        end as status,
         '{{blockchain}}' AS blockchain,
         '{{network}}' AS network,
         tx_hash,
@@ -880,6 +958,11 @@ FROM inputs
         LATERAL FLATTEN(input => eth_getLogs)
     )
     SELECT
+        case 
+        when REGEXP_LIKE(contract_address, '^0x([a-fA-F0-9]{40})$') 
+        then 'Success' 
+        else 'Error - Invalid Input' 
+        end as status,
         '{{blockchain}}' AS blockchain,
         '{{network}}' AS network,
         tx_hash,
@@ -922,6 +1005,12 @@ FROM inputs
         LATERAL FLATTEN(input => eth_getLogs)
     )
     SELECT
+        case 
+        when REGEXP_LIKE(contract_address, '^0x([a-fA-F0-9]{40})$') 
+        and is_integer(lookback)
+        then 'Success' 
+        else 'Error - Invalid Input' 
+        end as status,
         '{{blockchain}}' AS blockchain,
         '{{network}}' AS network,
         tx_hash,
@@ -1036,6 +1125,11 @@ final AS (
         transformed
 )
 SELECT
+    case 
+    when REGEXP_LIKE(n.contract_address, '^0x([a-fA-F0-9]{40})$') then 'Success' 
+    when f.event_name is null then 'Error - Contract ABI Not Found, submit ABIs [here](https://science.flipsidecrypto.xyz/abi-requestor/)'
+    else 'Error - Invalid Input' 
+    end as status,
     '{{blockchain}}' AS blockchain,
     '{{network}}' AS network,
     n.tx_hash,
@@ -1060,7 +1154,8 @@ WITH inputs AS (
 chainhead AS (
     SELECT
         {{ schema }}.udf_rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
-        CONCAT('0x', TRIM(TO_CHAR(utils.udf_hex_to_int(chainhead_hex) - lookback, 'XXXXXXXXXX'))) AS from_block_hex
+        CONCAT('0x', TRIM(TO_CHAR(utils.udf_hex_to_int(chainhead_hex) - lookback, 'XXXXXXXXXX'))) AS from_block_hex,
+        lookback
 ),
 abis AS (
     SELECT
@@ -1079,13 +1174,15 @@ node_call AS (
         inputs.contract_address,
         {{ schema }}.udf_rpc_eth_get_logs(
             OBJECT_CONSTRUCT('address', inputs.contract_address, 'fromBlock', from_block_hex, 'toBlock', chainhead_hex)
-        ) AS eth_getLogs
+        ) AS eth_getLogs,
+        lookback
     FROM inputs
     JOIN chainhead ON 1=1
 ),
 node_flat AS (
     SELECT
         contract_address,
+        lookback,
         utils.udf_hex_to_int(value:blockNumber::STRING)::INT AS block_number,
         value:transactionHash::STRING AS tx_hash,
         utils.udf_hex_to_int(value:transactionIndex::STRING)::INT AS tx_index,
@@ -1156,6 +1253,11 @@ final AS (
         transformed
 )
 SELECT
+    case 
+    when REGEXP_LIKE(n.contract_address, '^0x([a-fA-F0-9]{40})$') and is_integer(n.lookback) then 'Success' 
+    when f.event_name is null then 'Error - Contract ABI Not Found, submit ABIs [here](https://science.flipsidecrypto.xyz/abi-requestor/)'
+    else 'Error - Invalid Input' 
+    end as status,
     '{{blockchain}}' AS blockchain,
     '{{network}}' AS network,
     n.tx_hash,
@@ -1278,6 +1380,11 @@ final AS (
         transformed
 )
 SELECT
+    case 
+    when REGEXP_LIKE(n.contract_address, '^0x([a-fA-F0-9]{40})$') then 'Success' 
+    when f.event_name is null then 'Error - Contract ABI Not Found, submit ABIs [here](https://science.flipsidecrypto.xyz/abi-requestor/)'
+    else 'Error - Invalid Input' 
+    end as status,
     '{{blockchain}}' AS blockchain,
     '{{network}}' AS network,
     n.tx_hash,
@@ -1304,7 +1411,8 @@ inputs AS (
 chainhead AS (
     SELECT
         {{ schema }}.udf_rpc('eth_blockNumber', [])::STRING AS chainhead_hex,
-        CONCAT('0x', TRIM(TO_CHAR(utils.udf_hex_to_int(chainhead_hex) - lookback, 'XXXXXXXXXX'))) AS from_block_hex
+        CONCAT('0x', TRIM(TO_CHAR(utils.udf_hex_to_int(chainhead_hex) - lookback, 'XXXXXXXXXX'))) AS from_block_hex,
+        lookback
 ),
 abis AS (
     SELECT
@@ -1323,13 +1431,15 @@ node_call AS (
         inputs.contract_address,
         {{ schema }}.udf_rpc_eth_get_logs(
             OBJECT_CONSTRUCT('address', inputs.contract_address, 'fromBlock', from_block_hex, 'toBlock', chainhead_hex)
-        ) AS eth_getLogs
+        ) AS eth_getLogs,
+        lookback
     FROM inputs
     JOIN chainhead ON 1=1
 ),
 node_flat AS (
     SELECT
         contract_address,
+        lookback,
         utils.udf_hex_to_int(value:blockNumber::STRING)::INT AS block_number,
         value:transactionHash::STRING AS tx_hash,
         utils.udf_hex_to_int(value:transactionIndex::STRING)::INT AS tx_index,
@@ -1400,6 +1510,11 @@ final AS (
         transformed
 )
 SELECT
+    case 
+    when REGEXP_LIKE(n.contract_address, '^0x([a-fA-F0-9]{40})$') and is_integer(n.lookback) then 'Success' 
+    when f.event_name is null then 'Error - Contract ABI Not Found, submit ABIs [here](https://science.flipsidecrypto.xyz/abi-requestor/)'
+    else 'Error - Invalid Input' 
+    end as status,
     '{{blockchain}}' AS blockchain,
     '{{network}}' AS network,
     n.tx_hash,
