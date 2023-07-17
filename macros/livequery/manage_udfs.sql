@@ -111,8 +111,8 @@
  #}
   {% set schema = blockchain if not network else blockchain ~ "_" ~ network %}
     CREATE SCHEMA IF NOT EXISTS {{ schema }};
-    {%-  set ethereum_rpc_udfs = fromyaml(config_func(blockchain, network)) if network else fromyaml(config_func(schema, blockchain)) -%}
-    {%- for udf in ethereum_rpc_udfs -%}
+    {%-  set configs = fromyaml(config_func(blockchain, network)) if network else fromyaml(config_func(schema, blockchain)) -%}
+    {%- for udf in configs -%}
         {{- create_or_drop_function_from_config(udf, drop_=drop_) -}}
     {%- endfor -%}
 {%- endmacro -%}
@@ -145,7 +145,7 @@
     {%- endif -%}
 {%- endmacro -%}
 
-{% macro ephemeral_deploy() %}
+{% macro ephemeral_deploy(configs) %}
 {#
     This macro is used to deploy functions using ephemeral models.
     It should only be used within an ephemeral model.
@@ -153,10 +153,12 @@
     {%- set blockchain = this.schema -%}
     {%- set network = this.identifier -%}
     {% set sql %}
-        {{- crud_udfs_by_chain(config_evm_rpc_primitives, blockchain, network, var("DROP_UDFS_AND_SPS")) -}}
-        {{- crud_udfs_by_chain(config_evm_high_level_abstractions, blockchain, network, var("DROP_UDFS_AND_SPS")) -}}
+        {% for config in configs %}
+            {{- crud_udfs_by_chain(config, blockchain, network, var("DROP_UDFS_AND_SPS")) -}}
+        {%- endfor -%}
     {%- endset -%}
     {% if var("UPDATE_UDFS_AND_SPS") %}
+        {%- do log("Deploy Functions: " ~ this.database ~ "." ~ this.schema ~ "__" ~ this.identifier, true) -%}
         {%- do run_query(sql) -%}
     {%- endif -%}
 {%- endmacro -%}
