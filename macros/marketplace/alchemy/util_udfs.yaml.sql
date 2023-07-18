@@ -1,4 +1,4 @@
-{% macro config_alchemy_util_udfs(schema = "alchemy_utils", utils_schema_name="alchemy_utils") -%}
+{% macro config_alchemy_utils_udfs(schema = "alchemy_utils", utils_schema_name="alchemy_utils") -%}
 {#
     This macro is used to generate the alchemy base endpoints
  #}
@@ -13,10 +13,10 @@
   options: |
     COMMENT = $$Used to issue a 'GET' request to the Alchemy NFT API.$$
   sql: |
-    SELECT 
+    SELECT
       live.udf_api(
         concat(
-            'https://', NETWORK,'.g.alchemy.com/nft/v2/{',NETWORK,'}', PATH, 
+            'https://', NETWORK,'.g.alchemy.com/nft/v2/{',NETWORK,'}', PATH,
             utils.udf_object_to_url_query_string(QUERY_ARGS)
         ),
         '_FSC_SYS/ALCHEMY'
@@ -32,7 +32,7 @@
   options: |
     COMMENT = $$Used to issue a 'POST' request to the Alchemy NFT API.$$
   sql: |
-    SELECT 
+    SELECT
       live.udf_api(
         'POST',
         concat('https://', NETWORK,'.g.alchemy.com/nft/v2/{',NETWORK,'}', PATH),

@@ -1,4 +1,4 @@
-{% macro config_chainbase_util_udfs(schema_name = "chainbase_utils", utils_schema_name="chainbase_utils") -%}
+{% macro config_chainbase_utils_udfs(schema_name = "chainbase_utils", utils_schema_name="chainbase_utils") -%}
 {#
     This macro is used to generate the alchemy base endpoints
  #}
@@ -16,7 +16,7 @@
       live.udf_api(
         'GET',
         concat(
-           'https://api.chainbase.online', PATH, 
+           'https://api.chainbase.online', PATH,
             utils.udf_object_to_url_query_string(QUERY_ARGS)
         ),
         {'x-api-key': '{API_KEY}'},
@@ -33,7 +33,7 @@
   options: |
     COMMENT = $$Used to issue a 'POST' request to the Chainbase API. [Chainbase Docs](https://docs.chainbase.com/reference/supported-chains)$$
   sql: |
-    SELECT 
+    SELECT
       live.udf_api(
         'POST',
         concat('https://api.chainbase.online', PATH),

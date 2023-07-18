@@ -152,13 +152,13 @@
  #}
     {%- set blockchain = this.schema -%}
     {%- set network = this.identifier -%}
-    {% set sql %}
-        {% for config in configs %}
-            {{- crud_udfs_by_chain(config, blockchain, network, var("DROP_UDFS_AND_SPS")) -}}
-        {%- endfor -%}
-    {%- endset -%}
-    {% if var("UPDATE_UDFS_AND_SPS") %}
-        {%- do log("Deploy Functions: " ~ this.database ~ "." ~ this.schema ~ "__" ~ this.identifier, true) -%}
+    {% if var("UPDATE_UDFS_AND_SPS") and execute %}
+        {% set sql %}
+            {% for config in configs %}
+                {{- crud_udfs_by_chain(config, blockchain, network, var("DROP_UDFS_AND_SPS")) -}}
+            {%- endfor -%}
+        {%- endset -%}
+        {%- do log("Deploy Functions: " ~ this.database ~ "." ~ this.schema ~ "." ~ this.identifier, true) -%}
         {%- do run_query(sql) -%}
     {%- endif -%}
 {%- endmacro -%}

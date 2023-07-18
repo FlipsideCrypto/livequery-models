@@ -1,4 +1,4 @@
-{% macro config_alchemy_token_udfs(schema_name = "alchemy_tokens", utils_schema_name = "alchemy_utils") -%}
+{% macro config_alchemy_tokens_udfs(schema_name = "alchemy_tokens", utils_schema_name = "alchemy_utils") -%}
 {#
     This macro is used to generate the alchemy token endpoints
  #}
