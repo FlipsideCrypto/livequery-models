@@ -95,6 +95,10 @@
                 "POLYGON_NFTS": config_quicknode_polygon_nft_udfs,
                 "POLYGON_TOKENS": config_quicknode_polygon_token_udfs,
                 "SOLANA_NFTS": config_quicknode_solana_nft_udfs
+            }),
+            "HELIUS": ({
+                "UTILS": config_helius_util_udfs,
+                "DAS": config_helius_das_udfs
             })
     })%}
 
