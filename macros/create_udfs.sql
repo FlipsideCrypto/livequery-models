@@ -87,6 +87,14 @@
                 "GAMEFI": config_footprint_gamefi_udfs,
                 "CHAINS": config_footprint_chain_udfs,
                 "CHARTS": config_footprint_chart_udfs
+            }),
+            "QUICKNODE": ({
+                "UTILS": config_quicknode_util_udfs,
+                "ETHEREUM_NFTS": config_quicknode_ethereum_nft_udfs,
+                "ETHEREUM_TOKENS": config_quicknode_ethereum_token_udfs,
+                "POLYGON_NFTS": config_quicknode_polygon_nft_udfs,
+                "POLYGON_TOKENS": config_quicknode_polygon_token_udfs,
+                "SOLANA_NFTS": config_quicknode_solana_nft_udfs
             })
     })%}
 
