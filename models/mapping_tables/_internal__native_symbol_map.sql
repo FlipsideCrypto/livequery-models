@@ -113,6 +113,7 @@ WITH blockchain_assets AS (
         'polygon_zkevm' AS blockchain,
         'ETH' AS asset_symbol,
         'testnet' AS network
+    UNION ALL
     SELECT
         'CELO' AS blockchain,
         'CELO' AS asset_symbol,

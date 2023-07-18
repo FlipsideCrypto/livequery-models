@@ -1,5 +1,5 @@
 {% macro evm_latest_native_balance_string(schema, blockchain, network) %}
-with base as (lower(wallet) AS wallet_address)
+with base as (select lower(wallet) AS wallet_address)
 SELECT
     case 
     when REGEXP_LIKE(wallet_address, '^0x([a-fA-F0-9]{40})$') 
@@ -13,7 +13,7 @@ SELECT
     utils.udf_hex_to_int({{schema}}.udf_rpc_eth_get_balance(wallet_address,'latest')::string) AS raw_balance,
     (raw_balance / POW(10,18))::float AS balance
 FROM base
-LEFT JOIN {{ ref('_internal__contracts_map') }}
+LEFT JOIN {{ ref('_internal__native_symbol_map') }}
 on '{{blockchain}}' = blockchain
 and '{{network}}' = network
 {% endmacro %}
@@ -45,7 +45,7 @@ SELECT
     utils.udf_hex_to_int(hex_balance) AS raw_balance,
     (raw_balance / POW(10,18))::FLOAT AS balance
 FROM node_call
-LEFT JOIN {{ ref('_internal__contracts_map') }}
+LEFT JOIN {{ ref('_internal__native_symbol_map') }}
 on '{{blockchain}}' = blockchain
 and '{{network}}' = network
 {% endmacro %}
@@ -708,7 +708,7 @@ FROM final
 {% endmacro %}
 
 {% macro evm_historical_native_balance_si(schema, blockchain, network) %}
-with base as (lower(wallet) AS wallet_address, CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))) as hex_block)
+with base as (select lower(wallet) AS wallet_address, CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))) as hex_block)
 SELECT
     case 
     when REGEXP_LIKE(wallet_address, '^0x([a-fA-F0-9]{40})$') 
@@ -724,7 +724,7 @@ SELECT
     utils.udf_hex_to_int({{schema}}.udf_rpc_eth_get_balance(wallet_address,hex_block)::string) AS raw_balance,
     (raw_balance / POW(10,18))::float AS balance
 FROM base 
-LEFT JOIN {{ ref('_internal__contracts_map') }}
+LEFT JOIN {{ ref('_internal__native_symbol_map') }}
 on '{{blockchain}}' = blockchain
 and '{{network}}' = network
 {% endmacro %}
@@ -760,7 +760,7 @@ SELECT
     raw_balance,
     (raw_balance::int / pow(10,18)) ::float as balance
 FROM inputs
-LEFT JOIN {{ ref('_internal__contracts_map') }}
+LEFT JOIN {{ ref('_internal__native_symbol_map') }}
 on '{{blockchain}}' = blockchain
 and '{{network}}' = network
 {% endmacro %}
@@ -796,7 +796,7 @@ SELECT
     raw_balance,
     (raw_balance::int / pow(10,18)) ::float as balance
 FROM inputs
-LEFT JOIN {{ ref('_internal__contracts_map') }}
+LEFT JOIN {{ ref('_internal__native_symbol_map') }}
 on '{{blockchain}}' = blockchain
 and '{{network}}' = network
 {% endmacro %}
@@ -833,7 +833,7 @@ and '{{network}}' = network
         raw_balance,
         (raw_balance::int / pow(10,18))::float as balance
     FROM final
-    LEFT JOIN {{ ref('_internal__contracts_map') }}
+    LEFT JOIN {{ ref('_internal__native_symbol_map') }}
     on '{{blockchain}}' = blockchain
     and '{{network}}' = network
 {% endmacro %}
