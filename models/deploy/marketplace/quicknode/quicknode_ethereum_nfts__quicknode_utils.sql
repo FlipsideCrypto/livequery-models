@@ -1,6 +1,6 @@
 -- depends_on: {{ ref('live__') }}
 {%- set configs = [
-    config_alchemy_nfts_udfs,
+    config_quicknode_ethereum_nft_udfs,
     ] -%}
 {{- ephemeral_deploy_marketplace(configs) -}}
--- depends_on: {{ ref('alchemy_utils__alchemy_utils') }}
+-- depends_on: {{ ref('quicknode_utils__qicknode_utils') }}

@@ -152,10 +152,10 @@
     This macro is used to deploy functions using ephemeral models.
     It should only be used within an ephemeral model.
  #}
-    {% set sql %}
-        {{- crud_udfs(config_core_udfs, this.schema, var("DROP_UDFS_AND_SPS")) -}}
-    {%- endset -%}
     {% if execute and var("UPDATE_UDFS_AND_SPS") %}
+        {% set sql %}
+            {{- crud_udfs(config_core_udfs, this.schema, var("DROP_UDFS_AND_SPS")) -}}
+        {%- endset -%}
         {%- do log("Deploy Functions: " ~ this.database ~ "." ~ this.schema ~ "--" ~ this.identifier, true) -%}
         {%- do run_query(sql) -%}
     {%- endif -%}
@@ -187,7 +187,7 @@
     {%- set schema = this.schema -%}
     {%- set utility_schema = this.identifier -%}
     {% if execute and (var("UPDATE_UDFS_AND_SPS") or var("DROP_UDFS_AND_SPS")) %}
-        {{ log("XXX: "~selected_resources, info=True) }}
+        {# {{ log("XXX: "~selected_resources, info=True) }} #}
         {% set sql %}
             {% for config in configs %}
                 {{- crud_udfs_by_marketplace(config, schema, utility_schema, var("DROP_UDFS_AND_SPS")) -}}
