@@ -203,6 +203,18 @@
     HANDLER = 'object_to_url_query_string'
   sql: |
     {{ python_object_to_url_query_string() | indent(4) }}
+- name: utils.udf_evm_transform_log
+  signature:
+    - [decoded, VARIANT]
+  return_type: VARIANT
+  options: |
+    NULL
+    LANGUAGE PYTHON
+    IMMUTABLE
+    RUNTIME_VERSION = '3.8'
+    HANDLER = 'transform'
+  sql: |
+    {{ python_udf_evm_transform_log() | indent(4) }}
 
 {#
   LIVE SCHEMA

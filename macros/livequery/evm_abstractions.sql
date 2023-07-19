@@ -1075,7 +1075,7 @@ decode_logs AS (
         event_removed,
         event_data,
         event_topics,
-        ethereum.streamline.udf_decode(
+        utils.udf_evm_decode_log(
             abi,
             OBJECT_CONSTRUCT(
                 'topics',
@@ -1087,7 +1087,7 @@ decode_logs AS (
             )
         )[0] AS decoded_data,
         decoded_data:name::STRING AS event_name,
-        ethereum.silver.udf_transform_logs(decoded_data) AS transformed
+        utils.udf_evm_transform_log(decoded_data) AS transformed
     FROM node_flat
     JOIN abis
         ON contract_address = parent_contract_address
@@ -1203,7 +1203,7 @@ decode_logs AS (
         event_removed,
         event_data,
         event_topics,
-        ethereum.streamline.udf_decode(
+        utils.udf_evm_decode_log(
             abi,
             OBJECT_CONSTRUCT(
                 'topics',
@@ -1215,7 +1215,7 @@ decode_logs AS (
             )
         )[0] AS decoded_data,
         decoded_data:name::STRING AS event_name,
-        ethereum.silver.udf_transform_logs(decoded_data) AS transformed
+        utils.udf_evm_transform_log(decoded_data) AS transformed
     FROM node_flat
     JOIN abis
         ON contract_address = parent_contract_address
@@ -1330,7 +1330,7 @@ decode_logs AS (
         event_removed,
         event_data,
         event_topics,
-        ethereum.streamline.udf_decode(
+        utils.udf_evm_decode_log(
             abi,
             OBJECT_CONSTRUCT(
                 'topics',
@@ -1342,7 +1342,7 @@ decode_logs AS (
             )
         )[0] AS decoded_data,
         decoded_data:name::STRING AS event_name,
-        ethereum.silver.udf_transform_logs(decoded_data) AS transformed
+        utils.udf_evm_transform_log(decoded_data) AS transformed
     FROM node_flat
     JOIN abis
         ON contract_address = parent_contract_address
@@ -1460,7 +1460,7 @@ decode_logs AS (
         event_removed,
         event_data,
         event_topics,
-        ethereum.streamline.udf_decode(
+        utils.udf_evm_decode_log(
             abi,
             OBJECT_CONSTRUCT(
                 'topics',
@@ -1472,7 +1472,7 @@ decode_logs AS (
             )
         )[0] AS decoded_data,
         decoded_data:name::STRING AS event_name,
-        ethereum.silver.udf_transform_logs(decoded_data) AS transformed
+        utils.udf_evm_transform_log(decoded_data) AS transformed
     FROM node_flat
     JOIN abis
         ON contract_address = parent_contract_address
