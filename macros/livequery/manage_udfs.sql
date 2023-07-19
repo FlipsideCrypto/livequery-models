@@ -152,7 +152,7 @@
     This macro is used to deploy functions using ephemeral models.
     It should only be used within an ephemeral model.
  #}
-    {% if execute and var("UPDATE_UDFS_AND_SPS") %}
+    {% if execute and (var("UPDATE_UDFS_AND_SPS") or var("DROP_UDFS_AND_SPS")) and model.unique_id in selected_resources %}
         {% set sql %}
             {{- crud_udfs(config_core_udfs, this.schema, var("DROP_UDFS_AND_SPS")) -}}
         {%- endset -%}
@@ -168,7 +168,7 @@
  #}
     {%- set blockchain = this.schema -%}
     {%- set network = this.identifier -%}
-    {% if execute and (var("UPDATE_UDFS_AND_SPS") or var("DROP_UDFS_AND_SPS")) %}
+    {% if execute and (var("UPDATE_UDFS_AND_SPS") or var("DROP_UDFS_AND_SPS")) and model.unique_id in selected_resources %}
         {% set sql %}
             {% for config in configs %}
                 {{- crud_udfs_by_chain(config, blockchain, network, var("DROP_UDFS_AND_SPS")) -}}
@@ -186,8 +186,7 @@
  #}
     {%- set schema = this.schema -%}
     {%- set utility_schema = this.identifier -%}
-    {% if execute and (var("UPDATE_UDFS_AND_SPS") or var("DROP_UDFS_AND_SPS")) %}
-        {# {{ log("XXX: "~selected_resources, info=True) }} #}
+    {% if execute and (var("UPDATE_UDFS_AND_SPS") or var("DROP_UDFS_AND_SPS")) and model.unique_id in selected_resources %}
         {% set sql %}
             {% for config in configs %}
                 {{- crud_udfs_by_marketplace(config, schema, utility_schema, var("DROP_UDFS_AND_SPS")) -}}

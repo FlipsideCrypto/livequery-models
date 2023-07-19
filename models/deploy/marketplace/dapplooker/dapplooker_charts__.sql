@@ -2,4 +2,4 @@
 {%- set configs = [
     config_dapplooker_charts_udfs
     ] -%}
-{{- ephemeral_deploy(configs) -}}
+{{- ephemeral_deploy_marketplace(configs) -}}
