@@ -216,6 +216,18 @@
   sql: |
     {{ python_udf_evm_transform_log() | indent(4) }}
 
+- name: utils.udf_evm_decode_log
+  signature:
+    - [abi, ARRAY]
+    - [data, OBJECT]
+  return_type: ARRAY
+  func_type: EXTERNAL
+  api_integration: '{{ var("API_INTEGRATION") }}'
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+  sql: evm/decode/log
+
 {#
   LIVE SCHEMA
 #}
