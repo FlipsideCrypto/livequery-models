@@ -156,7 +156,7 @@
         {% set sql %}
             {{- crud_udfs(config_core_udfs, this.schema, var("DROP_UDFS_AND_SPS")) -}}
         {%- endset -%}
-        {%- do log("Deploy Functions: " ~ this.database ~ "." ~ this.schema ~ "--" ~ this.identifier, true) -%}
+        {%- do log("Deploy core udfs: " ~ this.database ~ "." ~ this.schema, true) -%}
         {%- do run_query(sql) -%}
     {%- endif -%}
 {%- endmacro -%}
@@ -174,7 +174,7 @@
                 {{- crud_udfs_by_chain(config, blockchain, network, var("DROP_UDFS_AND_SPS")) -}}
             {%- endfor -%}
         {%- endset -%}
-        {%- do log("Deploy Functions: " ~ this.database ~ "." ~ this.schema ~ "--" ~ this.identifier, true) -%}
+        {%- do log("Deploy partner udfs: " ~ this.database ~ "." ~ this.schema ~ "--" ~ this.identifier, true) -%}
         {%- do run_query(sql) -%}
     {%- endif -%}
 {%- endmacro -%}
@@ -192,7 +192,7 @@
                 {{- crud_udfs_by_marketplace(config, schema, utility_schema, var("DROP_UDFS_AND_SPS")) -}}
             {%- endfor -%}
         {%- endset -%}
-        {%- do log("Deploy Functions: " ~ this.database ~ "." ~ this.schema ~ "--" ~ this.identifier, true) -%}
+        {%- do log("Deploy marketplace udfs: " ~ this.database ~ "." ~ schema, true) -%}
         {%- do run_query(sql) -%}
     {%- endif -%}
 {%- endmacro -%}
