@@ -117,6 +117,21 @@
     {%- endfor -%}
 {%- endmacro -%}
 
+{% macro crud_udfs_by_marketplace(config_func, schema, utility_schema, drop_) %}
+{#
+    Generate create or drop statements for a list of udf configs for a given blockchain and network
+
+    config_func: function that returns a list of udf configs
+    schema: schema name
+    utility_schema: utility schema name
+ #}
+    CREATE SCHEMA IF NOT EXISTS {{ schema }};
+    {%- set configs = fromyaml(config_func(schema, utility_schema)) if utility_schema else fromyaml(config_func(schema, schema)) -%}
+    {%- for udf in configs -%}
+        {{- create_or_drop_function_from_config(udf, drop_=drop_) -}}
+    {%- endfor -%}
+{%- endmacro -%}
+
 {% macro crud_marketplace_udfs(config_func, schemaName, base_api_schema_name, drop_) %}
 {#
     Generate create or drop statements for a list of udf configs for a given schema and api
@@ -140,7 +155,8 @@
     {% set sql %}
         {{- crud_udfs(config_core_udfs, this.schema, var("DROP_UDFS_AND_SPS")) -}}
     {%- endset -%}
-    {% if var("UPDATE_UDFS_AND_SPS") %}
+    {% if execute and var("UPDATE_UDFS_AND_SPS") %}
+        {%- do log("Deploy Functions: " ~ this.database ~ "." ~ this.schema ~ "--" ~ this.identifier, true) -%}
         {%- do run_query(sql) -%}
     {%- endif -%}
 {%- endmacro -%}
@@ -152,13 +168,32 @@
  #}
     {%- set blockchain = this.schema -%}
     {%- set network = this.identifier -%}
-    {% if var("UPDATE_UDFS_AND_SPS") and execute %}
+    {% if execute and (var("UPDATE_UDFS_AND_SPS") or var("DROP_UDFS_AND_SPS")) %}
         {% set sql %}
             {% for config in configs %}
                 {{- crud_udfs_by_chain(config, blockchain, network, var("DROP_UDFS_AND_SPS")) -}}
             {%- endfor -%}
         {%- endset -%}
-        {%- do log("Deploy Functions: " ~ this.database ~ "." ~ this.schema ~ "." ~ this.identifier, true) -%}
+        {%- do log("Deploy Functions: " ~ this.database ~ "." ~ this.schema ~ "--" ~ this.identifier, true) -%}
+        {%- do run_query(sql) -%}
+    {%- endif -%}
+{%- endmacro -%}
+
+{% macro ephemeral_deploy_marketplace(configs) %}
+{#
+    This macro is used to deploy functions using ephemeral models.
+    It should only be used within an ephemeral model.
+ #}
+    {%- set schema = this.schema -%}
+    {%- set utility_schema = this.identifier -%}
+    {% if execute and (var("UPDATE_UDFS_AND_SPS") or var("DROP_UDFS_AND_SPS")) %}
+        {{ log("XXX: "~selected_resources, info=True) }}
+        {% set sql %}
+            {% for config in configs %}
+                {{- crud_udfs_by_marketplace(config, schema, utility_schema, var("DROP_UDFS_AND_SPS")) -}}
+            {%- endfor -%}
+        {%- endset -%}
+        {%- do log("Deploy Functions: " ~ this.database ~ "." ~ this.schema ~ "--" ~ this.identifier, true) -%}
         {%- do run_query(sql) -%}
     {%- endif -%}
 {%- endmacro -%}
