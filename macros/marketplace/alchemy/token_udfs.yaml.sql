@@ -32,5 +32,4 @@
   options: |
     COMMENT = $$Returns metadata (name, symbol, decimals, logo) for a given token contract address. [Alchemy docs here](https://docs.alchemy.com/reference/alchemy-gettokenmetadata).$$
   sql: {{alchemy_rpc_call(utils_schema_name, "alchemy_getTokenMetadata") | trim}}
-
 {% endmacro %}

@@ -84,16 +84,11 @@ def get_simplified_signature(abi):
 
 {% macro python_object_to_url_query_string() %}
 import urllib.parse
-import json
 
 def object_to_url_query_string(variant_object):
-    query_string = '?'
-    for key, value in variant_object.items():
-        if query_string != '?':
-            query_string += '&'
-        query_string += key + '=' + urllib.parse.quote(str(value))
-    if query_string == '?':
+    params = f'?{urllib.parse.urlencode(variant_object)}'
+    if params == '?':
         return ''
-    return query_string
+    return params
 
 {% endmacro %}

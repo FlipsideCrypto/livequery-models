@@ -41,5 +41,4 @@
         BODY,
         '_FSC_SYS/BLOCKPOUR'
     ) as response
-
 {% endmacro %}

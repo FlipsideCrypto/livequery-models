@@ -57,5 +57,4 @@
       {},
       {'id': 1,'jsonrpc': '2.0','method': METHOD,'params': PARAMS},
       '_FSC_SYS/ALCHEMY') as response
-
 {% endmacro %}

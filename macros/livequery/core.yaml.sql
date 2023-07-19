@@ -90,20 +90,6 @@
     HANDLER = 'hex_to_int'
   sql: |
     {{ python_hex_to_int() | indent(4) }}
-
-- name: utils.udf_object_to_url_query_string
-  signature:
-    - [object, OBJECT]
-  return_type: TEXT
-  options: |
-    NULL
-    LANGUAGE PYTHON
-    IMMUTABLE
-    RUNTIME_VERSION = '3.8'
-    HANDLER = 'object_to_url_query_string'
-  sql: |
-    {{ python_object_to_url_query_string() | indent(4) }}
-
 - name: utils.udf_hex_to_int
   signature:
     - [encoding, STRING]
@@ -118,7 +104,6 @@
     HANDLER = 'hex_to_int'
   sql: |
     {{ python_udf_hex_to_int_with_encoding() | indent(4) }}
-
 - name: utils.udf_evm_text_signature
   signature:
     - [abi, VARIANT]
@@ -205,6 +190,19 @@
     IMMUTABLE
   sql: |
     {{ sql_udf_json_rpc_call(False) }}
+
+- name: utils.udf_object_to_url_query_string
+  signature:
+    - [object, OBJECT]
+  return_type: TEXT
+  options: |
+    NULL
+    LANGUAGE PYTHON
+    IMMUTABLE
+    RUNTIME_VERSION = '3.8'
+    HANDLER = 'object_to_url_query_string'
+  sql: |
+    {{ python_object_to_url_query_string() | indent(4) }}
 
 {#
   LIVE SCHEMA
