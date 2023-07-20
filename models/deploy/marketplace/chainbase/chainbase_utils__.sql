@@ -1,4 +1,4 @@
--- depends_on: {{ ref('live__') }}
+-- depends_on: {{ ref('live') }}
 {%- set configs = [
     config_chainbase_utils_udfs,
     ] -%}

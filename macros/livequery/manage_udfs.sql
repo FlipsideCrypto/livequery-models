@@ -147,7 +147,7 @@
   {%- endfor -%}
 {%- endmacro -%}
 
-{% macro ephemeral_deploy_core() %}
+{% macro ephemeral_deploy_core(config) %}
 {#
     This macro is used to deploy functions using ephemeral models.
     It should only be used within an ephemeral model.
