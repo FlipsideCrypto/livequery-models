@@ -363,3 +363,37 @@
   sql: |
     {{ evm_latest_contract_events_decoded_ai(schema,  blockchain, network) | indent(4) -}}
 {%- endmacro -%}
+
+{% macro config_eth_high_level_abstractions(blockchain, network) -%}
+{#
+    This macro is used to generate high level abstractions for Ethereum mainnet only.
+#}
+{% set schema = blockchain ~ "_" ~ network %}
+- name: {{ schema -}}.tf_all_contract_events
+  signature:
+    - [address, STRING, The address of the contracts to get the events of]
+    - [min_block, INTEGER, The minimum block number to get the events from]
+  return_type:
+    - "TABLE(status STRING, blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, contract_address STRING, event_topics ARRAY, event_data STRING)"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns the events emitted by a contract from a specific block to the latest block.$$
+  sql: |
+    {{ evm_contract_events(schema,  blockchain, network) | indent(4) -}}
+
+- name: {{ schema -}}.tf_all_contract_events_decoded
+  signature:
+    - [address, STRING, The address of the contracts to get the events of]
+    - [min_block, INTEGER, The minimum block number to get the events from]
+  return_type:
+    - "TABLE(status STRING, blockchain STRING, network STRING, tx_hash STRING, block_number INTEGER, event_index INTEGER, event_name STRING, contract_address STRING, event_topics ARRAY, event_data STRING, decoded_data OBJECT)"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns the decoded events emitted by a contract from a specific block to the latest block. Submit missing ABIs [here](https://science.flipsidecrypto.xyz/abi-requestor/).$$  
+  sql: |
+    {{ evm_contract_events_decoded(schema,  blockchain, network) | indent(4) -}}
+{%- endmacro -%}
