@@ -3,8 +3,8 @@
 -- depends_on: {{ ref('_internal__native_symbol_map') }}
 -- depends_on: {{ ref('_internal__eth_logs') }}
 -- depends_on: {{ ref('_internal__eth_decoded_logs') }}
--- depends_on: {{ ref('live__') }}
--- depends_on: {{ ref('utils__') }}
+-- depends_on: {{ ref('live') }}
+-- depends_on: {{ ref('utils') }}
 {%- set configs = [
     config_evm_rpc_primitives,
     config_evm_high_level_abstractions,

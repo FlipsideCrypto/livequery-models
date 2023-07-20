@@ -61,4 +61,31 @@
   sql: |
     SELECT {{ schema -}}.udf_rpc('eth_getBalance', [address, block_or_tag])
 
+- name: {{ schema -}}.udf_get_token_balance
+  signature:
+    - [wallet_address, STRING, The address to get the balance of]
+    - [token_address, STRING, The token to get the balance of]
+  return_type: [STRING, The balance of the account of given address]
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns the balance of the wallet of given token address at the latest block.$$
+  sql: |
+    SELECT utils.udf_hex_to_int({{ schema -}}.udf_rpc_eth_call(object_construct_keep_null('from', null, 'to', token_address, 'data', concat('0x70a08231',LPAD(REPLACE(wallet_address, '0x', ''), 64, 0))),'latest')::string)
+
+- name: {{ schema -}}.udf_get_token_balance
+  signature:
+    - [wallet_address, STRING, The address to get the balance of]
+    - [token_address, STRING, The token to get the balance of]
+    - [block_number, INTEGER, The block number to retrieve the balance at]
+  return_type: [STRING, The balance of the account of given address]
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns the balance of the wallet of given token address at the given block.$$
+  sql: |
+    SELECT utils.udf_hex_to_int({{schema}}.udf_rpc_eth_call(OBJECT_CONSTRUCT_KEEP_NULL('from', NULL, 'to', token_address, 'data', concat('0x70a08231',LPAD(REPLACE(wallet_address, '0x', ''), 64, 0))), CONCAT('0x', TRIM(TO_CHAR(block_number, 'XXXXXXXXXX'))))::STRING)
+
 {%- endmacro -%}
