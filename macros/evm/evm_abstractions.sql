@@ -13,7 +13,7 @@ SELECT
     utils.udf_hex_to_int({{schema}}.udf_rpc_eth_get_balance(wallet_address,'latest')::string) AS raw_balance,
     (raw_balance / POW(10,18))::float AS balance
 FROM base
-LEFT JOIN {{ ref('_internal__native_symbol_map') }}
+LEFT JOIN {{ ref('_evm__native_symbol_map') }}
 on '{{blockchain}}' = blockchain
 and '{{network}}' = network
 {% endmacro %}
@@ -45,7 +45,7 @@ SELECT
     utils.udf_hex_to_int(hex_balance) AS raw_balance,
     (raw_balance / POW(10,18))::FLOAT AS balance
 FROM node_call
-LEFT JOIN {{ ref('_internal__native_symbol_map') }}
+LEFT JOIN {{ ref('_evm__native_symbol_map') }}
 on '{{blockchain}}' = blockchain
 and '{{network}}' = network
 {% endmacro %}
@@ -71,7 +71,7 @@ node_call AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         inputs
-    LEFT JOIN {{ ref('_internal__contracts_map') }}
+    LEFT JOIN {{ ref('_evm__contracts_map') }}
     ON token_address = address
     and blockchain = '{{blockchain}}'
 )
@@ -118,7 +118,7 @@ final AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         flat_rows
-    LEFT JOIN {{ ref('_internal__contracts_map') }} 
+    LEFT JOIN {{ ref('_evm__contracts_map') }} 
     ON token_address = address
     and blockchain = '{{blockchain}}'
 )
@@ -165,7 +165,7 @@ final AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         flat_rows
-    LEFT JOIN {{ ref('_internal__contracts_map') }} 
+    LEFT JOIN {{ ref('_evm__contracts_map') }} 
     ON token_address = address
     and blockchain = '{{blockchain}}'
 )
@@ -214,7 +214,7 @@ final AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         flat_rows
-    LEFT JOIN {{ ref('_internal__contracts_map') }} 
+    LEFT JOIN {{ ref('_evm__contracts_map') }} 
     ON token_address = address
     and blockchain = '{{blockchain}}'
 )
@@ -257,7 +257,7 @@ WITH inputs AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         inputs
-    LEFT JOIN {{ ref('_internal__contracts_map') }}
+    LEFT JOIN {{ ref('_evm__contracts_map') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -311,7 +311,7 @@ final AS (
     FROM
         inputs
     CROSS JOIN blocks
-    LEFT JOIN {{ ref('_internal__contracts_map') }}
+    LEFT JOIN {{ ref('_evm__contracts_map') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -365,7 +365,7 @@ final AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         inputs
-    LEFT JOIN {{ ref('_internal__contracts_map') }}
+    LEFT JOIN {{ ref('_evm__contracts_map') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -428,7 +428,7 @@ final AS (
     FROM
         inputs
     CROSS JOIN blocks
-    LEFT JOIN {{ ref('_internal__contracts_map') }}
+    LEFT JOIN {{ ref('_evm__contracts_map') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -483,7 +483,7 @@ final AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         inputs
-    LEFT JOIN {{ ref('_internal__contracts_map') }}
+    LEFT JOIN {{ ref('_evm__contracts_map') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -547,7 +547,7 @@ final AS (
     FROM
         inputs
     CROSS JOIN blocks
-    LEFT JOIN {{ ref('_internal__contracts_map') }}
+    LEFT JOIN {{ ref('_evm__contracts_map') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -611,7 +611,7 @@ final AS (
         raw_balance::INT / POW(10, ifnull(decimals,0)) AS balance
     FROM
         inputs
-    LEFT JOIN {{ ref('_internal__contracts_map') }}
+    LEFT JOIN {{ ref('_evm__contracts_map') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -684,7 +684,7 @@ final AS (
     FROM
         inputs
     CROSS JOIN blocks
-    LEFT JOIN {{ ref('_internal__contracts_map') }}
+    LEFT JOIN {{ ref('_evm__contracts_map') }}
     ON token_address = address
     AND blockchain = '{{blockchain}}'
 )
@@ -724,7 +724,7 @@ SELECT
     utils.udf_hex_to_int({{schema}}.udf_rpc_eth_get_balance(wallet_address,hex_block)::string) AS raw_balance,
     (raw_balance / POW(10,18))::float AS balance
 FROM base 
-LEFT JOIN {{ ref('_internal__native_symbol_map') }}
+LEFT JOIN {{ ref('_evm__native_symbol_map') }}
 on '{{blockchain}}' = blockchain
 and '{{network}}' = network
 {% endmacro %}
@@ -760,7 +760,7 @@ SELECT
     raw_balance,
     (raw_balance::int / pow(10,18)) ::float as balance
 FROM inputs
-LEFT JOIN {{ ref('_internal__native_symbol_map') }}
+LEFT JOIN {{ ref('_evm__native_symbol_map') }}
 on '{{blockchain}}' = blockchain
 and '{{network}}' = network
 {% endmacro %}
@@ -796,7 +796,7 @@ SELECT
     raw_balance,
     (raw_balance::int / pow(10,18)) ::float as balance
 FROM inputs
-LEFT JOIN {{ ref('_internal__native_symbol_map') }}
+LEFT JOIN {{ ref('_evm__native_symbol_map') }}
 on '{{blockchain}}' = blockchain
 and '{{network}}' = network
 {% endmacro %}
@@ -833,7 +833,7 @@ and '{{network}}' = network
         raw_balance,
         (raw_balance::int / pow(10,18))::float as balance
     FROM final
-    LEFT JOIN {{ ref('_internal__native_symbol_map') }}
+    LEFT JOIN {{ ref('_evm__native_symbol_map') }}
     on '{{blockchain}}' = blockchain
     and '{{network}}' = network
 {% endmacro %}
@@ -1038,7 +1038,7 @@ abis AS (
         event_signature,
         abi
     FROM inputs
-    JOIN {{ ref('_internal__abi_map') }}
+    JOIN {{ ref('_evm__abi_map') }}
         ON lower(contract_address) = parent_contract_address
         AND blockchain = '{{blockchain}}'
     QUALIFY ROW_NUMBER() OVER (PARTITION BY contract_address, event_name ORDER BY end_block DESC) = 1
@@ -1164,7 +1164,7 @@ abis AS (
         event_signature,
         abi
     FROM inputs
-    JOIN {{ ref('_internal__abi_map') }}
+    JOIN {{ ref('_evm__abi_map') }}
         ON lower(contract_address) = parent_contract_address
         AND blockchain = '{{blockchain}}'
     QUALIFY ROW_NUMBER() OVER (PARTITION BY contract_address, event_name ORDER BY end_block DESC) = 1
@@ -1293,7 +1293,7 @@ abis AS (
         event_signature,
         abi
     FROM inputs
-    JOIN {{ ref('_internal__abi_map') }}
+    JOIN {{ ref('_evm__abi_map') }}
         ON lower(contract_address) = parent_contract_address
         AND blockchain = '{{blockchain}}'
     QUALIFY ROW_NUMBER() OVER (PARTITION BY contract_address, event_name ORDER BY end_block DESC) = 1
@@ -1421,7 +1421,7 @@ abis AS (
         event_signature,
         abi
     FROM inputs
-    JOIN {{ ref('_internal__abi_map') }}
+    JOIN {{ ref('_evm__abi_map') }}
         ON lower(contract_address) = parent_contract_address
         AND blockchain = '{{blockchain}}'
     QUALIFY ROW_NUMBER() OVER (PARTITION BY contract_address, event_name ORDER BY end_block DESC) = 1
@@ -1586,7 +1586,7 @@ and n.event_index = f.event_index
         contract_address,
         topics as event_topics,
         data as event_data
-    from {{ ref('_internal__eth_logs') }}
+    from {{ ref('_eth__logs') }}
     where contract_address = (select contract_address from node_call)
     and block_number >= min_block  
     and block_number <= (select min_block_no from chainhead)
@@ -1609,7 +1609,7 @@ abis AS (
         event_signature,
         abi
     FROM inputs
-    JOIN {{ ref('_internal__abi_map') }}
+    JOIN {{ ref('_evm__abi_map') }}
         ON lower(contract_address) = parent_contract_address
         AND blockchain = '{{blockchain}}'
     QUALIFY ROW_NUMBER() OVER (PARTITION BY contract_address, event_name ORDER BY end_block DESC) = 1
@@ -1729,7 +1729,7 @@ select
     topics as event_topics,
     data as event_data,
     decoded_log as decoded_data
-from {{ ref('_internal__eth_decoded_logs') }}
+from {{ ref('_eth__decoded_logs') }}
     where contract_address = (select contract_address from inputs)
     and block_number >= min_block
     and block_number <= (select min_block_no from chainhead)

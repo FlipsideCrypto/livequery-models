@@ -1,6 +1,6 @@
--- depends_on: {{ ref('_internal__contracts_map') }}
--- depends_on: {{ ref('_internal__abi_map') }}
--- depends_on: {{ ref('_internal__native_symbol_map') }}
+-- depends_on: {{ ref('_evm__contracts_map') }}
+-- depends_on: {{ ref('_evm__abi_map') }}
+-- depends_on: {{ ref('_evm__native_symbol_map') }}
 -- depends_on: {{ ref('live') }}
 -- depends_on: {{ ref('utils') }}
 {%- set configs = [
