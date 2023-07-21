@@ -16,7 +16,7 @@
       live.udf_api(
         'GET',
         concat(
-           'https://api.chainbase.online', PATH,
+           'https://api.chainbase.online', PATH, '?',
             utils.udf_object_to_url_query_string(QUERY_ARGS)
         ),
         {'x-api-key': '{API_KEY}'},

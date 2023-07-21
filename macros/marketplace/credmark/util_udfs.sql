@@ -16,7 +16,7 @@
       live.udf_api(
         'GET',
         concat(
-           'https://gateway.credmark.com', PATH,
+           'https://gateway.credmark.com', PATH, '?',
             utils.udf_object_to_url_query_string(QUERY_ARGS)
         ),
         {'Authorization': 'Bearer {API_KEY}'},

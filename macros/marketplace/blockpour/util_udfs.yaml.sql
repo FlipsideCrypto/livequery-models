@@ -16,7 +16,7 @@
       live.udf_api(
         'GET',
         concat(
-           'https://services.blockpour.com/api', PATH,
+           'https://services.blockpour.com/api', PATH, '?',
             utils.udf_object_to_url_query_string(QUERY_ARGS)
         ),
         {'api-key': '{API_KEY}'},

@@ -86,10 +86,7 @@ def get_simplified_signature(abi):
 import urllib.parse
 
 def object_to_url_query_string(variant_object):
-    params = f'?{urllib.parse.urlencode(variant_object)}'
-    if params == '?':
-        return ''
-    return params
+    return f'{urllib.parse.urlencode(variant_object)}'
 
 {% endmacro %}
 

@@ -16,7 +16,7 @@
     SELECT
       live.udf_api(
         concat(
-            'https://', NETWORK,'.g.alchemy.com/nft/v2/{',NETWORK,'}', PATH,
+            'https://', NETWORK,'.g.alchemy.com/nft/v2/{',NETWORK,'}', PATH, '?',
             utils.udf_object_to_url_query_string(QUERY_ARGS)
         ),
         '_FSC_SYS/ALCHEMY'
