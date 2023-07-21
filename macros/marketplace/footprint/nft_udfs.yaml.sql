@@ -1,4 +1,4 @@
-{% macro config_footprint_nft_udfs(schema_name = "footprint_nfts", utils_schema_name = "footprint_utils") -%}
+{% macro config_footprint_nfts_udfs(schema_name = "footprint_nfts", utils_schema_name = "footprint_utils") -%}
 {#
     This macro is used to generate the Footprint nft endpoints
  #}

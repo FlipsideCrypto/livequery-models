@@ -1,4 +1,4 @@
-{% macro config_alchemy_token_udfs(schema_name = "alchemy_tokens", utils_schema_name = "alchemy_utils") -%}
+{% macro config_alchemy_tokens_udfs(schema_name = "alchemy_tokens", utils_schema_name = "alchemy_utils") -%}
 {#
     This macro is used to generate the alchemy token endpoints
  #}
@@ -32,5 +32,4 @@
   options: |
     COMMENT = $$Returns metadata (name, symbol, decimals, logo) for a given token contract address. [Alchemy docs here](https://docs.alchemy.com/reference/alchemy-gettokenmetadata).$$
   sql: {{alchemy_rpc_call(utils_schema_name, "alchemy_getTokenMetadata") | trim}}
-
 {% endmacro %}

@@ -1,4 +1,4 @@
-{% macro config_alchemy_nft_udfs(schema_name = "alchemy_nfts", utils_schema_name = "alchemy_utils") -%}
+{% macro config_alchemy_nfts_udfs(schema_name = "alchemy_nfts", utils_schema_name = "alchemy_utils") -%}
 {#
     This macro is used to generate the alchemy nft endpoints
  #}

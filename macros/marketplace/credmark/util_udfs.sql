@@ -1,4 +1,4 @@
-{% macro config_credmark_util_udfs(schema_name = "credmark_utils", utils_schema_name="credmark_utils") -%}
+{% macro config_credmark_utils_udfs(schema_name = "credmark_utils", utils_schema_name="credmark_utils") -%}
 {#
     This macro is used to generate the Credmark base endpoints
  #}
@@ -16,7 +16,7 @@
       live.udf_api(
         'GET',
         concat(
-           'https://gateway.credmark.com', PATH, 
+           'https://gateway.credmark.com', PATH,
             utils.udf_object_to_url_query_string(QUERY_ARGS)
         ),
         {'Authorization': 'Bearer {API_KEY}'},

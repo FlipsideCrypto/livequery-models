@@ -8,3 +8,9 @@ sources:
       - name: dim_date_hours
       - name: dim_contracts
       - name: dim_evm_event_abis
+  - name: ethereum_core
+    database: "{{ 'ethereum' if target.database == 'LIVEQUERY' else 'ethereum_dev' }}"
+    schema: core
+    tables:
+      - name: fact_event_logs
+      - name: ez_decoded_event_logs

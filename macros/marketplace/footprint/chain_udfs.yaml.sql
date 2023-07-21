@@ -1,4 +1,4 @@
-{% macro config_footprint_chain_udfs(schema_name = "footprint_chains", utils_schema_name = "footprint_utils") -%}
+{% macro config_footprint_chains_udfs(schema_name = "footprint_chains", utils_schema_name = "footprint_utils") -%}
 {#
     This macro is used to generate the Footprint token endpoints
  #}
