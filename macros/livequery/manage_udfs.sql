@@ -152,10 +152,6 @@
     This macro is used to deploy functions using ephemeral models.
     It should only be used within an ephemeral model.
  #}
-    {% do log("XXX:"~selected_resources) %}
-    {% do log("XXX:"~model.unique_id ) %}
-    {% do log("XXX:"~this.schema ) %}
-    {% do log("XXX:"~"___________" ) %}
     {% if execute and (var("UPDATE_UDFS_AND_SPS") or var("DROP_UDFS_AND_SPS")) and model.unique_id in selected_resources %}
         {% set sql %}
             {{- crud_udfs(config, this.schema, var("DROP_UDFS_AND_SPS")) -}}
@@ -178,7 +174,7 @@
                 {{- crud_udfs_by_chain(config, blockchain, network, var("DROP_UDFS_AND_SPS")) -}}
             {%- endfor -%}
         {%- endset -%}
-        {%- do log("Deploy partner udfs: " ~ this.database ~ "." ~ this.schema ~ "--" ~ this.identifier, true) -%}
+        {%- do log("Deploy partner udfs: " ~ this.database ~ "." ~ this.schema ~ "_" ~ this.identifier, true) -%}
         {%- do run_query(sql) -%}
     {%- endif -%}
 {%- endmacro -%}
