@@ -6,7 +6,7 @@ on:
   schedule:
     # Runs "at 9:00 UTC" (see https://crontab.guru)
     - cron: '0 9 * * *'
-    
+
 env:
   DBT_PROFILES_DIR: ./
 
@@ -25,15 +25,17 @@ concurrency:
 jobs:
   run_dbt_jobs:
     runs-on: ubuntu-latest
-    environment: 
+    environment:
       name: workflow_prod
 
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/setup-python@v1
+      - uses: actions/setup-python@v3
         with:
-          python-version: "3.7.x"
+          python-version: "pypy3.10"
+          cache: "pip"
+
 
       - name: install dependencies
         run: |
