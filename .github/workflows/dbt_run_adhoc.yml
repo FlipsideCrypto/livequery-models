@@ -3,8 +3,6 @@ run-name: dbt_run_adhoc
 
 on:
   workflow_dispatch:
-    branches:
-      - "main"
     inputs:
       environment:
         type: choice
