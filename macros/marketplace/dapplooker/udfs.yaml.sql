@@ -1,9 +1,9 @@
-{% macro config_dapplooker_charts_udfs(schema_name = "dapplooker_charts", utils_schema_name = "dapplooker_utils") -%}
+{% macro config_dapplooker_udfs(schema_name = "dapplooker", utils_schema_name = "dapplooker_utils") -%}
 {#
-    This macro is used to generate the DappLooker charts endpoints
+    This macro is used to generate the DappLooker endpoints
  #}
 
-- name: {{ schema_name -}}.get
+- name: {{ schema_name -}}.get_chart
   signature:
     - [CHART_ID, STRING, The UUID of the chart]
   return_type:

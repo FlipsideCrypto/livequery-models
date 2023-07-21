@@ -1,9 +1,9 @@
-{% macro config_playgrounds_subgraphs_udfs(schema_name = "playgrounds_subgraphs", utils_schema_name = "playgrounds_utils") -%}
+{% macro config_playgrounds_udfs(schema_name = "playgrounds", utils_schema_name = "playgrounds_utils") -%}
 {#
-    This macro is used to generate the Playgrounds Subgraph Call
+    This macro is used to generate the Playgrounds calls
  #}
 
-- name: {{ schema_name -}}.query
+- name: {{ schema_name -}}.query_subgraph
   signature:
     - [SUBGRAPH_ID, STRING, The ID of the Subgraph]
     - [QUERY, OBJECT, The GraphQL query]

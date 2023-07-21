@@ -1,8 +1,8 @@
-{% macro config_fred_series_udfs(schema_name = "fred_series", utils_schema_name = "fred_utils") -%}
+{% macro config_fred_udfs(schema_name = "fred", utils_schema_name = "fred_utils") -%}
 {#
-    This macro is used to generate the Fred Series Calls
+    This macro is used to generate the FRED Calls
  #}
-- name: {{ schema_name -}}.get
+- name: {{ schema_name -}}.get_series
   signature:
     - [QUERY_ARGS, OBJECT, The query arguments]
   return_type:
