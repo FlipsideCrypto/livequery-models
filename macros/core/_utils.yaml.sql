@@ -60,18 +60,5 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
   sql: secret/register
-- name: utils.udf_register_secret
-  signature:
-    - [request_id, STRING]
-    - [key, STRING]
-  func_type: SECURE
-  return_type: TEXT
-  options: |
-    NOT NULL
-    RETURNS NULL ON NULL INPUT
-    IMMUTABLE
-  sql: |
-    SELECT
-      {{ schema }}.UDF_REGISTER_SECRET(REQUEST_ID, {{ schema }}.UDF_WHOAMI(), KEY)
 
 {% endmacro %}
