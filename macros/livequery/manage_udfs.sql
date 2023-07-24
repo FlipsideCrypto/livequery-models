@@ -175,7 +175,7 @@
             {%- endfor -%}
         {%- endset -%}
         {%- do log("Deploy partner udfs: " ~ this.database ~ "." ~ this.schema ~ "_" ~ this.identifier, true) -%}
-        {%- do run_query(sql ~ grant_permissions_to_roles(blockchain ~ "." ~ network)) -%}
+        {%- do run_query(sql ~ grant_permissions_to_roles(blockchain ~ "_" ~ network)) -%}
     {%- endif -%}
 {%- endmacro -%}
 
