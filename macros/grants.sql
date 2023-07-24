@@ -1,6 +1,10 @@
 {% macro apply_grants_by_schema(schema) %}
 {#
     Generates SQL to grant permissions to roles for a given schema.
+    This gets run automatically when a deployment is made to prod.
+
+    This can be manually run to grant permissions to a new schema:
+    `dbt run-operation apply_grants_by_schema --args '{"schema": "my_schema"}'`
  #}
     {% if target.name == "prod" %}
         {%- set outer = namespace(sql="") -%}
@@ -24,7 +28,13 @@
 {%- endmacro -%}
 
 {% macro apply_grants_to_all_schema() %}
+{#
+    Run SQL to grant permissions to roles for all schemas.
+    This is useful for when a new role is created and needs to be granted access to all schemas.
+    This is not used in the normal grant process.
 
+    `dbt run-operation apply_grants_to_all_schema`
+ #}
     {% if execute and target.name == "prod" %}
         {% set sql_get_schema %}
             SELECT SCHEMA_NAME
