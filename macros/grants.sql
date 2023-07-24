@@ -33,7 +33,7 @@
         {%- endset -%}
         {%- set results = run_query(sql_get_schema) -%}
         {% set sql_apply_grants %}
-            {%- for schema in results.columns[1].values() -%}
+            {%- for schema in results.columns[0].values() -%}
                 {{ apply_grants_by_schema(schema) }}
             {%- endfor -%}
         {%- endset -%}
