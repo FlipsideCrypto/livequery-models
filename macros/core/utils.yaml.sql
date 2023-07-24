@@ -77,6 +77,17 @@
       LTRIM(regexp_replace(
         try_hex_decode_string(hex),
           '[\x00-\x1F\x7F-\x9F\xAD]', '', 1))
+- name: {{ schema }}.udf_int_to_hex
+  signature:
+    - [int, INTEGER]
+  return_type: TEXT
+  options: |
+    NULL
+    LANGUAGE SQL
+    RETURNS NULL ON NULL INPUT
+    IMMUTABLE
+  sql: |
+    select CONCAT('0x', TRIM(TO_CHAR(int, 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')))
 
 - name: {{ schema }}.udf_json_rpc_call
   signature:
