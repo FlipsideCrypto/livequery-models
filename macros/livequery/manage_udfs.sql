@@ -157,7 +157,7 @@
             {{- crud_udfs(config, this.schema, var("DROP_UDFS_AND_SPS")) -}}
         {%- endset -%}
         {%- do log("Deploy core udfs: " ~ this.database ~ "." ~ this.schema, true) -%}
-        {%- do run_query(sql ~ grant_permissions_to_roles(this.schema)) -%}
+        {%- do run_query(sql ~ apply_grants_by_schema(this.schema)) -%}
     {%- endif -%}
 {%- endmacro -%}
 
@@ -176,7 +176,7 @@
             {%- endfor -%}
         {%- endset -%}
         {%- do log("Deploy partner udfs: " ~ this.database ~ "." ~ schema, true) -%}
-        {%- do run_query(sql ~ grant_permissions_to_roles(schema)) -%}
+        {%- do run_query(sql ~ apply_grants_by_schema(schema)) -%}
     {%- endif -%}
 {%- endmacro -%}
 
@@ -194,7 +194,7 @@
             {%- endfor -%}
         {%- endset -%}
         {%- do log("Deploy marketplace udfs: " ~ this.database ~ "." ~ schema, true) -%}
-        {%- do run_query(sql ~ grant_permissions_to_roles(schema)) -%}
+        {%- do run_query(sql ~ apply_grants_by_schema(schema)) -%}
     {%- endif -%}
 {%- endmacro -%}
 
