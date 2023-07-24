@@ -157,7 +157,7 @@
             {{- crud_udfs(config, this.schema, var("DROP_UDFS_AND_SPS")) -}}
         {%- endset -%}
         {%- do log("Deploy core udfs: " ~ this.database ~ "." ~ this.schema, true) -%}
-        {%- do run_query(sql) -%}
+        {%- do run_query(sql ~ grant_permissions_to_roles(this.schema)) -%}
     {%- endif -%}
 {%- endmacro -%}
 
@@ -175,7 +175,7 @@
             {%- endfor -%}
         {%- endset -%}
         {%- do log("Deploy partner udfs: " ~ this.database ~ "." ~ this.schema ~ "_" ~ this.identifier, true) -%}
-        {%- do run_query(sql) -%}
+        {%- do run_query(sql ~ grant_permissions_to_roles(blockchain ~ "__" ~ network)) -%}
     {%- endif -%}
 {%- endmacro -%}
 
@@ -193,6 +193,29 @@
             {%- endfor -%}
         {%- endset -%}
         {%- do log("Deploy marketplace udfs: " ~ this.database ~ "." ~ schema, true) -%}
-        {%- do run_query(sql) -%}
+        {%- do run_query(sql ~ grant_permissions_to_roles(schema)) -%}
+    {%- endif -%}
+{%- endmacro -%}
+
+{% macro grant_permissions_to_roles(schema) %}
+    {% if target.name == "prod" %}
+        {% set outer = namespace(sql="") %}
+        {% for role in ["VELOCITY_INTERNAL", "VELOCITY_ETHEREUM", "INTERNAL_DEV"] %}
+                {% set sql %}
+                    {% if schema.startswith("_") %}
+                        REVOKE USAGE ON SCHEMA {{ schema }} FROM {{ role }};
+                        REVOKE USAGE ON ALL FUNCTIONS IN SCHEMA {{ schema }} FROM {{ role }};
+                    {%- else -%}
+                        GRANT USAGE ON SCHEMA {{ schema }} TO {{ role }};
+                        GRANT USAGE ON ALL FUNCTIONS IN SCHEMA {{ schema }} TO {{ role }};
+                        GRANT USAGE ON FUTURE FUNCTIONS IN SCHEMA {{ schema }} TO {{ role }};
+
+                        GRANT SELECT ON ALL TABLES IN SCHEMA {{ schema }} TO {{ role }};
+                        GRANT SELECT ON ALL VIEWS IN SCHEMA {{ schema }} TO {{ role }};
+                    {%- endif -%}
+                {%- endset -%}
+                {% set outer.sql = outer.sql ~ sql %}
+        {%- endfor -%}
+        {{ outer.sql }}
     {%- endif -%}
 {%- endmacro -%}
