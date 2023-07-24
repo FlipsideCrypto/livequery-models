@@ -9,7 +9,7 @@
     {% if target.name == "prod" %}
         {%- set outer = namespace(sql="") -%}
         {% for role in ["VELOCITY_INTERNAL", "VELOCITY_ETHEREUM", "INTERNAL_DEV"] %}
-                {%- set sql -%}
+                {% set sql -%}
                     {% if schema.startswith("_") %}
                         REVOKE USAGE ON SCHEMA {{ target.database }}.{{ schema }} FROM {{ role }};
                         REVOKE USAGE ON ALL FUNCTIONS IN SCHEMA {{ target.database }}.{{ schema }} FROM {{ role }};
