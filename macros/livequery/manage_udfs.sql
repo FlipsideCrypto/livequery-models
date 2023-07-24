@@ -168,14 +168,15 @@
  #}
     {%- set blockchain = this.schema -%}
     {%- set network = this.identifier -%}
+    {% set schema = blockchain ~ "_" ~ network %}
     {% if execute and (var("UPDATE_UDFS_AND_SPS") or var("DROP_UDFS_AND_SPS")) and model.unique_id in selected_resources %}
         {% set sql %}
             {% for config in configs %}
                 {{- crud_udfs_by_chain(config, blockchain, network, var("DROP_UDFS_AND_SPS")) -}}
             {%- endfor -%}
         {%- endset -%}
-        {%- do log("Deploy partner udfs: " ~ this.database ~ "." ~ this.schema ~ "_" ~ this.identifier, true) -%}
-        {%- do run_query(sql ~ grant_permissions_to_roles(blockchain ~ "_" ~ network)) -%}
+        {%- do log("Deploy partner udfs: " ~ this.database ~ "." ~ schema, true) -%}
+        {%- do run_query(sql ~ grant_permissions_to_roles(schema)) -%}
     {%- endif -%}
 {%- endmacro -%}
 
@@ -208,7 +209,6 @@
                     {%- else -%}
                         GRANT USAGE ON SCHEMA {{ schema }} TO {{ role }};
                         GRANT USAGE ON ALL FUNCTIONS IN SCHEMA {{ schema }} TO {{ role }};
-                        GRANT USAGE ON FUTURE FUNCTIONS IN SCHEMA {{ schema }} TO {{ role }};
 
                         GRANT SELECT ON ALL TABLES IN SCHEMA {{ schema }} TO {{ role }};
                         GRANT SELECT ON ALL VIEWS IN SCHEMA {{ schema }} TO {{ role }};
