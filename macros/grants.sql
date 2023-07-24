@@ -28,7 +28,7 @@
     {% if execute and target.name == "prod" %}
         {% set sql_get_schema %}
             SELECT SCHEMA_NAME
-            FROM {{ target.database }}.INFORMATION_SCHEMA.SCHEMA
+            FROM {{ target.database }}.INFORMATION_SCHEMA.SCHEMATA
             WHERE SCHEMA_NAME NOT IN ('PUBLIC', 'INFORMATION_SCHEMA')
         {%- endset -%}
         {%- set results = run_query(sql_get_schema) -%}
