@@ -1,5 +1,6 @@
 {{ config(
-    materialized = 'view'
+    materialized = 'view',
+    revokes = {"select": ["VELOCITY_INTERNAL", "VELOCITY_ETHEREUM"]}
 ) }}
 
 SELECT *

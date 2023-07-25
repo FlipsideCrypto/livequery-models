@@ -158,6 +158,8 @@
         {%- endset -%}
         {%- do log("Deploy core udfs: " ~ this.database ~ "." ~ this.schema, true) -%}
         {%- do run_query(sql ~ apply_grants_by_schema(this.schema)) -%}
+    {% else -%}
+        SELECT '{{ this.schema }}' as model
     {%- endif -%}
 {%- endmacro -%}
 

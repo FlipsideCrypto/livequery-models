@@ -9,8 +9,7 @@ SELECT
     abi,
     start_block,
     end_block,
-    CASE
-        blockchain
+    CASE blockchain
         WHEN 'avalanche' THEN 'avalanche_c'
         WHEN 'arbitrum' THEN 'arbitrum_one'
         ELSE blockchain
