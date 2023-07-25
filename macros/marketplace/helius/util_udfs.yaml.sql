@@ -17,9 +17,9 @@
       'GET',
       CASE 
           WHEN NETWORK = 'devnet' THEN 
-              concat('https://api-devnet.helius.xyz', PATH, '?api_key={API_KEY}&', utils.udf_object_to_url_query_string(QUERY_PARAMS))
+              concat('https://api-devnet.helius.xyz', PATH, '?api-key={API_KEY}&', utils.udf_object_to_url_query_string(QUERY_PARAMS))
           ELSE 
-              concat('https://api.helius.xyz', PATH, '?api_key={API_KEY}&', utils.udf_object_to_url_query_string(QUERY_PARAMS))
+              concat('https://api.helius.xyz', PATH, '?api-key={API_KEY}&', utils.udf_object_to_url_query_string(QUERY_PARAMS))
       END,
       {},
       {},
@@ -40,9 +40,9 @@
       'POST',
       CASE
           WHEN NETWORK = 'devnet' THEN 
-              concat('https://api-devnet.helius.xyz', PATH, '?api_key={API_KEY}')
+              concat('https://api-devnet.helius.xyz', PATH, '?api-key={API_KEY}')
           ELSE 
-              concat('https://api.helius.xyz', PATH, '?api_key={API_KEY}')
+              concat('https://api.helius.xyz', PATH, '?api-key={API_KEY}')
       END,
       {},
       BODY,

@@ -26,9 +26,9 @@
       'GET',
       CASE 
           WHEN NETWORK = 'devnet' THEN 
-              concat('https://api-devnet.helius.xyz/v0/addresses/', ADDRESS, '/balances?api_key={API_KEY}')
+              concat('https://api-devnet.helius.xyz/v0/addresses/', ADDRESS, '/balances?api-key={API_KEY}')
           ELSE 
-              concat('https://api.helius.xyz/v0/addresses/', ADDRESS, '/balances?api_key={API_KEY}')
+              concat('https://api.helius.xyz/v0/addresses/', ADDRESS, '/balances?api-key={API_KEY}')
       END,
       {},
       {},
