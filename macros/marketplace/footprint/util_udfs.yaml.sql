@@ -10,7 +10,7 @@
   return_type:
     - "VARIANT"
   options: |
-    COMMENT = $$Used to issue a 'GET' request to the Chainbase API.$$
+    COMMENT = $$Used to issue a 'GET' request to the Footprint API.$$
   sql: |
     SELECT
       live.udf_api(
@@ -31,7 +31,7 @@
   return_type:
     - "VARIANT"
   options: |
-    COMMENT = $$Used to issue a 'POST' request to the Chainbase API.$$
+    COMMENT = $$Used to issue a 'POST' request to the Footprint API.$$
   sql: |
     SELECT
       live.udf_api(
@@ -50,7 +50,7 @@
   return_type:
     - "VARIANT"
   options: |
-    COMMENT = $$Used to issue an RPC call to Chainbase.$$
+    COMMENT = $$Used to issue an RPC call to Footprint.$$
   sql: |
     SELECT live.udf_api(
       'POST',
