@@ -1,14 +1,14 @@
 {% test test_udf(model, column_name, args, expected) %}
 ,
-tests as
+tests AS
 (
-SELECT
-'{{ column_name }}' as test_name
-,{{ column_name }}({{args}}) as actual
-,{{ expected }} as expected
-,NOT {{ column_name }}({{args}}) = {{ expected }} as failed
+    SELECT
+        '{{ column_name }}' AS test_name
+        ,{{ column_name }}({{args}}) AS actual
+        ,{{ expected }} AS expected
+        ,NOT {{ column_name }}({{args}}) = {{ expected }} AS failed
 )
-select *
-from tests
+SELECT *
+FROM tests
 WHERE FAILED = TRUE
 {% endtest %}

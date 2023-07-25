@@ -7,7 +7,7 @@ SELECT
     symbol,
     decimals,
     CASE
-        blockchain
+    blockchain
         WHEN 'avalanche' THEN 'avalanche_c'
         WHEN 'arbitrum' THEN 'arbitrum_one'
         ELSE blockchain

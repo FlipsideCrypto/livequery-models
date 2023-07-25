@@ -5,7 +5,7 @@ models:
         tests:
           - test_udf:
               args: "'foo', [], 1"
-              expected: |
+              expected: >
                 {
                   'jsonrpc': '2.0',
                   'method': 'foo',
