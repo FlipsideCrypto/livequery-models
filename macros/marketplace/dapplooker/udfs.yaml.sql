@@ -14,7 +14,7 @@
     SELECT
       live.udf_api(
         'GET',
-        concat('https://api.dapplooker.com/charts/', CHART_ID, '?api_key={API_KEY}&format=json'),
+        concat('https://api.dapplooker.com/chart/', CHART_ID, '?api_key={API_KEY}&format=json'),
         {},
         {},
         '_FSC_SYS/DAPPLOOKER'
