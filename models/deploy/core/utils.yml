@@ -7,8 +7,8 @@ models:
               args: "'foo', [], 1"
               expected: >
                 {
-                  'jsonrpc': '2.0',
-                  'method': 'foo',
-                  'params': [],
-                  'id': '1'
+                'jsonrpc': '2.0',
+                'method': 'foo',
+                'params': [],
+                'id': '1'
                 }
