@@ -1,12 +1,15 @@
 {% test test_udf(model, column_name, args, expected) %}
+{%- set schema = model | replace("__dbt__cte__", "") -%}
+{%- set udf = schema ~ "." ~ column_name -%}
 ,
 tests AS
 (
     SELECT
-        '{{ column_name }}' AS test_name
-        ,{{ column_name }}({{args}}) AS actual
+        '{{ udf }}' AS test_name
+        ,[{{ args }}] as parameters
+        ,{{ udf }}({{args}}) AS actual
         ,{{ expected }} AS expected
-        ,NOT {{ column_name }}({{args}}) = {{ expected }} AS failed
+        ,NOT {{ udf }}({{args}}) = {{ expected }} AS failed
 )
 SELECT *
 FROM tests

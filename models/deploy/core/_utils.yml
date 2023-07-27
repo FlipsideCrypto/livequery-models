@@ -1,7 +1,7 @@
 models:
   - name: _utils
     columns:
-      - name: _utils.udf_introspect
+      - name: udf_introspect
         tests:
           - test_udf:
               args: "'hello'"

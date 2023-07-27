@@ -159,7 +159,7 @@
         {%- do log("Deploy core udfs: " ~ this.database ~ "." ~ this.schema, true) -%}
         {%- do run_query(sql ~ apply_grants_by_schema(this.schema)) -%}
     {% else -%}
-        SELECT '{{ this.schema }}' as model
+        SELECT '{{ model.schema }}' as schema_
     {%- endif -%}
 {%- endmacro -%}
 
@@ -179,6 +179,8 @@
         {%- endset -%}
         {%- do log("Deploy partner udfs: " ~ this.database ~ "." ~ schema, true) -%}
         {%- do run_query(sql ~ apply_grants_by_schema(schema)) -%}
+    {% else -%}
+        SELECT '{{ model.schema }}' as schema_
     {%- endif -%}
 {%- endmacro -%}
 
@@ -197,6 +199,8 @@
         {%- endset -%}
         {%- do log("Deploy marketplace udfs: " ~ this.database ~ "." ~ schema, true) -%}
         {%- do run_query(sql ~ apply_grants_by_schema(schema)) -%}
+    {% else -%}
+        SELECT '{{ model.schema }}' as schema_
     {%- endif -%}
 {%- endmacro -%}
 
