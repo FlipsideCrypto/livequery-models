@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'view',
-    revokes = {"select": ["VELOCITY_INTERNAL", "VELOCITY_ETHEREUM"]}
+    grants = {'+select': ['INTERNAL_DEV']}
 ) }}
 
 SELECT *
