@@ -1,13 +1,11 @@
 name: dbt_run_adhoc
-run-name: dbt_run_adhoc
+run-name: ${{ inputs.dbt_command }}
 
 on:
   workflow_dispatch:
-    branches:
-      - "main"
     inputs:
       environment:
-        type: choice 
+        type: choice
         description: DBT Run Environment
         required: true
         options:
@@ -15,9 +13,9 @@ on:
           - prod
         default: dev
       warehouse:
-        type: choice 
+        type: choice
         description: Snowflake warehouse
-        required: true 
+        required: true
         options:
           - DBT
           - DBT_CLOUD
@@ -27,7 +25,7 @@ on:
         type: string
         description: 'DBT Run Command'
         required: true
-    
+
 env:
   DBT_PROFILES_DIR: ./
 
@@ -46,20 +44,28 @@ concurrency:
 jobs:
   run_dbt_jobs:
     runs-on: ubuntu-latest
-    environment: 
+    environment:
       name: workflow_${{ inputs.environment }}
 
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/setup-python@v1
+      - uses: actions/setup-python@v4
         with:
-          python-version: "3.7.x"
+          python-version: "3.10"
+          cache: "pip"
+
 
       - name: install dependencies
         run: |
-          pip3 install dbt-snowflake==${{ vars.DBT_VERSION }} cli_passthrough requests click
+          pip install -r requirements.txt
           dbt deps
       - name: Run DBT Jobs
         run: |
-          ${{ inputs.dbt_command }}
+          dbt --debug ${{ inputs.dbt_command }}
+
+      - name: Store logs
+        uses: actions/upload-artifact@v3
+        with:
+          name: dbt-logs
+          path: logs

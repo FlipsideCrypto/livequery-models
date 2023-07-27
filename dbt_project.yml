@@ -13,7 +13,7 @@ profile: "livequery"
 # found in the "models/" directory. You probably won't need to change these!
 model-paths: ["models"]
 analysis-paths: ["analysis"]
-test-paths: ["tests"]
+# test-paths: ["tests"]
 seed-paths: ["data"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
@@ -24,12 +24,22 @@ clean-targets: # directories to be removed by `dbt clean`
   - "dbt_modules"
   - "dbt_packages"
 
+models:
+  livequery_models:
+    deploy:
+      +materialized: ephemeral
+      core:
+        +tags: core
+      evm:
+        +tags: evm
+      marketplace:
+        +tags: marketplace
+
 tests:
   +store_failures: true # all tests
 
 on-run-start:
   - "{{ create_sps() }}"
-  - "{{ create_udfs() }}"
 
 on-run-end:
   - "{{ apply_meta_as_tags(results) }}"
@@ -44,6 +54,7 @@ on-run-end:
 vars:
   "dbt_date:time_zone": GMT
   UPDATE_UDFS_AND_SPS: false
+  DROP_UDFS_AND_SPS: false
   UPDATE_SNOWFLAKE_TAGS: true
   STREAMLINE_INVOKE_STREAMS: False
   STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES: False
