@@ -1,0 +1,16 @@
+version: 2
+models:
+  - name: subquery__
+    columns:
+      - name: udf_json_rpc_call
+        tests:
+          - test_udf:
+              args: "'foo', [], 1"
+              expected: >
+                {
+                'jsonrpc': '2.0',
+                'method': 'foo',
+                'params': [],
+                'id': '1'
+                }
+

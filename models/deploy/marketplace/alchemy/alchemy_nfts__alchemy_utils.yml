@@ -1,0 +1,153 @@
+version: 2
+models:
+  - name: alchemy_nfts__alchemy_utils
+    columns:
+      - name: get_nfts
+        tests:
+          - test_udf:
+              args: |
+                '',{}
+              expected: >
+                {}
+      - name: get_owners_for_token
+        tests:
+          - test_udf:
+              args: |
+                '',{}
+              expected: >
+                {}
+      - name: get_owners_for_collection
+        tests:
+          - test_udf:
+              args: |
+                '',{}
+              expected: >
+                {}
+      - name: is_holder_of_collection
+        tests:
+          - test_udf:
+              args: |
+                '',{}
+              expected: >
+                {}
+      - name: get_contracts_for_owner
+        tests:
+          - test_udf:
+              args: |
+                '',{}
+              expected: >
+                {}
+      - name: get_nft_metadata
+        tests:
+          - test_udf:
+              args: |
+                '',{}
+              expected: >
+                {}
+      - name: get_nft_metadata_batch
+        tests:
+          - test_udf:
+              args: |
+                '',{}
+              expected: >
+                {}
+      - name: get_contract_metadata
+        tests:
+          - test_udf:
+              args: |
+                '',{}
+              expected: >
+                {}
+      - name: get_contract_metadata_batch
+        tests:
+          - test_udf:
+              args: |
+                '',{}
+              expected: >
+                {}
+      - name: invalidate_contract
+        tests:
+          - test_udf:
+              args: |
+                '',{}
+              expected: >
+                {}
+      - name: reingest_contract
+        tests:
+          - test_udf:
+              args: |
+                '',{}
+              expected: >
+                {}
+      - name: search_contract_metadata
+        tests:
+          - test_udf:
+              args: |
+                '',{}
+              expected: >
+                {}
+      - name: get_nfts_for_collection
+        tests:
+          - test_udf:
+              args: |
+                '',{}
+              expected: >
+                {}
+      - name: get_spam_contracts
+        tests:
+          - test_udf:
+              args: |
+                '',{}
+              expected: >
+                {}
+      - name: is_spam_contract
+        tests:
+          - test_udf:
+              args: |
+                '',{}
+              expected: >
+                {}
+      - name: is_airdrop
+        tests:
+          - test_udf:
+              args: |
+                '',{}
+              expected: >
+                {}
+      - name: report_spam
+        tests:
+          - test_udf:
+              args: |
+                '',{}
+              expected: >
+                {}
+      - name: get_floor_price
+        tests:
+          - test_udf:
+              args: |
+                '',{}
+              expected: >
+                {}
+      - name: get_nft_sales
+        tests:
+          - test_udf:
+              args: |
+                '',{}
+              expected: >
+                {}
+      - name: compute_rarity
+        tests:
+          - test_udf:
+              args: |
+                '',{}
+              expected: >
+                {}
+      - name: summarize_nft_attributes
+        tests:
+          - test_udf:
+              args: |
+                '',{}
+              expected: >
+                {}
+
+
