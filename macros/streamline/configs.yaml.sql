@@ -117,6 +117,18 @@
     HANDLER = 'udf_encode'
   sql: |
     {{ fsc_utils.create_udf_keccak256() | indent(4) }}  
+  
+- name: {{ schema }}.udf_decimal_adjust
+  signature:
+    - [input, string]
+    - [adjustment, int]
+  return_type: VARCHAR
+  options: |
+    LANGUAGE PYTHON
+    RUNTIME_VERSION = '3.8'
+    HANDLER = 'custom_divide'
+  sql: |
+    {{ fsc_utils.create_udf_decimal_adjust() | indent(4) }}  
 
 {% endmacro %}
 

@@ -74,3 +74,26 @@ def get_simplified_signature(abi):
     signature_parts[-1] = signature_parts[-1].rstrip(",") + ")"
     return "".join(signature_parts)
 {% endmacro %}
+
+{% macro create_udf_decimal_adjust() %}
+
+from decimal import Decimal, ROUND_DOWN
+
+def custom_divide(input, adjustment):
+    try:
+        if adjustment is None or input is None:
+            return None
+
+        # Perform the division using Decimal type
+        result = Decimal(input) / pow(10, Decimal(adjustment))
+
+        # Determine the number of decimal places in the result
+        decimal_places = max(0, -result.as_tuple().exponent)
+
+        # Convert the result to a string representation without scientific notation and with dynamic decimal precision
+        result_str = "{:.{prec}f}".format(result, prec=decimal_places)
+
+        return result_str
+    except Exception as e:
+        return None
+{% endmacro %}
