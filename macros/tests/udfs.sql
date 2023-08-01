@@ -13,7 +13,7 @@ tests AS
         ,[{{ args }}] as parameters
         ,{{ udf }}({{args}}){{ filter}} AS actual
         ,{{ expected }} AS expected
-        ,NOT actual = {{ expected }} AS failed
+        ,COALESCE(NOT actual = {{ expected }}, TRUE) AS failed
 )
 SELECT *
 FROM tests
