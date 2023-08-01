@@ -1,9 +1,9 @@
-{% macro config_quicknode_util_udfs(schema = "quicknode_utils", utils_schema_name="quicknode_utils") -%}
+{% macro config_quicknode_util_udfs(schema_name = "quicknode_utils", utils_schema_name="quicknode_utils") -%}
 {#
     This macro is used to generate the QuickNode base endpoints/RPC calls
  #}
 
-- name: {{ schema -}}.ethereum_mainnet_rpc
+- name: {{ schema_name -}}.ethereum_mainnet_rpc
   signature:
     - [METHOD, STRING, The RPC method to call]
     - [PARAMS, OBJECT, The RPC Params arguments]
@@ -20,7 +20,7 @@
       '_FSC_SYS/QUICKNODE'
     ) as response
 
-- name: {{ schema -}}.polygon_mainnet_rpc
+- name: {{ schema_name -}}.polygon_mainnet_rpc
   signature:
     - [METHOD, STRING, The RPC method to call]
     - [PARAMS, OBJECT, The RPC Params arguments]
@@ -37,7 +37,7 @@
       '_FSC_SYS/QUICKNODE'
     ) as response
 
-- name: {{ schema -}}.solana_mainnet_rpc
+- name: {{ schema_name -}}.solana_mainnet_rpc
   signature:
     - [METHOD, STRING, The RPC method to call]
     - [PARAMS, OBJECT, The RPC Params arguments]

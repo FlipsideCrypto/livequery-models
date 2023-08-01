@@ -2,15 +2,15 @@ version: 2
 models:
   - name: fred__
     columns:
-      - name: udf_json_rpc_call
+      - name: get_series
         tests:
-          - test_udf:
-              args: "'foo', [], 1"
-              expected: >
+          - test_marketplace_udf:
+              name: test_fred__get_series_status_200
+              args: >
                 {
-                'jsonrpc': '2.0',
-                'method': 'foo',
-                'params': [],
-                'id': '1'
+                  'series_id': 'CORESTICKM679SFRBATL',
+                  'file_type': 'json'
                 }
 
+              filter: :status_code
+              expected: 200

@@ -2,15 +2,36 @@ version: 2
 models:
   - name: bitquery__
     columns:
-      - name: udf_json_rpc_call
+      - name: graphql
         tests:
-          - test_udf:
-              args: "'foo', [], 1"
-              expected: >
+          - test_marketplace_udf:
+              name: test_bitquery__graphql_status_200
+              args: >
                 {
-                'jsonrpc': '2.0',
-                'method': 'foo',
-                'params': [],
-                'id': '1'
+                  'query': '{
+                    ethereum( network: bsc ) {
+                      dexTrades(
+                        options: {limit: 1}
+                        baseCurrency: {is: "0x6679eB24F59dFe111864AEc72B443d1Da666B360"}
+                        quoteCurrency: {is: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"}
+                      ) {
+                        buyAmount
+                        buyAmountInUsd: buyAmount(in: USD)
+                        buyCurrency {
+                          symbol
+                          address
+                        }
+                        sellAmount
+                        sellCurrency {
+                          symbol
+                          address
+                        }
+                        tradeAmount(in: USD)
+                      }
+                    }
+                  }',
+                  'variables': '{}'
                 }
+              filter: :status_code
+              expected: 200
 

@@ -2,15 +2,33 @@ version: 2
 models:
   - name: quicknode_solana_nfts__quicknode_utils
     columns:
-      - name: udf_json_rpc_call
+      - name: fetch_nfts
         tests:
-          - test_udf:
-              args: "'foo', [], 1"
-              expected: >
+          - test_marketplace_udf:
+              name: test_quicknode_solana_nfts__fetch_nfts_status_200
+              args: >
                 {
-                'jsonrpc': '2.0',
-                'method': 'foo',
-                'params': [],
-                'id': '1'
+                  'wallet': 'DcTmx4VLcf5euAB17nynax7g55xuB3XKBDyz1pudMcjW',
+                  'omitFields': [
+                    'provenance',
+                    'traits'
+                    ],
+                  'page': 1,
+                  'perPage': 10
                 }
 
+              filter: :status_code
+              expected: 200
+      - name: fetch_nfts_by_creator
+        tests:
+          - test_marketplace_udf:
+              name: test_quicknode_solana_nfts__fetch_nfts_by_creator_status_200
+              args: >
+                {
+                  'creator': 'DznU28LgherhU2JwC2db3KmAeWPqoF9Yx2aVtNUudW6R',
+                  'page': 1,
+                  'perPage': 3
+                }
+
+              filter: :status_code
+              expected: 200

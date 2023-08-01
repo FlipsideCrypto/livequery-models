@@ -2,15 +2,63 @@ version: 2
 models:
   - name: quicknode_ethereum_tokens__quicknode_utils
     columns:
-      - name: udf_json_rpc_call
+      - name: get_token_metadata_by_contract_address
         tests:
-          - test_udf:
-              args: "'foo', [], 1"
-              expected: >
+          - test_marketplace_udf:
+              name: test_quicknode_ethereum_tokens__get_token_metadata_by_contract_address_status_200
+              args: >
                 {
-                'jsonrpc': '2.0',
-                'method': 'foo',
-                'params': [],
-                'id': '1'
+                  'contract': '0x4d224452801ACEd8B2F0aebE155379bb5D594381'
                 }
 
+              filter: :status_code
+              expected: 200
+      - name: get_token_metadata_by_symbol
+        tests:
+          - test_marketplace_udf:
+              name: test_quicknode_ethereum_tokens__get_token_metadata_by_symbol_status_200
+              args: >
+                {
+                  'symbol': 'USDC'
+                }
+
+              filter: :status_code
+              expected: 200
+      - name: get_transactions_by_address
+        tests:
+          - test_marketplace_udf:
+              name: test_quicknode_ethereum_tokens__get_transactions_by_address_status_200
+              args: >
+                {
+                  'address': '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
+                  'page': 1,
+                  'perPage': 10
+                }
+
+              filter: :status_code
+              expected: 200
+      - name: get_wallet_token_balance
+        tests:
+          - test_marketplace_udf:
+              name: test_quicknode_ethereum_tokens__get_wallet_token_balance_status_200
+              args: >
+                {
+                  'wallet': '0xd8da6bf26964af9d7eed9e03e53415d37aa96045'
+                }
+
+              filter: :status_code
+              expected: 200
+      - name: get_wallet_token_transactions
+        tests:
+          - test_marketplace_udf:
+              name: test_quicknode_ethereum_tokens__get_wallet_token_transactions_status_200
+              args: >
+                {
+                  'address': '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
+                  'contract': '0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE',
+                  'page': 1,
+                  'perPage': 10
+                }
+
+              filter: :status_code
+              expected: 200

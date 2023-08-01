@@ -2,15 +2,43 @@ version: 2
 models:
   - name: playgrounds__
     columns:
-      - name: udf_json_rpc_call
+      - name: query_subgraph
         tests:
-          - test_udf:
-              args: "'foo', [], 1"
-              expected: >
-                {
-                'jsonrpc': '2.0',
-                'method': 'foo',
-                'params': [],
-                'id': '1'
+          - test_marketplace_udf:
+              name: test_playgrounds__query_subgraph_status_200_liquidity_pools
+              args: >
+                'ELUcwgpm14LKPLrBRuVvPvNKHQ9HvwmtKgKSH6123cr7'
+                , {
+                  'query': '{
+                      liquidityPools(first: 200, orderBy: totalValueLockedUSD, orderDirection: desc) {
+                        id
+                        totalLiquidity
+                        name
+                        inputTokens {
+                           id
+                           symbol
+                        }
+                      }
+                  }',
+                  'variables': {}
                 }
+
+              filter: :status_code
+              expected: 200
+          - test_marketplace_udf:
+              name: test_playgrounds__query_subgraph_status_200_total_pool_count
+              args: >
+                'ELUcwgpm14LKPLrBRuVvPvNKHQ9HvwmtKgKSH6123cr7'
+                , {
+                  'query': '{
+                    protocols {
+                      name
+                      totalPoolCount
+                    }
+                  }',
+                  'variables': {}
+                }
+
+              filter: :status_code
+              expected: 200
 

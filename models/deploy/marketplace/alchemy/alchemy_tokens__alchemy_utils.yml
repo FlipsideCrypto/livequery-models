@@ -2,15 +2,28 @@ version: 2
 models:
   - name: alchemy_tokens__alchemy_utils
     columns:
-      - name: udf_json_rpc_call
+      - name: get_token_allowance
         tests:
-          - test_udf:
-              args: "'foo', [], 1"
-              expected: >
-                {
-                'jsonrpc': '2.0',
-                'method': 'foo',
-                'params': [],
-                'id': '1'
-                }
+          - test_marketplace_udf:
+              name: test_alchemy_tokens__get_token_allowance_status_200
+              args: >
+                'eth-mainnet', [{'contract': '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270', 'owner': '0xf1a726210550c306a9964b251cbcd3fa5ecb275d', 'spender': '0xdef1c0ded9bec7f1a1670819833240f027b25eff'}]
+              filter: :status_code
+              expected: 200
+      - name: get_token_balances
+        tests:
+          - test_marketplace_udf:
+              name: test_alchemy_tokens__get_token_balances_status_200
+              args: >
+                'eth-mainnet', ['0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5', 'erc20']
+              filter: :status_code
+              expected: 200
+      - name: get_token_metadata
+        tests:
+          - test_marketplace_udf:
+              name: test_alchemy_tokens__get_token_metadata_status_200
+              args: >
+                'eth-mainnet', ['0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48']
+              filter: :status_code
+              expected: 200
 

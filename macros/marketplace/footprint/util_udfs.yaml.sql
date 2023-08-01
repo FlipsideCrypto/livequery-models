@@ -1,9 +1,9 @@
-{% macro config_footprint_utils_udfs(schema = "footprint_utils", utils_schema_name="footprint_utils") -%}
+{% macro config_footprint_utils_udfs(schema_name = "footprint_utils", utils_schema_name="footprint_utils") -%}
 {#
     This macro is used to generate the Footprint base endpoints
  #}
 
-- name: {{ schema -}}.get
+- name: {{ schema_name -}}.get
   signature:
     - [PATH, STRING, The path starting with '/']
     - [QUERY_ARGS, OBJECT, The query arguments]
@@ -24,7 +24,7 @@
         '_FSC_SYS/FOOTPRINT'
     ) as response
 
-- name: {{ schema -}}.post
+- name: {{ schema_name -}}.post
   signature:
     - [PATH, STRING, The path starting with '/']
     - [BODY, OBJECT, The request body]
@@ -43,7 +43,7 @@
     ) as response
 
 
-- name: {{ schema -}}.rpc
+- name: {{ schema_name -}}.rpc
   signature:
     - [METHOD, STRING, The RPC method to call]
     - [PARAMS, ARRAY, The RPC Params arguments]

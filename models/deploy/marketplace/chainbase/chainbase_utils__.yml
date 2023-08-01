@@ -2,15 +2,17 @@ version: 2
 models:
   - name: chainbase_utils__
     columns:
-      - name: udf_json_rpc_call
+      - name: get
         tests:
-          - test_udf:
-              args: "'foo', [], 1"
-              expected: >
-                {
-                'jsonrpc': '2.0',
-                'method': 'foo',
-                'params': [],
-                'id': '1'
+          - test_marketplace_udf:
+              name: test_chainbase_utils__get_status_200
+              args: >
+                '/v1/nft/metadata'
+                , {
+                  'chain_id': 1,
+                  'contract_address': '0xed5af388653567af2f388e6224dc7c4b3241c544',
+                  'token_id': 1
                 }
 
+              filter: :status_code
+              expected: 200

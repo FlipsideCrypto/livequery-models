@@ -134,6 +134,7 @@ models:
         tests:
           - test_marketplace_udf:
               config:
+                # we don't want to run this test in CI
                 enabled: false
               name: test_alchemy_nfts__report_spam_status_200
               args: null

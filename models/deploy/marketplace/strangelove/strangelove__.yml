@@ -2,15 +2,15 @@ version: 2
 models:
   - name: strangelove__
     columns:
-      - name: udf_json_rpc_call
+      - name: get
         tests:
-          - test_udf:
-              args: "'foo', [], 1"
-              expected: >
-                {
-                'jsonrpc': '2.0',
-                'method': 'foo',
-                'params': [],
-                'id': '1'
+          - test_marketplace_udf:
+              name: test_strangelove__get_status_200
+              args: >
+                'https://api.strange.love/cosmoshub/mainnet/rpc/block_by_hash'
+                , {
+                  'blockHash': '0xD70952032620CC4E2737EB8AC379806359D8E0B17B0488F627997A0B043ABDED'
                 }
 
+              filter: :status_code
+              expected: 200
