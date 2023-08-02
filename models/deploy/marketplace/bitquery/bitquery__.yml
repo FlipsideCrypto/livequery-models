@@ -35,3 +35,4 @@ models:
               validations:
                 - result:status_code = 200
 
+

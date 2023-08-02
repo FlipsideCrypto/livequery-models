@@ -10,9 +10,9 @@ models:
                 '/v1/tokens/1/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', {
                   'blockNumber': 17767007
                 }
-
               validations:
                 - result:status_code = 200
+
       - name: post
         tests:
           - test_marketplace_udf:
@@ -25,6 +25,5 @@ models:
                   'blockNumber': 17767016,
                   'input': {}
                 }
-
               validations:
                 - result:status_code = 200

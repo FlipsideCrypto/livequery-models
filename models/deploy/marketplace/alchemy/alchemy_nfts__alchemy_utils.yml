@@ -10,6 +10,7 @@ models:
                 'eth-mainnet', {'owner': '0x4a9318F375937B56045E5a548e7E66AEA61Dd610'}
               validations:
                 - result:status_code = 200
+
       - name: get_owners_for_token
         tests:
           - test_marketplace_udf:
@@ -18,6 +19,7 @@ models:
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'tokenId': 44}
               validations:
                 - result:status_code = 200
+
       - name: get_owners_for_collection
         tests:
           - test_marketplace_udf:
@@ -26,6 +28,7 @@ models:
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'withTokenBalances': True}
               validations:
                 - result:status_code = 200
+
       - name: is_holder_of_collection
         tests:
           - test_marketplace_udf:
@@ -34,6 +37,7 @@ models:
                 'eth-mainnet', {'wallet': '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045', 'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330'}
               validations:
                 - result:status_code = 200
+
       - name: get_contracts_for_owner
         tests:
           - test_marketplace_udf:
@@ -42,6 +46,7 @@ models:
                 'eth-mainnet', {'owner': 'vitalik.eth', 'pageSize': 100, 'page': 1}
               validations:
                 - result:status_code = 200
+
       - name: get_nft_metadata
         tests:
           - test_marketplace_udf:
@@ -50,6 +55,7 @@ models:
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'tokenId': 44}
               validations:
                 - result:status_code = 200
+
       - name: get_nft_metadata_batch
         tests:
           - test_marketplace_udf:
@@ -58,6 +64,7 @@ models:
                 'eth-mainnet', {'tokens': [{'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'tokenId': 44}, {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'tokenId': 43}]}
               validations:
                 - result:status_code = 200
+
       - name: get_contract_metadata
         tests:
           - test_marketplace_udf:
@@ -66,6 +73,7 @@ models:
                 'ethereum-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330'}
               validations:
                 - result:status_code = 200
+
       - name: get_contract_metadata_batch
         tests:
           - test_marketplace_udf:
@@ -74,6 +82,7 @@ models:
                 'eth-mainnet', {'contractAddresses': ['0xe785E82358879F061BC3dcAC6f0444462D4b5330', '0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d']}
               validations:
                 - result:status_code = 200
+
       - name: invalidate_contract
         tests:
           - test_marketplace_udf:
@@ -82,6 +91,7 @@ models:
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330'}
               validations:
                 - result:status_code = 200
+
       - name: reingest_contract
         tests:
           - test_marketplace_udf:
@@ -90,6 +100,7 @@ models:
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330'}
               validations:
                 - result:status_code = 200
+
       - name: search_contract_metadata
         tests:
           - test_marketplace_udf:
@@ -98,6 +109,7 @@ models:
                 'eth-mainnet', {'query': 'bored'}
               validations:
                 - result:status_code = 200
+
       - name: get_nfts_for_collection
         tests:
           - test_marketplace_udf:
@@ -106,6 +118,7 @@ models:
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'withMetadata': True}
               validations:
                 - result:status_code = 200
+
       - name: get_spam_contracts
         tests:
           - test_marketplace_udf:
@@ -114,6 +127,7 @@ models:
                 'eth-mainnet', {}
               validations:
                 - result:status_code = 200
+
       - name: is_spam_contract
         tests:
           - test_marketplace_udf:
@@ -122,6 +136,7 @@ models:
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330'}
               validations:
                 - result:status_code = 200
+
       - name: is_airdrop
         tests:
           - test_marketplace_udf:
@@ -130,6 +145,7 @@ models:
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'tokenId': 44}
               validations:
                 - result:status_code = 200
+
       - name: report_spam
         tests:
           - test_marketplace_udf:
@@ -140,6 +156,7 @@ models:
               args: null
               validations:
                 - result:status_code = 200
+
       - name: get_floor_price
         tests:
           - test_marketplace_udf:
@@ -148,6 +165,7 @@ models:
                 'eth-mainnet', {'contractAddress': '0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d'}
               validations:
                 - result:status_code = 200
+
       - name: get_nft_sales
         tests:
           - test_marketplace_udf:
@@ -156,6 +174,7 @@ models:
                 'eth-mainnet', {'fromBlock': 0, 'toBlock': 'latest', 'order': 'asc', 'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'tokenId': 44}
               validations:
                 - result:status_code = 200
+
       - name: compute_rarity
         tests:
           - test_marketplace_udf:
@@ -164,6 +183,7 @@ models:
                 'eth-mainnet', {'tokenId': 3603, 'contractAddress': '0xb6a37b5d14d502c3ab0ae6f3a0e058bc9517786e'}
               validations:
                 - result:status_code = 200
+
       - name: summarize_nft_attributes
         tests:
           - test_marketplace_udf:
