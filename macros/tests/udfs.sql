@@ -11,9 +11,10 @@ tests AS
     SELECT
         '{{ udf }}' AS test_name
         ,[{{ args }}] as parameters
-        ,{{ udf }}({{args}}){{ filter}} AS actual
+        ,{{ udf }}({{args}}) AS result
+        ,result{{ filter}} AS actual
         ,{{ expected }} AS expected
-        ,COALESCE(NOT actual = {{ expected }}, TRUE) AS failed
+        ,COALESCE(actual <> {{ expected }}, TRUE) AS failed
 )
 SELECT *
 FROM tests
