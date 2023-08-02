@@ -1,7 +1,10 @@
 {% macro base_test_udf(model, udf, args, validations) %}
+{#
+  Generates a test for a UDF.
+ #}
 {% if execute %}
     {% set sql %}
-      SET LIVEQUERY_CONTEXT = '{"userId":"98d15c30-9fa5-43cd-9c69-3d4c0bb269f5"}';
+      SET LIVEQUERY_CONTEXT = '{"userId":"{{ var("STUDIO_TEST_USER_ID") }}"}';
     {% endset %}
   {% do run_query(sql) %}
 {% endif %}
