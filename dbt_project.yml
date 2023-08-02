@@ -62,3 +62,4 @@ vars:
   REST_API_ID_DEV: hn8uqhku77
   API_INTEGRATION: AWS_LIVE_QUERY{{ '_DEV' if target.name != 'prod' else ''  }}
   AWS_REGION: us-east-1
+  STUDIO_TEST_USER_ID: 98d15c30-9fa5-43cd-9c69-3d4c0bb269f5
