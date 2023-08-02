@@ -1,4 +1,4 @@
-{% macro config_quicknode_ethereum_nft_udfs(schema_name = "quicknode_ethereum_nfts", utils_schema_name = "quicknode_utils") -%}
+{% macro config_quicknode_ethereum_nfts_udfs(schema_name = "quicknode_ethereum_nfts", utils_schema_name = "quicknode_utils") -%}
 {#
     This macro is used to generate the QuickNode Ethereum NFT endpoints
  #}

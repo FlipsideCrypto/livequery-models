@@ -1,4 +1,4 @@
-{% macro config_quicknode_util_udfs(schema_name = "quicknode_utils", utils_schema_name="quicknode_utils") -%}
+{% macro config_quicknode_utils_udfs(schema_name = "quicknode_utils", utils_schema_name="quicknode_utils") -%}
 {#
     This macro is used to generate the QuickNode base endpoints/RPC calls
  #}

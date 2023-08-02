@@ -1,4 +1,4 @@
-{% macro config_quicknode_solana_nft_udfs(schema_name = "quicknode_solana_nfts", utils_schema_name = "quicknode_utils") -%}
+{% macro config_quicknode_solana_nfts_udfs(schema_name = "quicknode_solana_nfts", utils_schema_name = "quicknode_utils") -%}
 {#
     This macro is used to generate the QuickNode Solana NFT endpoints
  #}

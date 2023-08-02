@@ -1,4 +1,4 @@
-{% macro config_quicknode_ethereum_token_udfs(schema_name = "quicknode_ethereum_tokens", utils_schema_name = "quicknode_utils") -%}
+{% macro config_quicknode_ethereum_tokens_udfs(schema_name = "quicknode_ethereum_tokens", utils_schema_name = "quicknode_utils") -%}
 {#
     This macro is used to generate the QuickNode Ethereum Token endpoints
  #}
