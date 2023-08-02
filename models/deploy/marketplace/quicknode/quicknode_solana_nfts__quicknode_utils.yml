@@ -17,8 +17,8 @@ models:
                   'perPage': 10
                 }
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200
       - name: fetch_nfts_by_creator
         tests:
           - test_marketplace_udf:
@@ -30,5 +30,5 @@ models:
                   'perPage': 3
                 }
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200

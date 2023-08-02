@@ -12,8 +12,8 @@ models:
                   'id': 'F9Lw3ki3hJ7PF9HQXsBzoY8GyE6sPoEZZdXJBsTTD2rk'
                 }
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200
       - name: get_signatures_for_asset
         tests:
           - test_marketplace_udf:
@@ -26,8 +26,8 @@ models:
                   'limit': 1000 -- Limit 1000 per request.
                 }
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200
       - name: search_assets
         tests:
           - test_marketplace_udf:
@@ -41,8 +41,8 @@ models:
                   'limit': 1000
                 }
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200
       - name: get_asset_proof
         tests:
           - test_marketplace_udf:
@@ -53,8 +53,8 @@ models:
                   'id': 'Bu1DEKeawy7txbnCEJE4BU3BKLXaNAKCYcHR4XhndGss'
                 }
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200
       - name: get_assets_by_owner
         tests:
           - test_marketplace_udf:
@@ -67,8 +67,8 @@ models:
                   'limit': 1000
                 }
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200
       - name: get_assets_by_authority
         tests:
           - test_marketplace_udf:
@@ -81,8 +81,8 @@ models:
                   'limit': 1000
                 }
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200
       - name: get_assets_by_creator
         tests:
           - test_marketplace_udf:
@@ -96,8 +96,8 @@ models:
                   'limit': 1000
                 }
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200
       - name: get_assets_by_group
         tests:
           - test_marketplace_udf:
@@ -111,5 +111,5 @@ models:
                   'limit': 1000
                 }
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200

@@ -11,8 +11,8 @@ models:
                   'blockNumber': 17767007
                 }
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200
       - name: post
         tests:
           - test_marketplace_udf:
@@ -26,5 +26,5 @@ models:
                   'input': {}
                 }
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200

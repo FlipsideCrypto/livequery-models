@@ -14,5 +14,5 @@ models:
                   'token_id': 1
                 }
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200

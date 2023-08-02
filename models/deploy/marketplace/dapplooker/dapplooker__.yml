@@ -9,5 +9,5 @@ models:
               args: >
                 'a68cc6dd-1bc1-40ca-aaf8-b5155785f0b4'
 
-              filter: :status_code
-              expected: 202
+              validations:
+                - result:status_code = 200

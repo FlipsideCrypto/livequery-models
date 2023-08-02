@@ -14,8 +14,8 @@ models:
                       ]
                 }
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200
       - name: fetch_nfts
         tests:
           - test_marketplace_udf:
@@ -35,8 +35,8 @@ models:
                     ]
                 }
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200
       - name: fetch_nfts_by_collection
         tests:
           - test_marketplace_udf:
@@ -52,8 +52,8 @@ models:
                   'perPage': 10
                 }
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200
       - name: get_transfers_by_nft
         tests:
           - test_marketplace_udf:
@@ -66,8 +66,8 @@ models:
                 'perPage': 10
                 }
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200
       - name: verify_nfts_owner
         tests:
           - test_marketplace_udf:
@@ -81,5 +81,5 @@ models:
                   ]
                 }
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200

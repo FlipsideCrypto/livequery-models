@@ -31,8 +31,8 @@ _____
               name: test_{{ item["name"].replace(".", "__") ~ "_status_200" }}
               args: >
                 {{ test_queries[item["name"]] | join(", ") | indent(16) }}
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200
 {%- endfor %}
 
 =====================

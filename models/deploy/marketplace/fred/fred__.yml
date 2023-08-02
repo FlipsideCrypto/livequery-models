@@ -12,5 +12,5 @@ models:
                   'file_type': 'json'
                 }
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200

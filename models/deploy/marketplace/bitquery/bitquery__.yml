@@ -32,6 +32,6 @@ models:
                   }',
                   'variables': '{}'
                 }
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200
 

@@ -16,8 +16,8 @@ models:
                   'includeOffChain': true
                 }
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200
       - name: balances
         tests:
           - test_marketplace_udf:
@@ -26,8 +26,8 @@ models:
                 'mainnet'
                 , '231B38ZpsbtrWbsBEjSXfjVj9JT2XyuNXy4f98V5NXxg'
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200
       - name: parse_transactions
         tests:
           - test_marketplace_udf:
@@ -39,5 +39,5 @@ models:
                   '2bWLiRSA8GCh7UNEpiZdgsh2BMxZwKawk8ND4Z3iWrqDZE6JQk69n9WoCU9rKDrgWHw6qV25g8UBMJYddRJRHR9v'
                 ]
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200

@@ -10,5 +10,5 @@ models:
                 'kepler-network'
                 , {'query':'query { _mmrs (first: 5) { nodes { key } } }'}
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200

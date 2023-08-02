@@ -1,3 +1,4 @@
+version: 2
 models:
   - name: utils
     columns:
@@ -5,10 +6,11 @@ models:
         tests:
           - test_udf:
               args: "'foo', [], 1"
-              expected: >
-                {
-                'jsonrpc': '2.0',
-                'method': 'foo',
-                'params': [],
-                'id': '1'
-                }
+              validations:
+                - >
+                  result = {
+                    'jsonrpc': '2.0',
+                    'method': 'foo',
+                    'params': [],
+                    'id': '1'
+                  }

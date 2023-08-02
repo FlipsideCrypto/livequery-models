@@ -23,8 +23,8 @@ models:
                   'variables': {}
                 }
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200
           - test_marketplace_udf:
               name: test_playgrounds__query_subgraph_status_200_total_pool_count
               args: >
@@ -39,6 +39,6 @@ models:
                   'variables': {}
                 }
 
-              filter: :status_code
-              expected: 200
+              validations:
+                - result:status_code = 200
 
