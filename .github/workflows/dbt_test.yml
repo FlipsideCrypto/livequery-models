@@ -1,4 +1,4 @@
-name: dbt_run_adhoc
+name: dbt_tests
 run-name: ${{ inputs.dbt_command }}
 
 on:
