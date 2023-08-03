@@ -6,7 +6,7 @@ models:
         tests:
           - test_udf:
               args: "'foo', [], 1"
-              validations:
+              assertions:
                 - >
                   result = {
                     'jsonrpc': '2.0',

@@ -1,4 +1,4 @@
-{% macro base_test_udf(model, udf, args, validations) %}
+{% macro base_test_udf(model, udf, args, assertions) %}
 {#
   Generates a test for a UDF.
  #}
@@ -16,14 +16,14 @@ test AS
         ,[{{ args }}] as parameters
         ,{{ udf }}({{args}}) AS result
 )
-  {% for validation in validations %}
+  {% for assertion in assertions %}
     SELECT
     test_name,
     parameters,
     result,
-    $${{ validation }}$$ AS validation
+    $${{ assertion }}$$ AS assertion
     FROM test
-    WHERE NOT {{ validation }}
+    WHERE NOT {{ assertion }}
     {%- if not loop.last -%}
     UNION ALL
     {%- endif -%}

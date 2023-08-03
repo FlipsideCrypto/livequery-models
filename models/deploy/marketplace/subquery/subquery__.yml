@@ -9,5 +9,5 @@ models:
               args: >
                 'kepler-network'
                 , {'query':'query { _mmrs (first: 5) { nodes { key } } }'}
-              validations:
+              assertions:
                 - result:status_code = 200

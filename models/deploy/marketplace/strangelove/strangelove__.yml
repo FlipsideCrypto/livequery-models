@@ -11,5 +11,5 @@ models:
                 , {
                   'blockHash': '0xD70952032620CC4E2737EB8AC379806359D8E0B17B0488F627997A0B043ABDED'
                 }
-              validations:
+              assertions:
                 - result:status_code = 200

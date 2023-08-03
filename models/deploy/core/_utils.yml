@@ -5,5 +5,5 @@ models:
         tests:
           - test_udf:
               args: "'hello'"
-              validations:
+              assertions:
                 - result = 'hello'

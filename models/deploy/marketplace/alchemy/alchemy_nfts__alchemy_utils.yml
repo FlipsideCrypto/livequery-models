@@ -8,7 +8,7 @@ models:
               name: test_alchemy_nfts__get_nfts_status_200
               args: >
                 'eth-mainnet', {'owner': '0x4a9318F375937B56045E5a548e7E66AEA61Dd610'}
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: get_owners_for_token
@@ -17,7 +17,7 @@ models:
               name: test_alchemy_nfts__get_owners_for_token_status_200
               args: >
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'tokenId': 44}
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: get_owners_for_collection
@@ -26,7 +26,7 @@ models:
               name: test_alchemy_nfts__get_owners_for_collection_status_200
               args: >
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'withTokenBalances': True}
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: is_holder_of_collection
@@ -35,7 +35,7 @@ models:
               name: test_alchemy_nfts__is_holder_of_collection_status_200
               args: >
                 'eth-mainnet', {'wallet': '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045', 'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330'}
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: get_contracts_for_owner
@@ -44,7 +44,7 @@ models:
               name: test_alchemy_nfts__get_contracts_for_owner_status_200
               args: >
                 'eth-mainnet', {'owner': 'vitalik.eth', 'pageSize': 100, 'page': 1}
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: get_nft_metadata
@@ -53,7 +53,7 @@ models:
               name: test_alchemy_nfts__get_nft_metadata_status_200
               args: >
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'tokenId': 44}
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: get_nft_metadata_batch
@@ -62,7 +62,7 @@ models:
               name: test_alchemy_nfts__get_nft_metadata_batch_status_200
               args: >
                 'eth-mainnet', {'tokens': [{'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'tokenId': 44}, {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'tokenId': 43}]}
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: get_contract_metadata
@@ -71,7 +71,7 @@ models:
               name: test_alchemy_nfts__get_contract_metadata_status_200
               args: >
                 'ethereum-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330'}
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: get_contract_metadata_batch
@@ -80,7 +80,7 @@ models:
               name: test_alchemy_nfts__get_contract_metadata_batch_status_200
               args: >
                 'eth-mainnet', {'contractAddresses': ['0xe785E82358879F061BC3dcAC6f0444462D4b5330', '0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d']}
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: invalidate_contract
@@ -89,7 +89,7 @@ models:
               name: test_alchemy_nfts__invalidate_contract_status_200
               args: >
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330'}
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: reingest_contract
@@ -98,7 +98,7 @@ models:
               name: test_alchemy_nfts__reingest_contract_status_200
               args: >
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330'}
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: search_contract_metadata
@@ -107,7 +107,7 @@ models:
               name: test_alchemy_nfts__search_contract_metadata_status_200
               args: >
                 'eth-mainnet', {'query': 'bored'}
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: get_nfts_for_collection
@@ -116,7 +116,7 @@ models:
               name: test_alchemy_nfts__get_nfts_for_collection_status_200
               args: >
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'withMetadata': True}
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: get_spam_contracts
@@ -125,7 +125,7 @@ models:
               name: test_alchemy_nfts__get_spam_contracts_status_200
               args: >
                 'eth-mainnet', {}
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: is_spam_contract
@@ -134,7 +134,7 @@ models:
               name: test_alchemy_nfts__is_spam_contract_status_200
               args: >
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330'}
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: is_airdrop
@@ -143,7 +143,7 @@ models:
               name: test_alchemy_nfts__is_airdrop_status_200
               args: >
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'tokenId': 44}
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: report_spam
@@ -154,7 +154,7 @@ models:
                 enabled: false
               name: test_alchemy_nfts__report_spam_status_200
               args: null
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: get_floor_price
@@ -163,7 +163,7 @@ models:
               name: test_alchemy_nfts__get_floor_price_status_200
               args: >
                 'eth-mainnet', {'contractAddress': '0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d'}
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: get_nft_sales
@@ -172,7 +172,7 @@ models:
               name: test_alchemy_nfts__get_nft_sales_status_200
               args: >
                 'eth-mainnet', {'fromBlock': 0, 'toBlock': 'latest', 'order': 'asc', 'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'tokenId': 44}
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: compute_rarity
@@ -181,7 +181,7 @@ models:
               name: test_alchemy_nfts__compute_rarity_status_200
               args: >
                 'eth-mainnet', {'tokenId': 3603, 'contractAddress': '0xb6a37b5d14d502c3ab0ae6f3a0e058bc9517786e'}
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: summarize_nft_attributes
@@ -190,5 +190,5 @@ models:
               name: test_alchemy_nfts__summarize_nft_attributes_status_200
               args: >
                 'eth-mainnet', {'contractAddress': '0xb6a37b5d14d502c3ab0ae6f3a0e058bc9517786e'}
-              validations:
+              assertions:
                 - result:status_code = 200

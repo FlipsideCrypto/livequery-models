@@ -22,7 +22,7 @@ models:
                   }',
                   'variables': {}
                 }
-              validations:
+              assertions:
                 - result:status_code = 200
 
           - test_udf:
@@ -38,7 +38,7 @@ models:
                   }',
                   'variables': {}
                 }
-              validations:
+              assertions:
                 - result:status_code = 200
 
 

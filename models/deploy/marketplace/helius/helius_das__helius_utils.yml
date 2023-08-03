@@ -11,7 +11,7 @@ models:
                 , {
                   'id': 'F9Lw3ki3hJ7PF9HQXsBzoY8GyE6sPoEZZdXJBsTTD2rk'
                 }
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: get_signatures_for_asset
@@ -25,7 +25,7 @@ models:
                   'page': 1, -- Starts at 1
                   'limit': 1000 -- Limit 1000 per request.
                 }
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: search_assets
@@ -40,7 +40,7 @@ models:
                   'page': 1, -- Starts at 1
                   'limit': 1000
                 }
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: get_asset_proof
@@ -52,7 +52,7 @@ models:
                 , {
                   'id': 'Bu1DEKeawy7txbnCEJE4BU3BKLXaNAKCYcHR4XhndGss'
                 }
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: get_assets_by_owner
@@ -66,7 +66,7 @@ models:
                   'page': 1, -- Starts at 1
                   'limit': 1000
                 }
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: get_assets_by_authority
@@ -80,7 +80,7 @@ models:
                   'page': 1, -- Starts at 1
                   'limit': 1000
                 }
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: get_assets_by_creator
@@ -95,7 +95,7 @@ models:
                   'page': 1, -- Starts at 1
                   'limit': 1000
                 }
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: get_assets_by_group
@@ -110,5 +110,5 @@ models:
                   'page': 1,
                   'limit': 1000
                 }
-              validations:
+              assertions:
                 - result:status_code = 200

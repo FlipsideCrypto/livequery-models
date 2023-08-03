@@ -10,7 +10,7 @@ models:
                 {
                   'contract': '0x4d224452801ACEd8B2F0aebE155379bb5D594381'
                 }
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: get_token_metadata_by_symbol
@@ -21,7 +21,7 @@ models:
                 {
                   'symbol': 'USDC'
                 }
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: get_transactions_by_address
@@ -34,7 +34,7 @@ models:
                   'page': 1,
                   'perPage': 10
                 }
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: get_wallet_token_balance
@@ -45,7 +45,7 @@ models:
                 {
                   'wallet': '0xd8da6bf26964af9d7eed9e03e53415d37aa96045'
                 }
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: get_wallet_token_transactions
@@ -59,5 +59,5 @@ models:
                   'page': 1,
                   'perPage': 10
                 }
-              validations:
+              assertions:
                 - result:status_code = 200

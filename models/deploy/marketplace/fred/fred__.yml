@@ -11,5 +11,5 @@ models:
                   'series_id': 'CORESTICKM679SFRBATL',
                   'file_type': 'json'
                 }
-              validations:
+              assertions:
                 - result:status_code = 200

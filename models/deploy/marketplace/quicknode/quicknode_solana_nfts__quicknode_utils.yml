@@ -16,7 +16,7 @@ models:
                   'page': 1,
                   'perPage': 10
                 }
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: fetch_nfts_by_creator
@@ -29,6 +29,6 @@ models:
                   'page': 1,
                   'perPage': 3
                 }
-              validations:
+              assertions:
                 - result:status_code = 200
 

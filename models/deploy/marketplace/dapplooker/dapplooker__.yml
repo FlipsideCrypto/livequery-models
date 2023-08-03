@@ -8,6 +8,6 @@ models:
               name: test_dapplooker__get_chart_status_202
               args: >
                 'a68cc6dd-1bc1-40ca-aaf8-b5155785f0b4'
-              validations:
-                - result:status_code = 200
+              assertions:
+                - result:status_code between 200 and 299
 

@@ -14,5 +14,5 @@ models:
                   'limit': 10,
                   'offset': 0
                 }
-              validations:
+              assertions:
                 - result:status_code = 200

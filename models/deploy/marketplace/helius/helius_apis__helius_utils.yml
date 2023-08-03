@@ -15,7 +15,7 @@ models:
                   ],
                   'includeOffChain': true
                 }
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: balances
@@ -25,7 +25,7 @@ models:
               args: >
                 'mainnet'
                 , '231B38ZpsbtrWbsBEjSXfjVj9JT2XyuNXy4f98V5NXxg'
-              validations:
+              assertions:
                 - result:status_code = 200
 
       - name: parse_transactions
@@ -38,6 +38,6 @@ models:
                   '5u5S6yWN5wJkEDr3hKeqF3Y8nWcyWaZDboEnpfUuAw1zcvbvevs58rEfCpN6VkfxaS4N8RCMkBcyhxBFs3eoL4U4',
                   '2bWLiRSA8GCh7UNEpiZdgsh2BMxZwKawk8ND4Z3iWrqDZE6JQk69n9WoCU9rKDrgWHw6qV25g8UBMJYddRJRHR9v'
                 ]
-              validations:
+              assertions:
                 - result:status_code = 200
 
