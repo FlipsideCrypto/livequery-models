@@ -1,7 +1,21 @@
 version: "0.2"
 language: en
 words:
+  - aave
+  - bitquery
+  - blockpour
+  - chainbase
+  - credmark
+  - dapplooker
+  - doseq
   - fromyaml
   - GETVARIABLE
+  - helius
+  - keccak
   - livequery
+  - quicknode
+  - reingest
+  - solana
+  - strangelove
+  - subquery
   - udfs
