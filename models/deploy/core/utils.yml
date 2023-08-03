@@ -14,3 +14,55 @@ models:
                     'params': [],
                     'id': '1'
                   }
+      - name: udf_urlencode
+        tests:
+          - test_udf:
+              args: >
+                {'a':'b'}, TRUE
+              assertions:
+                - result = 'a=b'
+          - test_udf:
+              args: >
+                {'a':'a', 'b':'b'}, TRUE
+              assertions:
+                - result = 'a=a&b=b'
+          - test_udf:
+              args: >
+                  {'space': 'abc 123'}, TRUE
+              assertions:
+                - result = 'space=abc+123'
+          - test_udf:
+              args: >
+                  {'special!': ' !@#$,+"'}, TRUE
+              assertions:
+                - result = 'special%21=+%21%40%23%24%2C%2B%22'
+          - test_udf:
+              args: >
+                  {'array': [0, 1, 2]}, TRUE
+              assertions:
+                - result = 'array=0&array=1&array=2'
+          - test_udf:
+              args: >
+                {'a':'b'}, FALSE
+              assertions:
+                - result = 'a=b'
+          - test_udf:
+              args: >
+                {'a':'b', 'b':'b'}, FALSE
+              assertions:
+                - result = 'a=b&b=b'
+          - test_udf:
+              args: >
+                  {'space': 'abc 123'}, FALSE
+              assertions:
+                - result = 'space=abc+123'
+          - test_udf:
+              args: >
+                  {'special!': ' !@#$,+"'}, FALSE
+              assertions:
+                - result = 'special%21=+%21%40%23%24%2C%2B%22'
+          - test_udf:
+              args: >
+                  {'array': [0, 1, 2]}, FALSE
+              assertions:
+                - result = 'array=%5B0%2C+1%2C+2%5D'

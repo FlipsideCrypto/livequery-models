@@ -150,6 +150,7 @@
     LANGUAGE PYTHON
     IMMUTABLE
     RUNTIME_VERSION = '3.8'
+    COMMENT=$$Pthon (function)[https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlencode] to convert an object to a URL query string.$$
     HANDLER = 'object_to_url_query_string'
   sql: |
     {{ python_object_to_url_query_string() | indent(4) }}
@@ -163,6 +164,7 @@
     LANGUAGE PYTHON
     IMMUTABLE
     RUNTIME_VERSION = '3.8'
+    COMMENT=$$Pthon (function)[https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlencode] to convert an array to a URL query string.$$
     HANDLER = 'object_to_url_query_string'
   sql: |
     {{ python_object_to_url_query_string() | indent(4) }}
