@@ -140,9 +140,10 @@
   sql: |
     {{ sql_udf_json_rpc_call(False) }}
 
-- name: {{ schema }}.udf_object_to_url_query_string
+- name: {{ schema }}.udf_urlencode
   signature:
-    - [object, OBJECT]
+    - [query, OBJECT]
+    - [doseq, BOOLEAN]
   return_type: TEXT
   options: |
     NULL
@@ -152,6 +153,29 @@
     HANDLER = 'object_to_url_query_string'
   sql: |
     {{ python_object_to_url_query_string() | indent(4) }}
+- name: {{ schema }}.udf_urlencode
+  signature:
+    - [query, ARRAY]
+    - [doseq, BOOLEAN]
+  return_type: TEXT
+  options: |
+    NULL
+    LANGUAGE PYTHON
+    IMMUTABLE
+    RUNTIME_VERSION = '3.8'
+    HANDLER = 'object_to_url_query_string'
+  sql: |
+    {{ python_object_to_url_query_string() | indent(4) }}
+- name: {{ schema }}.udf_object_to_url_query_string
+  signature:
+    - [object, OBJECT]
+  return_type: TEXT
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    IMMUTABLE
+  sql: SELECT utils.udf_urlencode(object, FALSE)
+
 - name: {{ schema }}.udf_evm_transform_log
   signature:
     - [decoded, VARIANT]

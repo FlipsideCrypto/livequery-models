@@ -6,6 +6,26 @@
 - name: {{ schema_name -}}.get
   signature:
     - [PATH, STRING, The path starting with '/']
+    - [QUERY_ARGS, ARRAY, The query arguments]
+  return_type:
+    - "VARIANT"
+  options: |
+    COMMENT = $$Used to issue a 'GET' request to the Footprint API.$$
+  sql: |
+    SELECT
+      live.udf_api(
+        'GET',
+        concat(
+           'https://api.footprint.network/api', PATH, '?',
+            utils.udf_urlencode(QUERY_ARGS, TRUE)
+        ),
+        {'api-key': '{API_KEY}'},
+        {},
+        '_FSC_SYS/FOOTPRINT'
+    ) as response
+- name: {{ schema_name -}}.get
+  signature:
+    - [PATH, STRING, The path starting with '/']
     - [QUERY_ARGS, OBJECT, The query arguments]
   return_type:
     - "VARIANT"
@@ -17,7 +37,7 @@
         'GET',
         concat(
            'https://api.footprint.network/api', PATH, '?',
-            utils.udf_object_to_url_query_string(QUERY_ARGS)
+            utils.udf_urlencode(QUERY_ARGS, TRUE)
         ),
         {'api-key': '{API_KEY}'},
         {},

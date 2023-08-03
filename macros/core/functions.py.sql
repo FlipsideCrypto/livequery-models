@@ -83,10 +83,13 @@ def get_simplified_signature(abi):
 
 
 {% macro python_object_to_url_query_string() %}
-import urllib.parse
+from urllib.parse import urlencode
 
-def object_to_url_query_string(variant_object):
-    return f'{urllib.parse.urlencode(variant_object)}'
+def object_to_url_query_string(query, doseq=False):
+    {# return type(query) #}
+    if isinstance(query, dict):
+        return urlencode(query, doseq)
+    return urlencode([tuple(i) for i in query], doseq)
 
 {% endmacro %}
 
