@@ -4,7 +4,7 @@ models:
     columns:
       - name: get
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_credmark_utils__get_status_200
               args: >
                 '/v1/tokens/1/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
@@ -16,7 +16,7 @@ models:
 
       - name: post
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_credmark_utils__post_status_200
               args: >
                 '/v1/model/run'

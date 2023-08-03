@@ -4,7 +4,7 @@ models:
     columns:
       - name: get
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_footprint_utils__get_status_200_v2_protocol_info
               args: >
                 '/v2/protocol/info'

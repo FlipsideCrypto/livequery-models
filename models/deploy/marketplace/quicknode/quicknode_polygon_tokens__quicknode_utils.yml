@@ -4,7 +4,7 @@ models:
     columns:
       - name: get_token_metadata_by_contract_address
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_quicknode_polygon_tokens__get_token_metadata_by_contract_address_status_200
               args: >
                 {
@@ -15,7 +15,7 @@ models:
 
       - name: get_token_metadata_by_symbol
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_quicknode_polygon_tokens__get_token_metadata_by_symbol_status_200
               args: >
                 {
@@ -26,7 +26,7 @@ models:
 
       - name: get_transactions_by_address
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_quicknode_polygon_tokens__get_transactions_by_address_status_200
               args: >
                 {
@@ -39,7 +39,7 @@ models:
 
       - name: get_wallet_token_balance
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_quicknode_polygon_tokens__get_wallet_token_balance_status_200
               args: >
                 {
@@ -50,7 +50,7 @@ models:
 
       - name: get_wallet_token_transactions
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_quicknode_polygon_tokens__get_wallet_token_transactions_status_200
               args: >
                 {

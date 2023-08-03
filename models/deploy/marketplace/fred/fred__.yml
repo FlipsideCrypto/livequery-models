@@ -4,7 +4,7 @@ models:
     columns:
       - name: get_series
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_fred__get_series_status_200
               args: >
                 {

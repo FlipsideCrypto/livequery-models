@@ -4,7 +4,7 @@ models:
     columns:
       - name: query_subgraph
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_playgrounds__query_subgraph_status_200_liquidity_pools
               args: >
                 'ELUcwgpm14LKPLrBRuVvPvNKHQ9HvwmtKgKSH6123cr7'
@@ -25,7 +25,7 @@ models:
               validations:
                 - result:status_code = 200
 
-          - test_marketplace_udf:
+          - test_udf:
               name: test_playgrounds__query_subgraph_status_200_total_pool_count
               args: >
                 'ELUcwgpm14LKPLrBRuVvPvNKHQ9HvwmtKgKSH6123cr7'

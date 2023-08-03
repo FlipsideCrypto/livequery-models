@@ -4,7 +4,7 @@ models:
     columns:
       - name: graphql
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_subquery__graphql_status_200
               args: >
                 'kepler-network'

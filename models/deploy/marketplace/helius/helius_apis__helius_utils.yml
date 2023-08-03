@@ -4,7 +4,7 @@ models:
     columns:
       - name: token_metadata
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_helius_apis__token_metadata_status_200
               args: >
                 'mainnet'
@@ -20,7 +20,7 @@ models:
 
       - name: balances
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_helius_apis__balances_status_200
               args: >
                 'mainnet'
@@ -30,7 +30,7 @@ models:
 
       - name: parse_transactions
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_helius_apis__parse_transactions_status_200
               args: >
                 'mainnet'

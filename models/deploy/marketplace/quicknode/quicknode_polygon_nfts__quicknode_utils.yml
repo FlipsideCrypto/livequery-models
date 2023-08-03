@@ -4,7 +4,7 @@ models:
     columns:
       - name: fetch_nft_collection_details
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_quicknode_polygon_nfts__fetch_nft_collection_details_status_200
               args: >
                 {
@@ -18,7 +18,7 @@ models:
 
       - name: fetch_nfts
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_quicknode_polygon_nfts__fetch_nfts_status_200
               args: >
                 {
@@ -39,7 +39,7 @@ models:
 
       - name: fetch_nfts_by_collection
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_quicknode_polygon_nfts__fetch_nfts_by_collection_status_200
               args: >
                 {
@@ -56,7 +56,7 @@ models:
 
       - name: get_transfers_by_nft
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_quicknode_polygon_nfts__get_transfers_by_nft_status_200
               args: >
                 {
@@ -70,7 +70,7 @@ models:
 
       - name: verify_nfts_owner
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_quicknode_polygon_nfts__verify_nfts_owner_status_200
               args: >
                 {

@@ -4,7 +4,7 @@ models:
     columns:
       - name: get_asset
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_helius_das__get_asset_status_200
               args: >
                 'mainnet'
@@ -16,7 +16,7 @@ models:
 
       - name: get_signatures_for_asset
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_helius_das__get_signatures_for_asset_status_200
               args: >
                 'mainnet'
@@ -30,7 +30,7 @@ models:
 
       - name: search_assets
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_helius_das__search_assets_status_200
               args: >
                 'mainnet'
@@ -45,7 +45,7 @@ models:
 
       - name: get_asset_proof
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_helius_das__get_asset_proof_status_200
               args: >
                 'mainnet'
@@ -57,7 +57,7 @@ models:
 
       - name: get_assets_by_owner
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_helius_das__get_assets_by_owner_status_200
               args: >
                 'mainnet'
@@ -71,7 +71,7 @@ models:
 
       - name: get_assets_by_authority
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_helius_das__get_assets_by_authority_status_200
               args: >
                 'mainnet'
@@ -85,7 +85,7 @@ models:
 
       - name: get_assets_by_creator
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_helius_das__get_assets_by_creator_status_200
               args: >
                 'mainnet'
@@ -100,7 +100,7 @@ models:
 
       - name: get_assets_by_group
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_helius_das__get_assets_by_group_status_200
               args: >
                 'mainnet'

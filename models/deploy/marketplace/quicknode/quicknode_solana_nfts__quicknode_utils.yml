@@ -4,7 +4,7 @@ models:
     columns:
       - name: fetch_nfts
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_quicknode_solana_nfts__fetch_nfts_status_200
               args: >
                 {
@@ -21,7 +21,7 @@ models:
 
       - name: fetch_nfts_by_creator
         tests:
-          - test_marketplace_udf:
+          - test_udf:
               name: test_quicknode_solana_nfts__fetch_nfts_by_creator_status_200
               args: >
                 {
