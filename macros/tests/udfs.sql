@@ -14,7 +14,7 @@ test AS
     SELECT
         '{{ udf }}' AS test_name
         ,[{{ args }}] as parameters
-        ,{{ udf }}({{args}}) AS result
+        ,{{ target.database}}.{{ udf }}({{args}}) AS result
 )
   {% for assertion in assertions %}
     SELECT
