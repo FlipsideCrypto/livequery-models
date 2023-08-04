@@ -168,6 +168,28 @@
     HANDLER = 'object_to_url_query_string'
   sql: |
     {{ python_object_to_url_query_string() | indent(4) }}
+- name: {{ schema }}.udf_urlencode
+  signature:
+    - [query, ARRAY]
+  return_type: TEXT
+  options: |
+    NULL
+    LANGUAGE SQL
+    RETURNS NULL ON NULL INPUT
+    IMMUTABLE
+  sql: |
+    SELECT {{ schema }}.udf_urlencode(query, FALSE)
+- name: {{ schema }}.udf_urlencode
+  signature:
+    - [query, OBJECT]
+  return_type: TEXT
+  options: |
+    NULL
+    LANGUAGE SQL
+    RETURNS NULL ON NULL INPUT
+    IMMUTABLE
+  sql: |
+    SELECT {{ schema }}.udf_urlencode(query, FALSE)
 - name: {{ schema }}.udf_object_to_url_query_string
   signature:
     - [object, OBJECT]
