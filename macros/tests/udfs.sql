@@ -3,25 +3,29 @@
   Generates a test for a UDF.
  #}
 {% if execute %}
-    {% set sql %}
+    {%- set context -%}
       SET LIVEQUERY_CONTEXT = '{"userId":"{{ var("STUDIO_TEST_USER_ID") }}"}';
-    {% endset %}
-  {% do run_query(sql) %}
-{% endif %}
+    {%- endset -%}
+  {%- do run_query(context) -%}
+{%- endif -%}
+{%- set call -%}
+{{ target.database }}.{{ udf }}({{ args }})
+{%- endset -%}
 ,
 test AS
 (
     SELECT
         '{{ udf }}' AS test_name
         ,[{{ args }}] as parameters
-        ,{{ target.database}}.{{ udf }}({{args}}) AS result
+        ,{{ call }} AS result
 )
   {% for assertion in assertions %}
     SELECT
     test_name,
     parameters,
     result,
-    $${{ assertion }}$$ AS assertion
+    $${{ assertion }}$$ AS assertion,
+    $${{ context ~ "\n" }}SELECT {{ call ~ "\n" }};$$ AS sql
     FROM test
     WHERE NOT {{ assertion }}
     {%- if not loop.last -%}
