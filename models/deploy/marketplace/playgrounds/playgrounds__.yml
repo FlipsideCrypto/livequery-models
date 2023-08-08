@@ -1,0 +1,44 @@
+version: 2
+models:
+  - name: playgrounds__
+    columns:
+      - name: query_subgraph
+        tests:
+          - test_udf:
+              name: test_playgrounds__query_subgraph_status_200_liquidity_pools
+              args: >
+                'ELUcwgpm14LKPLrBRuVvPvNKHQ9HvwmtKgKSH6123cr7'
+                , {
+                  'query': '{
+                      liquidityPools(first: 200, orderBy: totalValueLockedUSD, orderDirection: desc) {
+                        id
+                        totalLiquidity
+                        name
+                        inputTokens {
+                           id
+                           symbol
+                        }
+                      }
+                  }',
+                  'variables': {}
+                }
+              assertions:
+                - result:status_code = 200
+
+          - test_udf:
+              name: test_playgrounds__query_subgraph_status_200_total_pool_count
+              args: >
+                'ELUcwgpm14LKPLrBRuVvPvNKHQ9HvwmtKgKSH6123cr7'
+                , {
+                  'query': '{
+                    protocols {
+                      name
+                      totalPoolCount
+                    }
+                  }',
+                  'variables': {}
+                }
+              assertions:
+                - result:status_code = 200
+
+

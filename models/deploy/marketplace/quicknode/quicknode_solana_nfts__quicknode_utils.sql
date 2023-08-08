@@ -1,6 +1,6 @@
 -- depends_on: {{ ref('live') }}
 {%- set configs = [
-    config_quicknode_solana_nft_udfs,
+    config_quicknode_solana_nfts_udfs,
     ] -%}
 {{- ephemeral_deploy_marketplace(configs) -}}
--- depends_on: {{ ref('quicknode_utils__qicknode_utils') }}
+-- depends_on: {{ ref('quicknode_utils__quicknode_utils') }}

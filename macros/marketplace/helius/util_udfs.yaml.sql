@@ -1,4 +1,4 @@
-{% macro config_helius_util_udfs(schema = "helius_utils", utils_schema_name="helius_utils") -%}
+{% macro config_helius_utils_udfs(schema = "helius_utils", utils_schema_name="helius_utils") -%}
 {#
     This macro is used to generate the Helius base endpoints
  #}
@@ -15,10 +15,10 @@
   sql: |
     SELECT live.udf_api(
       'GET',
-      CASE 
-          WHEN NETWORK = 'devnet' THEN 
+      CASE
+          WHEN NETWORK = 'devnet' THEN
               concat('https://api-devnet.helius.xyz', PATH, '?api-key={API_KEY}&', utils.udf_object_to_url_query_string(QUERY_PARAMS))
-          ELSE 
+          ELSE
               concat('https://api.helius.xyz', PATH, '?api-key={API_KEY}&', utils.udf_object_to_url_query_string(QUERY_PARAMS))
       END,
       {},
@@ -39,9 +39,9 @@
     SELECT live.udf_api(
       'POST',
       CASE
-          WHEN NETWORK = 'devnet' THEN 
+          WHEN NETWORK = 'devnet' THEN
               concat('https://api-devnet.helius.xyz', PATH, '?api-key={API_KEY}')
-          ELSE 
+          ELSE
               concat('https://api.helius.xyz', PATH, '?api-key={API_KEY}')
       END,
       {},
@@ -62,9 +62,9 @@
     SELECT live.udf_api(
       'POST',
       CASE
-          WHEN NETWORK = 'devnet' THEN 
+          WHEN NETWORK = 'devnet' THEN
               'https://devnet.helius-rpc.com?api-key={API_KEY}'
-          ELSE 
+          ELSE
               'https://rpc.helius.xyz?api-key={API_KEY}'
       END,
       {},

@@ -1,4 +1,4 @@
-{% macro config_quicknode_polygon_nft_udfs(schema_name = "quicknode_polygon_nfts", utils_schema_name = "quicknode_utils") -%}
+{% macro config_quicknode_polygon_nfts_udfs(schema_name = "quicknode_polygon_nfts", utils_schema_name = "quicknode_utils") -%}
 {#
     This macro is used to generate the QuickNode Polygon NFT endpoints
  #}

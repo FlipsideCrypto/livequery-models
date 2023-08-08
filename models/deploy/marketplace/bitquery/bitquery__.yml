@@ -1,0 +1,38 @@
+version: 2
+models:
+  - name: bitquery__
+    columns:
+      - name: graphql
+        tests:
+          - test_udf:
+              name: test_bitquery__graphql_status_200
+              args: >
+                {
+                  'query': '{
+                    ethereum( network: bsc ) {
+                      dexTrades(
+                        options: {limit: 1}
+                        baseCurrency: {is: "0x6679eB24F59dFe111864AEc72B443d1Da666B360"}
+                        quoteCurrency: {is: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"}
+                      ) {
+                        buyAmount
+                        buyAmountInUsd: buyAmount(in: USD)
+                        buyCurrency {
+                          symbol
+                          address
+                        }
+                        sellAmount
+                        sellCurrency {
+                          symbol
+                          address
+                        }
+                        tradeAmount(in: USD)
+                      }
+                    }
+                  }',
+                  'variables': '{}'
+                }
+              assertions:
+                - result:status_code = 200
+
+

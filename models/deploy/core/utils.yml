@@ -1,3 +1,4 @@
+version: 2
 models:
   - name: utils
     columns:
@@ -5,10 +6,194 @@ models:
         tests:
           - test_udf:
               args: "'foo', [], 1"
-              expected: >
-                {
-                'jsonrpc': '2.0',
-                'method': 'foo',
-                'params': [],
-                'id': '1'
-                }
+              assertions:
+                - >
+                  result = {
+                    'jsonrpc': '2.0',
+                    'method': 'foo',
+                    'params': [],
+                    'id': '1'
+                  }
+      - name: udf_urlencode
+        tests:
+          - test_udf:
+              name: test_utils__udf_urlencode_dict_true_1
+              args: >
+                {'a':'b'}, TRUE
+              assertions:
+                - result = 'a=b'
+          - test_udf:
+              name: test_utils__udf_urlencode_dict_true_2
+              args: >
+                {'a':'a', 'b':'b'}, TRUE
+              assertions:
+                - result = 'a=a&b=b'
+          - test_udf:
+              name: test_utils__udf_urlencode_dict_true_space
+              args: >
+                  {'space': 'abc 123'}, TRUE
+              assertions:
+                - result = 'space=abc+123'
+          - test_udf:
+              name: test_utils__udf_urlencode_dict_true_special
+              args: >
+                  {'special!': ' !@#$,+"'}, TRUE
+              assertions:
+                - result = 'special%21=+%21%40%23%24%2C%2B%22'
+          - test_udf:
+              name: test_utils__udf_urlencode_dict_true_array
+              args: >
+                  {'array': [0, 1, 2]}, TRUE
+              assertions:
+                - result = 'array=0&array=1&array=2'
+          - test_udf:
+              name: test_utils__udf_urlencode_dict_false_1
+              args: >
+                {'a':'b'}, FALSE
+              assertions:
+                - result = 'a=b'
+          - test_udf:
+              name: test_utils__udf_urlencode_dict_false_2
+              args: >
+                {'a':'b', 'b':'b'}, FALSE
+              assertions:
+                - result = 'a=b&b=b'
+          - test_udf:
+              name: test_utils__udf_urlencode_dict_false_space
+              args: >
+                  {'space': 'abc 123'}, FALSE
+              assertions:
+                - result = 'space=abc+123'
+          - test_udf:
+              name: test_utils__udf_urlencode_dict_false_special
+              args: >
+                  {'special!': ' !@#$,+"'}, FALSE
+              assertions:
+                - result = 'special%21=+%21%40%23%24%2C%2B%22'
+          - test_udf:
+              name: test_utils__udf_urlencode_dict_false_array
+              args: >
+                  {'array': [0, 1, 2]}, FALSE
+              assertions:
+                - result = 'array=%5B0%2C+1%2C+2%5D'
+          - test_udf:
+              name: test_utils__udf_urlencode_dict_1
+              args: >
+                {'a':'b'}
+              assertions:
+                - result = 'a=b'
+          - test_udf:
+              name: test_utils__udf_urlencode_dict_2
+              args: >
+                {'a':'b', 'b':'b'}
+              assertions:
+                - result = 'a=b&b=b'
+          - test_udf:
+              name: test_utils__udf_urlencode_dict_space
+              args: >
+                  {'space': 'abc 123'}
+              assertions:
+                - result = 'space=abc+123'
+          - test_udf:
+              name: test_utils__udf_urlencode_dict_special
+              args: >
+                  {'special!': ' !@#$,+"'}
+              assertions:
+                - result = 'special%21=+%21%40%23%24%2C%2B%22'
+          - test_udf:
+              name: test_utils__udf_urlencode_dict_array
+              args: >
+                  {'array': [0, 1, 2]}
+              assertions:
+                - result = 'array=%5B0%2C+1%2C+2%5D'
+          # write tests but use arrays of arrays instead of dictionaries
+          - test_udf:
+              name: test_utils__udf_urlencode_array_true_1
+              args: >
+                [['a', 'b']], TRUE
+              assertions:
+                - result = 'a=b'
+          - test_udf:
+              name: test_utils__udf_urlencode_array_true_2
+              args: >
+                [['a', 'a'], ['b', 'b']], TRUE
+              assertions:
+                - result = 'a=a&b=b'
+          - test_udf:
+              name: test_utils__udf_urlencode_array_true_space
+              args: >
+                  [['space', 'abc 123']], TRUE
+              assertions:
+                - result = 'space=abc+123'
+          - test_udf:
+              name: test_utils__udf_urlencode_array_true_special
+              args: >
+                  [['special!', ' !@#$,+"']], TRUE
+              assertions:
+                - result = 'special%21=+%21%40%23%24%2C%2B%22'
+          - test_udf:
+              name: test_utils__udf_urlencode_array_true_array
+              args: >
+                  [['array', [0, 1, 2]]], TRUE
+              assertions:
+                - result = 'array=0&array=1&array=2'
+          - test_udf:
+              name: test_utils__udf_urlencode_array_false_1
+              args: >
+                [['a', 'b']], FALSE
+              assertions:
+                - result = 'a=b'
+          - test_udf:
+              name: test_utils__udf_urlencode_array_false_2
+              args: >
+                [['a', 'a'], ['b', 'b']], FALSE
+              assertions:
+                - result = 'a=a&b=b'
+          - test_udf:
+              name: test_utils__udf_urlencode_array_false_space
+              args: >
+                  [['space', 'abc 123']], FALSE
+              assertions:
+                - result = 'space=abc+123'
+          - test_udf:
+              name: test_utils__udf_urlencode_array_false_special
+              args: >
+                  [['special!', ' !@#$,+"']], FALSE
+              assertions:
+                - result = 'special%21=+%21%40%23%24%2C%2B%22'
+          - test_udf:
+              name: test_utils__udf_urlencode_array_false_array
+              args: >
+                  [['array', [0, 1, 2]]], FALSE
+              assertions:
+                - result = 'array=%5B0%2C+1%2C+2%5D'
+          - test_udf:
+              name: test_utils__udf_urlencode_array_1
+              args: >
+                [['a', 'b']]
+              assertions:
+                - result = 'a=b'
+          - test_udf:
+              name: test_utils__udf_urlencode_array_2
+              args: >
+                [['a', 'a'], ['b', 'b']]
+              assertions:
+                - result = 'a=a&b=b'
+          - test_udf:
+              name: test_utils__udf_urlencode_array_space
+              args: >
+                  [['space', 'abc 123']]
+              assertions:
+                - result = 'space=abc+123'
+          - test_udf:
+              name: test_utils__udf_urlencode_array_special
+              args: >
+                  [['special!', ' !@#$,+"']]
+              assertions:
+                - result = 'special%21=+%21%40%23%24%2C%2B%22'
+          - test_udf:
+              name: test_utils__udf_urlencode_array_array
+              args: >
+                  [['array', [0, 1, 2]]]
+              assertions:
+                - result = 'array=%5B0%2C+1%2C+2%5D'

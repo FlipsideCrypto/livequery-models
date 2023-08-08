@@ -1,0 +1,15 @@
+version: 2
+models:
+  - name: fred__
+    columns:
+      - name: get_series
+        tests:
+          - test_udf:
+              name: test_fred__get_series_status_200
+              args: >
+                {
+                  'series_id': 'CORESTICKM679SFRBATL',
+                  'file_type': 'json'
+                }
+              assertions:
+                - result:status_code = 200

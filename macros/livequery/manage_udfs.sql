@@ -156,7 +156,11 @@
         {% set sql %}
             {{- crud_udfs(config, this.schema, var("DROP_UDFS_AND_SPS")) -}}
         {%- endset -%}
-        {%- do log("Deploy core udfs: " ~ this.database ~ "." ~ this.schema, true) -%}
+        {%- if var("DROP_UDFS_AND_SPS") -%}
+            {%- do log("Drop core udfs: " ~ this.database ~ "." ~ this.schema, true) -%}
+        {%- else -%}
+            {%- do log("Deploy core udfs: " ~ this.database ~ "." ~ this.schema, true) -%}
+        {%- endif -%}
         {%- do run_query(sql ~ apply_grants_by_schema(this.schema)) -%}
     {% else -%}
         SELECT '{{ model.schema }}' as schema_
@@ -177,7 +181,11 @@
                 {{- crud_udfs_by_chain(config, blockchain, network, var("DROP_UDFS_AND_SPS")) -}}
             {%- endfor -%}
         {%- endset -%}
-        {%- do log("Deploy partner udfs: " ~ this.database ~ "." ~ schema, true) -%}
+        {%- if var("DROP_UDFS_AND_SPS") -%}
+            {%- do log("Drop partner udfs: " ~ this.database ~ "." ~ schema, true) -%}
+        {%- else -%}
+            {%- do log("Deploy partner udfs: " ~ this.database ~ "." ~ schema, true) -%}
+        {%- endif -%}
         {%- do run_query(sql ~ apply_grants_by_schema(schema)) -%}
     {% else -%}
         SELECT '{{ model.schema }}' as schema_
@@ -197,7 +205,11 @@
                 {{- crud_udfs_by_marketplace(config, schema, utility_schema, var("DROP_UDFS_AND_SPS")) -}}
             {%- endfor -%}
         {%- endset -%}
-        {%- do log("Deploy marketplace udfs: " ~ this.database ~ "." ~ schema, true) -%}
+        {%- if var("DROP_UDFS_AND_SPS") -%}
+            {%- do log("Drop marketplace udfs: " ~ this.database ~ "." ~ schema, true) -%}
+        {%- else -%}
+            {%- do log("Deploy marketplace udfs: " ~ this.database ~ "." ~ schema, true) -%}
+        {%- endif -%}
         {%- do run_query(sql ~ apply_grants_by_schema(schema)) -%}
     {% else -%}
         SELECT '{{ model.schema }}' as schema_

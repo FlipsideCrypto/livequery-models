@@ -1,4 +1,4 @@
-{% macro config_alchemy_utils_udfs(schema = "alchemy_utils", utils_schema_name="alchemy_utils") -%}
+{% macro config_alchemy_utils_udfs(schema_name = "alchemy_utils", utils_schema_name="alchemy_utils") -%}
 {#
     This macro is used to generate the alchemy base endpoints
  #}

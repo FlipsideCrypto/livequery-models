@@ -1,0 +1,18 @@
+version: 2
+models:
+  - name: footprint_utils__footprint_utils
+    columns:
+      - name: get
+        tests:
+          - test_udf:
+              name: test_footprint_utils__get_status_200_v2_protocol_info
+              args: >
+                '/v2/protocol/info'
+                , {
+                  'chain': 'Ethereum',
+                  'protocol_slug': 'the-sandbox',
+                  'limit': 10,
+                  'offset': 0
+                }
+              assertions:
+                - result:status_code = 200
