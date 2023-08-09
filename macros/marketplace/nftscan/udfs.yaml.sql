@@ -6,7 +6,7 @@
 - name: {{ schema_name -}}.get
   signature:
     - [URL, STRING, The full url including the path]
-    - [QUERY_ARGS, ARRAY, The query arguments]
+    - [QUERY_ARGS, OBJECT, The query arguments]
   return_type:
     - "VARIANT"
   options: |

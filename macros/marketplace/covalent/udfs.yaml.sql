@@ -6,7 +6,7 @@
 - name: {{ schema_name -}}.get
   signature:
     - [PATH, STRING, The path starting with '/']
-    - [QUERY_ARGS, ARRAY, The query arguments]
+    - [QUERY_ARGS, OBJECT, The query arguments]
   return_type:
     - "VARIANT"
   options: |
