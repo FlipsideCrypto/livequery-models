@@ -1,0 +1,13 @@
+version: 2
+models:
+  - name: defillama__
+    columns:
+      - name: get
+        tests:
+          - test_udf:
+              name: test_defillama__get_status_200
+              args: >
+                '/protocols'
+                , {}
+              assertions:
+                - result:status_code = 200

@@ -1,0 +1,13 @@
+version: 2
+models:
+  - name: dappradar__
+    columns:
+      - name: get
+        tests:
+          - test_udf:
+              name: test_dappradar__get_status_200
+              args: >
+                '/4tsxo4vuhotaojtl/defi/chains'
+                , {}
+              assertions:
+                - result:status_code = 200

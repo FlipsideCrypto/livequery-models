@@ -1,0 +1,13 @@
+version: 2
+models:
+  - name: transpose__
+    columns:
+      - name: get
+        tests:
+          - test_udf:
+              name: test_transpose__get_status_200
+              args: >
+                '/ens/ens-records-by-name'
+                , {'chain_id': 'ethereum','ens_names': 'vitalik.eth'}
+              assertions:
+                - result:status_code = 200
