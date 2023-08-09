@@ -1,30 +1,10 @@
-name: dbt_tests
-run-name: ${{ inputs.dbt_command }}
+name: test udfs
 
 on:
-  workflow_dispatch:
-    inputs:
-      environment:
-        type: choice
-        description: DBT Run Environment
-        required: true
-        options:
-          - dev
-          - prod
-        default: dev
-      warehouse:
-        type: choice
-        description: Snowflake warehouse
-        required: true
-        options:
-          - DBT
-          - DBT_CLOUD
-          - DBT_EMERGENCY
-        default: DBT
-      dbt_command:
-        type: string
-        description: 'DBT Run Command'
-        required: true
+  schedule:
+    # Runs “At minute 20 past every 4th hour.” (see https://crontab.guru)
+    - cron: '0 0 * * *'
+
 
 env:
   DBT_PROFILES_DIR: ./
@@ -45,7 +25,7 @@ jobs:
   run_tests:
     runs-on: ubuntu-latest
     environment:
-      name: workflow_${{ inputs.environment }}
+      name: workflow_prod
 
     steps:
       - uses: actions/checkout@v3
@@ -62,7 +42,7 @@ jobs:
           dbt deps
       - name: Run DBT Jobs
         run: |
-          dbt --debug test ${{ inputs.dbt_command }}
+          dbt test --selector test_udfs
 
       - name: Store logs
         uses: actions/upload-artifact@v3
