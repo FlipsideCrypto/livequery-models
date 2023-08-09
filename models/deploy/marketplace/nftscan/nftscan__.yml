@@ -1,0 +1,13 @@
+version: 2
+models:
+  - name: nftscan__
+    columns:
+      - name: get
+        tests:
+          - test_udf:
+              name: test_nftscan__get_status_200
+              args: >
+                'https://restapi.nftscan.com/api/v2/account/own/0xca1257ade6f4fa6c6834fdc42e030be6c0f5a813'
+                , {'erc_type': 'erc721'}
+              assertions:
+                - result:status_code = 200
