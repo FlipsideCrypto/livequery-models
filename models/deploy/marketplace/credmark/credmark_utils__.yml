@@ -13,18 +13,3 @@ models:
                 }
               assertions:
                 - result:status_code = 200
-
-      - name: post
-        tests:
-          - test_udf:
-              name: test_credmark_utils__post_status_200
-              args: >
-                '/v1/model/run'
-                , {
-                  'slug': 'aave-v2.account-info',
-                  'chainId': 1,
-                  'blockNumber': 17725466,
-                  'input': {'address': '0xf89a3799b90593317E0a1Eb74164fbc1755A297A'}
-                }
-              assertions:
-                - result:status_code = 200
