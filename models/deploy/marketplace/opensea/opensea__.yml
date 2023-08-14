@@ -1,0 +1,13 @@
+version: 2
+models:
+  - name: opensea__
+    columns:
+      - name: get
+        tests:
+          - test_udf:
+              name: test_opensea__get_status_200
+              args: >
+                '/health'
+                , {}
+              assertions:
+                - result:status_code = 200

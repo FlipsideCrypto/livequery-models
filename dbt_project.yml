@@ -58,8 +58,8 @@ vars:
   UPDATE_SNOWFLAKE_TAGS: true
   STREAMLINE_INVOKE_STREAMS: False
   STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES: False
-  REST_API_ID_PROD: ARPK1G9P37
-  REST_API_ID_DEV: QG6A9ZS6R7
-  API_INTEGRATION: AWS_LIVE_QUERY{{ '_DEV' if target.name != 'prod' else ''  }}
+  REST_API_PREFIX_PROD: bqco8lkjsb.execute-api.us-east-1.amazonaws.com/prod/
+  REST_API_PREFIX_DEV: u5z0tu43sc.execute-api.us-east-1.amazonaws.com/stg/
+  API_INTEGRATION: AWS_LIVE_QUERY{{ '_STG' if target.name != 'prod' else ''  }}
   AWS_REGION: us-east-1
   STUDIO_TEST_USER_ID: 98d15c30-9fa5-43cd-9c69-3d4c0bb269f5

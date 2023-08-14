@@ -197,3 +197,44 @@ models:
                   [['array', [0, 1, 2]]]
               assertions:
                 - result = 'array=%5B0%2C+1%2C+2%5D'
+      - name: udf_evm_decode_log
+        tests:
+          - test_udf:
+              name: test_utils__udf_evm_decode_log
+              args: >
+                {
+                  'anonymous': false,
+                  'inputs': [
+                    {
+                      'indexed': false,
+                      'name': 'nonce',
+                      'type': 'uint256'
+                    }
+                  ],
+                  'name': 'NonceChanged',
+                  'type': 'event'
+                }::variant,
+                {
+                  'address': '0x55032650b14df07b85bf18a3a3ec8e0af2e028d5',
+                  'data': '0x000000000000000000000000000000000000000000000000000000000000279c',
+                  'topics': [
+                    '0x7220970e1f1f12864ecccd8942690a837c7a8dd45d158cb891eb45a8a69134aa'
+                  ]
+                }::variant
+              assertions:
+                - >
+                  result = [
+                    {
+                      'address': '0x55032650b14df07b85bF18A3a3eC8E0Af2e028d5',
+                      'data': [
+                        {
+                          'decoded': true,
+                          'name': 'nonce',
+                          'type': 'uint256',
+                          'value': 10140
+                        }
+                      ],
+                      'decoded': true,
+                      'name': 'NonceChanged'
+                    }
+                  ]
