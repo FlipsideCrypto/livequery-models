@@ -6,7 +6,7 @@
 {% endmacro %}
 
 {%- macro construct_api_route(route) -%}
-    'https://{{ var("REST_API_ID_PROD") if target.name == "prod" else var("REST_API_ID_DEV") }}.execute-api.{{ var( aws_region, "us-east-1" ) }}.amazonaws.com/{{ target.name }}/{{ route }}'
+    'https://{{ var("REST_API_PREFIX_PROD") | lower if target.name == "prod" else var("REST_API_PREFIX_DEV") | lower }}{{ route }}'
 {%- endmacro -%}
 
 {%- macro compile_signature(
