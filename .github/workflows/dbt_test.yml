@@ -1,9 +1,6 @@
 name: test udfs
 
 on:
-  push:
-    branches:
-      - "main"
   workflow_dispatch:
     inputs:
       environment:
@@ -22,10 +19,6 @@ on:
           - DBT
           - DBT_CLOUD
         default: DBT
-      dbt_command:
-        type: string
-        description: 'DBT Run Command'
-        required: true
   schedule:
     # Runs “Daily at midnight GMT” (see https://crontab.guru)
     - cron: '0 0 * * *'
@@ -48,19 +41,16 @@ concurrency:
 
 jobs:
   scheduled_job:
-    if: ${{ github.event_name == 'schedule' }} || github.event_name == 'push'
+    if: ${{ github.event_name == 'schedule' }} || ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     environment:
       name: workflow_prod
     steps:
       - uses: actions/checkout@v3
-
       - uses: actions/setup-python@v4
         with:
           python-version: "3.10"
           cache: "pip"
-
-
       - name: install dependencies
         run: |
           pip install -r requirements.txt
@@ -78,13 +68,10 @@ jobs:
       name: workflow_${{ inputs.environment }}
     steps:
       - uses: actions/checkout@v3
-
       - uses: actions/setup-python@v4
         with:
           python-version: "3.10"
           cache: "pip"
-
-
       - name: install dependencies
         run: |
           pip install -r requirements.txt
