@@ -81,6 +81,6 @@
     - "VARIANT"
   options: |
     COMMENT = $$Get a list of assets by a group key and value. [Helius docs here](https://docs.helius.xyz/solana-compression/digital-asset-standard-das-api/get-assets-by-group).$$
-  sql: {{ helius_rpc_call(utils_schema_name, 'getAssetsByCreator') | trim }}
+  sql: {{ helius_rpc_call(utils_schema_name, 'getAssetsByGroup') | trim }}
 
 {% endmacro %}
