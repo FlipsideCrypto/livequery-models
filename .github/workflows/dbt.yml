@@ -5,7 +5,7 @@ on:
       warehouse:
         required: false
         type: string
-        default: DBT
+        default: DBT_CLOUD
       environment:
         required: true
         type: string
