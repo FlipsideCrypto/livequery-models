@@ -1,0 +1,38 @@
+name: Run dbt command
+on:
+  workflow_call:
+    inputs:
+      warehouse:
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string
+      command:
+          required: true
+          type: string
+      python_version:
+          required: false
+          type: string
+          default: "3.10"
+
+jobs:
+  dbt:
+    runs-on: ubuntu-latest
+    env:
+      WAREHOUSE: ${{ inputs.warehouse }}
+    environment:
+      name: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+          cache: "pip"
+      - name: install dependencies
+        run: |
+          pip install -r requirements.txt
+          dbt deps
+      - name: Run DBT Jobs
+        run: |
+          dbt ${{ inputs.command }}
