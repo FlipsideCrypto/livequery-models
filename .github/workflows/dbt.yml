@@ -1,4 +1,4 @@
-name: Run dbt command
+name: dbt
 on:
   workflow_call:
     inputs:
@@ -16,11 +16,31 @@ on:
           type: string
           default: "3.10"
 
+env:
+  DBT_PROFILES_DIR: ./
+
+  ACCOUNT: "${{ vars.ACCOUNT }}"
+  ROLE: "${{ vars.ROLE }}"
+  USER: "${{ vars.USER }}"
+  PASSWORD: "${{ secrets.PASSWORD }}"
+  REGION: "${{ vars.REGION }}"
+  DATABASE: "${{ vars.DATABASE }}"
+  WAREHOUSE: "${{ vars.WAREHOUSE }}"
+  SCHEMA: "${{ vars.SCHEMA }}"
+
 jobs:
   dbt:
     runs-on: ubuntu-latest
     env:
+      DBT_PROFILES_DIR: ./
+      ACCOUNT: "${{ vars.ACCOUNT }}"
+      ROLE: "${{ vars.ROLE }}"
+      USER: "${{ vars.USER }}"
+      PASSWORD: "${{ secrets.PASSWORD }}"
+      REGION: "${{ vars.REGION }}"
+      DATABASE: "${{ vars.DATABASE }}"
       WAREHOUSE: ${{ inputs.warehouse }}
+      SCHEMA: "${{ vars.SCHEMA }}"
     environment:
       name: ${{ inputs.environment }}
     steps:

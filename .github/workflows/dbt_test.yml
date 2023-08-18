@@ -23,19 +23,6 @@ on:
     # Runs “Daily at midnight GMT” (see https://crontab.guru)
     - cron: '0 0 * * *'
 
-
-env:
-  DBT_PROFILES_DIR: ./
-
-  ACCOUNT: "${{ vars.ACCOUNT }}"
-  ROLE: "${{ vars.ROLE }}"
-  USER: "${{ vars.USER }}"
-  PASSWORD: "${{ secrets.PASSWORD }}"
-  REGION: "${{ vars.REGION }}"
-  DATABASE: "${{ vars.DATABASE }}"
-  WAREHOUSE: "${{ vars.WAREHOUSE }}"
-  SCHEMA: "${{ vars.SCHEMA }}"
-
 concurrency:
   group: ${{ github.workflow }}
 
@@ -43,6 +30,7 @@ jobs:
   scheduled_job:
     uses: ./.github/workflows/dbt.yml
     if: github.event_name == 'schedule' || github.event_name == 'push'
+    secrets: inherit
     with:
       warehouse: ${{ inputs.warehouse }}
       environment: workflow_${{ inputs.environment }}
@@ -51,6 +39,7 @@ jobs:
   manual_job:
     uses: ./.github/workflows/dbt.yml
     if:  github.event_name == 'workflow_dispatch'
+    secrets: inherit
     with:
       warehouse: ${{ inputs.warehouse }}
       environment: workflow_${{ inputs.environment }}
