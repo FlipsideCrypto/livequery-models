@@ -27,7 +27,7 @@ concurrency:
   group: ${{ github.workflow }}
 
 jobs:
-  scheduled_job:
+  scheduled:
     uses: ./.github/workflows/dbt.yml
     if: github.event_name == 'schedule' || github.event_name == 'push'
     secrets: inherit
@@ -36,7 +36,7 @@ jobs:
       environment: workflow_${{ inputs.environment }}
       command: test --selector test_udfs
 
-  manual_job:
+  dispached:
     uses: ./.github/workflows/dbt.yml
     if:  github.event_name == 'workflow_dispatch'
     secrets: inherit
