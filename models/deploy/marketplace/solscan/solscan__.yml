@@ -1,0 +1,13 @@
+version: 2
+models:
+  - name: solscan__
+    columns:
+      - name: public_api_get
+        tests:
+          - test_udf:
+              name: test_solscan_public_api_get__get_status_200
+              args: >
+                '/block/last'
+                , {'limit': 10}
+              assertions:
+                - result:status_code = 200
