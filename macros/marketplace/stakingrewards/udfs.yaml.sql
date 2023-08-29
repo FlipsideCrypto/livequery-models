@@ -14,7 +14,7 @@
     SELECT
       live.udf_api(
         'POST',
-        'https:/api.stakingrewards.com/public/query',
+        'https://api.stakingrewards.com/public/query',
         {'X-API-KEY': '{API_KEY}'},
         QUERY,
         '_FSC_SYS/STAKINGREWARDS'
