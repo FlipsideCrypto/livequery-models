@@ -18,6 +18,7 @@ models:
                 }
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: fetch_nfts_by_creator
         tests:
@@ -31,4 +32,5 @@ models:
                 }
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 

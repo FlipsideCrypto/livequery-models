@@ -11,3 +11,4 @@ models:
                 , {'chain_id': 'ethereum','ens_names': 'vitalik.eth'}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL

@@ -12,6 +12,7 @@ models:
                 }
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: get_token_metadata_by_symbol
         tests:
@@ -23,6 +24,7 @@ models:
                 }
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: get_transactions_by_address
         tests:
@@ -36,6 +38,7 @@ models:
                 }
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: get_wallet_token_balance
         tests:
@@ -47,6 +50,7 @@ models:
                 }
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: get_wallet_token_transactions
         tests:
@@ -61,3 +65,4 @@ models:
                 }
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL

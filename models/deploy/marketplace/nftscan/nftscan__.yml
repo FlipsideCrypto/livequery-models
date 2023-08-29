@@ -11,3 +11,4 @@ models:
                 , {'erc_type': 'erc721'}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL

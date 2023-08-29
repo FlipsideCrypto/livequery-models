@@ -11,3 +11,4 @@ models:
                 , {'limit': 10}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
