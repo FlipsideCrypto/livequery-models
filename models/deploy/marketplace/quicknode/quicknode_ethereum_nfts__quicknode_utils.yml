@@ -15,6 +15,7 @@ models:
                 }
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: fetch_nfts
         tests:
@@ -36,6 +37,7 @@ models:
                 }
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: fetch_nfts_by_collection
         tests:
@@ -53,6 +55,7 @@ models:
                 }
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: get_transfers_by_nft
         tests:
@@ -67,6 +70,7 @@ models:
                 }
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: verify_nfts_owner
         tests:
@@ -82,3 +86,4 @@ models:
                 }
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL

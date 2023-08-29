@@ -10,6 +10,7 @@ models:
                 'eth-mainnet', {'owner': '0x4a9318F375937B56045E5a548e7E66AEA61Dd610'}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: get_owners_for_token
         tests:
@@ -19,6 +20,7 @@ models:
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'tokenId': 44}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: get_owners_for_collection
         tests:
@@ -28,6 +30,7 @@ models:
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'withTokenBalances': True}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: is_holder_of_collection
         tests:
@@ -37,6 +40,7 @@ models:
                 'eth-mainnet', {'wallet': '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045', 'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330'}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: get_contracts_for_owner
         tests:
@@ -46,6 +50,7 @@ models:
                 'eth-mainnet', {'owner': 'vitalik.eth', 'pageSize': 100, 'page': 1}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: get_nft_metadata
         tests:
@@ -55,6 +60,7 @@ models:
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'tokenId': 44}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: get_nft_metadata_batch
         tests:
@@ -64,6 +70,7 @@ models:
                 'eth-mainnet', {'tokens': [{'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'tokenId': 44}, {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'tokenId': 43}]}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: get_contract_metadata
         tests:
@@ -73,6 +80,7 @@ models:
                 'ethereum-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330'}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: get_contract_metadata_batch
         tests:
@@ -82,6 +90,7 @@ models:
                 'eth-mainnet', {'contractAddresses': ['0xe785E82358879F061BC3dcAC6f0444462D4b5330', '0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d']}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: invalidate_contract
         tests:
@@ -91,6 +100,7 @@ models:
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330'}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: reingest_contract
         tests:
@@ -100,6 +110,7 @@ models:
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330'}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: search_contract_metadata
         tests:
@@ -109,6 +120,7 @@ models:
                 'eth-mainnet', {'query': 'bored'}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: get_nfts_for_collection
         tests:
@@ -118,6 +130,7 @@ models:
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'withMetadata': True}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: get_spam_contracts
         tests:
@@ -127,6 +140,7 @@ models:
                 'eth-mainnet', {}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: is_spam_contract
         tests:
@@ -136,6 +150,7 @@ models:
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330'}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: is_airdrop
         tests:
@@ -145,6 +160,7 @@ models:
                 'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'tokenId': 44}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: report_spam
         tests:
@@ -156,6 +172,7 @@ models:
               args: null
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: get_floor_price
         tests:
@@ -165,6 +182,7 @@ models:
                 'eth-mainnet', {'contractAddress': '0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d'}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: get_nft_sales
         tests:
@@ -174,6 +192,7 @@ models:
                 'eth-mainnet', {'fromBlock': 0, 'toBlock': 'latest', 'order': 'asc', 'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330', 'tokenId': 44}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: compute_rarity
         tests:
@@ -183,6 +202,7 @@ models:
                 'eth-mainnet', {'tokenId': 3603, 'contractAddress': '0xb6a37b5d14d502c3ab0ae6f3a0e058bc9517786e'}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: summarize_nft_attributes
         tests:
@@ -192,3 +212,4 @@ models:
                 'eth-mainnet', {'contractAddress': '0xb6a37b5d14d502c3ab0ae6f3a0e058bc9517786e'}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL

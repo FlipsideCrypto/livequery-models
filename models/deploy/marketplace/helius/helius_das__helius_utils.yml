@@ -13,6 +13,7 @@ models:
                 }
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: get_signatures_for_asset
         tests:
@@ -27,6 +28,7 @@ models:
                 }
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: search_assets
         tests:
@@ -42,6 +44,7 @@ models:
                 }
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: get_asset_proof
         tests:
@@ -54,6 +57,7 @@ models:
                 }
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: get_assets_by_owner
         tests:
@@ -68,6 +72,7 @@ models:
                 }
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: get_assets_by_authority
         tests:
@@ -82,6 +87,7 @@ models:
                 }
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: get_assets_by_creator
         tests:
@@ -97,6 +103,7 @@ models:
                 }
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
 
       - name: get_assets_by_group
         tests:
@@ -112,3 +119,4 @@ models:
                 }
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL

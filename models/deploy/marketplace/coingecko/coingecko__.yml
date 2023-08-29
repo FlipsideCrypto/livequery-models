@@ -11,3 +11,4 @@ models:
                 , {'ids': '0x', 'vs_currencies': 'btc,usd,eth'}
               assertions:
                 - result:status_code = 200
+                - result:error IS NULL
