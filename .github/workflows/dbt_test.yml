@@ -32,8 +32,8 @@ jobs:
     if: github.event_name == 'schedule' || github.event_name == 'push'
     secrets: inherit
     with:
-      warehouse: ${{ inputs.warehouse }}
-      environment: workflow_${{ inputs.environment }}
+      warehouse: DBT_CLOUD
+      environment: workflow_prod
       command: test --selector test_udfs
 
   dispached:
@@ -41,6 +41,6 @@ jobs:
     if:  github.event_name == 'workflow_dispatch'
     secrets: inherit
     with:
-      warehouse: DBT_CLOUD
-      environment: workflow_prod
+      warehouse: ${{ inputs.warehouse }}
+      environment: workflow_${{ inputs.environment }}
       command: test --selector test_udfs
