@@ -77,7 +77,7 @@ models:
           - test_udf:
               name: test_alchemy_nfts__get_contract_metadata_status_200
               args: >
-                'ethereum-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330'}
+                'eth-mainnet', {'contractAddress': '0xe785E82358879F061BC3dcAC6f0444462D4b5330'}
               assertions:
                 - result:status_code = 200
                 - result:error IS NULL
