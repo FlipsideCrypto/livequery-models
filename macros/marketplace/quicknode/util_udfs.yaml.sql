@@ -48,7 +48,7 @@
   sql: |
     SELECT live.udf_api(
       'POST',
-      '{solana-mainnet}',
+      '{solana-solana-mainnet}',
       {},
       {'id': 1,'jsonrpc': '2.0','method': METHOD,'params': PARAMS},
       '_FSC_SYS/QUICKNODE'
