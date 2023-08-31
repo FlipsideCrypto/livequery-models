@@ -1,4 +1,5 @@
 name: test udfs
+run-name: ${{ github.event.inputs.branch }}
 
 on:
   workflow_dispatch:
@@ -34,7 +35,7 @@ jobs:
     with:
       warehouse: DBT_CLOUD
       environment: workflow_prod
-      command: test --selector test_udfs
+      command: test --selector test_udfs --threads 24
 
   dispached:
     uses: ./.github/workflows/dbt.yml
@@ -43,4 +44,4 @@ jobs:
     with:
       warehouse: ${{ inputs.warehouse }}
       environment: workflow_${{ inputs.environment }}
-      command: test --selector test_udfs
+      command: test --selector test_udfs --threads 24
