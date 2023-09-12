@@ -1,0 +1,37 @@
+version: 2
+models:
+  - name: github_actions
+    columns:
+      - name: workflows
+        tests:
+          - test_udf:
+              name: test_github_actions__workflows_status_200
+              args: >
+                'FlipsideCrypto',
+                'admin-models'
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL
+      - name: runs
+        tests:
+          - test_udf:
+              name: test_github_actions__runs_status_200
+              args: >
+                'FlipsideCrypto',
+                'admin-models',
+                {}
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL
+      - name: workflow_runs
+        tests:
+          - test_udf:
+              name: test_github_actions__workflow_runs_status_200
+              args: >
+                'FlipsideCrypto',
+                'admin-models',
+                'dbt_run_dev_refresh.yml',
+                {}
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL
