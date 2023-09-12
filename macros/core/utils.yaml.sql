@@ -148,6 +148,7 @@
   options: |
     NULL
     LANGUAGE PYTHON
+    RETURNS NULL ON NULL INPUT
     IMMUTABLE
     RUNTIME_VERSION = '3.8'
     COMMENT=$$Pthon (function)[https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlencode] to convert an object to a URL query string.$$
@@ -162,6 +163,7 @@
   options: |
     NULL
     LANGUAGE PYTHON
+    RETURNS NULL ON NULL INPUT
     IMMUTABLE
     RUNTIME_VERSION = '3.8'
     COMMENT=$$Pthon (function)[https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlencode] to convert an array to a URL query string.$$
