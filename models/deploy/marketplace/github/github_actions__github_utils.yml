@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: github_actions
+  - name: github_actions__github_utils
     columns:
       - name: workflows
         tests:

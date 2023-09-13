@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: github_utils
+  - name: github_utils__github_utils
     columns:
       - name: octocat
         tests:
