@@ -49,7 +49,7 @@
   return_type:
     - "TABLE(id NUMBER, name STRING, node_id STRING, check_suite_id NUMBER, check_suite_node_id STRING, head_branch STRING, head_sha STRING, run_number NUMBER, event STRING, display_title STRING, status STRING, conclusion STRING, workflow_id NUMBER, url STRING, html_url STRING, pull_requests STRING, created_at TIMESTAMP, updated_at TIMESTAMP, actor OBJECT, run_attempt STRING, run_started_at TIMESTAMP, triggering_actor OBJECT, jobs_url STRING, logs_url STRING, check_suite_url STRING, artifacts_url STRING, cancel_url STRING, rerun_url STRING, workflow_url STRING, head_commit OBJECT, repository OBJECT, head_repository OBJECT)"
   options: |
-        COMMENT = $$Lists all workflow runs for a repository. You can use query parameters to narrow the list of results. [Docs](https://docs.github.com/en/rest/actions/workflows?apiVersion=2022-11-28#list-repository-workflows).$$
+        COMMENT = $$Lists all workflow runs for a repository. You can use query parameters to narrow the list of results. [Docs](https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-repository).$$
 
   sql: |
     WITH response AS
@@ -98,7 +98,7 @@
   return_type:
     - "TABLE(id NUMBER, name STRING, node_id STRING, check_suite_id NUMBER, check_suite_node_id STRING, head_branch STRING, head_sha STRING, run_number NUMBER, event STRING, display_title STRING, status STRING, conclusion STRING, workflow_id NUMBER, url STRING, html_url STRING, pull_requests STRING, created_at TIMESTAMP, updated_at TIMESTAMP, actor OBJECT, run_attempt STRING, run_started_at TIMESTAMP, triggering_actor OBJECT, jobs_url STRING, logs_url STRING, check_suite_url STRING, artifacts_url STRING, cancel_url STRING, rerun_url STRING, workflow_url STRING, head_commit OBJECT, repository OBJECT, head_repository OBJECT)"
   options: |
-      COMMENT = $$Lists all workflow runs for a repository. You can use query parameters to narrow the list of results. [Docs](https://docs.github.com/en/rest/actions/workflows?apiVersion=2022-11-28#list-repository-workflows).$$
+      COMMENT = $$Lists all workflow runs for a repository. You can use query parameters to narrow the list of results. [Docs](https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-repository).$$
   sql: |
     SELECT *
     FROM TABLE({{ schema_name -}}.tf_runs(owner, repo, {}))
@@ -112,7 +112,7 @@
   return_type:
     - "TABLE(id NUMBER, name STRING, node_id STRING, check_suite_id NUMBER, check_suite_node_id STRING, head_branch STRING, head_sha STRING, run_number NUMBER, event STRING, display_title STRING, status STRING, conclusion STRING, workflow_id NUMBER, url STRING, html_url STRING, pull_requests STRING, created_at TIMESTAMP, updated_at TIMESTAMP, actor OBJECT, run_attempt STRING, run_started_at TIMESTAMP, triggering_actor OBJECT, jobs_url STRING, logs_url STRING, check_suite_url STRING, artifacts_url STRING, cancel_url STRING, rerun_url STRING, workflow_url STRING, head_commit OBJECT, repository OBJECT, head_repository OBJECT)"
   options: |
-      COMMENT = $$Lists all workflow runs for a repository. You can use query parameters to narrow the list of results. [Docs](https://docs.github.com/en/rest/actions/workflows?apiVersion=2022-11-28#list-repository-workflows).$$
+      COMMENT = $$Lists all workflow runs for a repository. You can use query parameters to narrow the list of results. [Docs](https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-repository).$$
   sql: |
     WITH response AS
     (
@@ -161,8 +161,7 @@
   return_type:
     - "TABLE(id NUMBER, name STRING, node_id STRING, check_suite_id NUMBER, check_suite_node_id STRING, head_branch STRING, head_sha STRING, run_number NUMBER, event STRING, display_title STRING, status STRING, conclusion STRING, workflow_id NUMBER, url STRING, html_url STRING, pull_requests STRING, created_at TIMESTAMP, updated_at TIMESTAMP, actor OBJECT, run_attempt STRING, run_started_at TIMESTAMP, triggering_actor OBJECT, jobs_url STRING, logs_url STRING, check_suite_url STRING, artifacts_url STRING, cancel_url STRING, rerun_url STRING, workflow_url STRING, head_commit OBJECT, repository OBJECT, head_repository OBJECT)"
   options: |
-        COMMENT = $$Lists all workflow runs for a repository. You can use query parameters to narrow the list of results. [Docs](https://docs.github.com/en/rest/actions/workflows?apiVersion=2022-11-28#list-repository-workflows).$$
-
+        COMMENT = $$Lists all workflow runs for a repository. You can use query parameters to narrow the list of results. [Docs](https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-repository).$$
   sql: |
     SELECT *
     FROM TABLE({{ schema_name -}}.tf_workflow_runs(owner, repo, WORKFLKOW_ID, {}))
