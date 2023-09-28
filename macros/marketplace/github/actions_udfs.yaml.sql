@@ -101,4 +101,48 @@
         CONCAT_WS('/', 'repos', owner, repo, 'actions/workflows', workflow_id, 'dispatches'),
         COALESCE(body, {'ref': 'main'})::OBJECT
     )::OBJECT
+
+- name: {{ schema_name -}}.workflow_dispatches
+  signature:
+    - [owner, "TEXT"]
+    - [repo, "TEXT"]
+    - [workflow_id, "TEXT"]
+  return_type:
+    - "OBJECT"
+  options: |
+    COMMENT = $$You can use this endpoint to manually trigger a GitHub Actions workflow run. You can replace workflow_id with the workflow file name. For example, you could use main.yaml. [Docs](https://docs.github.com/en/rest/actions/workflows?apiVersion=2022-11-28#create-a-workflow-dispatch-event).$$
+  sql: |
+    SELECT
+      {{ schema_name -}}.workflow_dispatches(owner, repo, workflow_id, NULL)
+
+- name: {{ schema_name -}}.workflow_enable
+  signature:
+    - [owner, "TEXT"]
+    - [repo, "TEXT"]
+    - [workflow_id, "TEXT"]
+  return_type:
+    - "OBJECT"
+  options: |
+    COMMENT = $$Enables a workflow. You can replace workflow_id with the workflow file name. For example, you could use main.yaml. [Docs](https://docs.github.com/en/rest/reference/actions#enable-a-workflow).$$
+  sql: |
+    SELECT
+      {{ utils_schema_name }}.PUT(
+        CONCAT_WS('/', 'repos', owner, repo, 'actions/workflows', workflow_id, 'enable'),
+        {}
+    )::OBJECT
+- name: {{ schema_name -}}.workflow_disable
+  signature:
+    - [owner, "TEXT"]
+    - [repo, "TEXT"]
+    - [workflow_id, "TEXT"]
+  return_type:
+    - "OBJECT"
+  options: |
+    COMMENT = $$Disables a workflow. You can replace workflow_id with the workflow file name. For example, you could use main.yaml. [Docs](https://docs.github.com/en/rest/reference/actions#disable-a-workflow).$$
+  sql: |
+    SELECT
+      {{ utils_schema_name }}.PUT(
+        CONCAT_WS('/', 'repos', owner, repo, 'actions/workflows', workflow_id, 'disable'),
+        {}
+    )::OBJECT
 {% endmacro %}

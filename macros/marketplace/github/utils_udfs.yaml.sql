@@ -67,4 +67,21 @@
         data,
         '_FSC_SYS/GITHUB'
     )
+- name: {{ schema_name -}}.put
+  signature:
+    - [route, "TEXT"]
+    - [data, "OBJECT"]
+  return_type:
+    - "VARIANT"
+  options: |
+    COMMENT = $$List all workflow runs for a workflow. You can replace workflow_id with the workflow file name. You can use parameters to narrow the list of results. [Docs](https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-workflow).$$
+  sql: |
+    SELECT
+      live.udf_api(
+        'PUT',
+        CONCAT_WS('/', 'https://api.github.com', route),
+        PARSE_JSON({{ schema_name -}}.headers()),
+        data,
+        '_FSC_SYS/GITHUB'
+    )
 {% endmacro %}
