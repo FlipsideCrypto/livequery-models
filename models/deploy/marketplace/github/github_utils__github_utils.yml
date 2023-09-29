@@ -1,0 +1,11 @@
+version: 2
+models:
+  - name: github_utils__github_utils
+    columns:
+      - name: octocat
+        tests:
+          - test_udf:
+              name: test_github_utils__octocat_status_200
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL
