@@ -63,7 +63,8 @@ WHERE
 {% endmacro %}
 
 {% macro block_reorg(target, hours) %}
-DELETE FROM
+DELETE 
+FROM
     {{ target }}
     t
 WHERE
