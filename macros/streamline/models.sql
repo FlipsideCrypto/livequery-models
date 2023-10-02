@@ -70,7 +70,7 @@ WHERE
     t._inserted_timestamp > DATEADD(
         'hour',
         -{{ hours}},
-        CURRENT_TIMESTAMP
+        SYSDATE()
     )
     AND NOT EXISTS (
         SELECT
@@ -82,7 +82,7 @@ WHERE
             s._inserted_timestamp > DATEADD(
                 'hour',
                 -{{ hours}},
-                CURRENT_TIMESTAMP
+                SYSDATE()
             )
             AND s.block_number = t.block_number
             AND s.tx_hash = t.tx_hash
