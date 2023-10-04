@@ -93,3 +93,4 @@ WHERE
     {% do run_query(sql) %}
   {% endfor %}
 {% endmacro %}
+
