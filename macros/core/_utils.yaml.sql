@@ -8,7 +8,6 @@
   api_integration: '{{ var("API_INTEGRATION") }}'
   sql: introspect
 
-
 - name: {{ schema }}.udf_user_tier
   signature: []
   func_type: SECURE
@@ -53,7 +52,7 @@
     - [request_id, STRING]
     - [user_id, STRING]
     - [key, STRING]
-  return_type: TEXT
+  return_type: OBJECT
   func_type: SECURE EXTERNAL
   api_integration: '{{ var("API_INTEGRATION") }}'
   options: |
