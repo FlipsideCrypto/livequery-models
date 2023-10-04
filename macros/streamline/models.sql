@@ -64,7 +64,6 @@ WHERE
 
 {% macro block_reorg(reorg_model_list, hours) %}
   {% set models = reorg_model_list.split(",") %}
-  
   {% for model in models %}
   {% set sql %}
     DELETE FROM
