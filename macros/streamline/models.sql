@@ -62,32 +62,34 @@ WHERE
     )
 {% endmacro %}
 
-{% macro block_reorg(target, hours) %}
-DELETE 
-FROM
-    {{ target }}
-    t
-WHERE
-    t._inserted_timestamp > DATEADD(
-        'hour',
-        -{{ hours}},
-        SYSDATE()
-    )
-    AND EXTRACT(HOUR FROM SYSDATE()) IN (0,8,16)
-    AND ROUND(EXTRACT(MINUTE FROM SYSDATE()),-1) BETWEEN 15 AND 45
-    AND NOT EXISTS (
-        SELECT
-            1
-        FROM
-            {{ ref('silver__transactions') }}
-            s
-        WHERE
-            s._inserted_timestamp > DATEADD(
-                'hour',
-                -{{ hours}},
-                SYSDATE()
-            )
-            AND s.block_number = t.block_number
-            AND s.tx_hash = t.tx_hash
-    );
+{% macro block_reorg(reorg_model_list, hours) %}
+  {% set models = reorg_model_list.split(",") %}
+  
+  {% for model in models %}
+  {% set sql %}
+    DELETE FROM
+        {{ ref(model) }}
+    WHERE
+        _inserted_timestamp > DATEADD(
+            'hour',
+            -{{ hours }},
+            CURRENT_TIMESTAMP
+        )
+        AND NOT EXISTS (
+            SELECT
+                1
+            FROM
+                {{ ref('silver__transactions') }}
+            WHERE
+                _inserted_timestamp > DATEADD(
+                    'hour',
+                    -{{ hours }},
+                    CURRENT_TIMESTAMP
+                )
+                AND block_number = block_number
+                AND tx_hash = tx_hash
+        );
+    {% endset %}
+    {% do run_query(sql) %}
+  {% endfor %}
 {% endmacro %}
