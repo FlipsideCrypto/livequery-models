@@ -73,6 +73,7 @@ WHERE
         -{{ hours}},
         SYSDATE()
     )
+    AND EXTRACT(HOUR FROM SYSDATE()) IN (0,8,16)
     AND NOT EXISTS (
         SELECT
             1
