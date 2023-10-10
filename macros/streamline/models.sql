@@ -67,9 +67,9 @@ WHERE
   {% for model in models %}
   {% set sql %}
     DELETE FROM
-        {{ ref(model) }}
+        {{ ref(model) }} t
     WHERE
-        _inserted_timestamp > DATEADD(
+        t._inserted_timestamp > DATEADD(
             'hour',
             -{{ hours }},
             SYSDATE()
@@ -79,14 +79,15 @@ WHERE
                 1
             FROM
                 {{ ref('silver__transactions') }}
+                s
             WHERE
-                _inserted_timestamp > DATEADD(
+                s._inserted_timestamp > DATEADD(
                     'hour',
                     -{{ hours }},
                     SYSDATE()
                 )
-                AND block_number = block_number
-                AND tx_hash = tx_hash
+                AND s.block_number = t.block_number
+                AND s.tx_hash = t.tx_hash
         );
     {% endset %}
     {% do run_query(sql) %}
