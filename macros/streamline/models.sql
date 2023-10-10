@@ -80,13 +80,7 @@ WHERE
             FROM
                 {{ ref('silver__transactions') }}
                 s
-            WHERE
-                s._inserted_timestamp > DATEADD(
-                    'hour',
-                    -{{ hours }},
-                    SYSDATE()
-                )
-                AND s.block_number = t.block_number
+            WHERE s.block_number = t.block_number
                 AND s.tx_hash = t.tx_hash
         );
     {% endset %}
