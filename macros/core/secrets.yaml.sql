@@ -6,7 +6,7 @@
     - [request_id, STRING]
     - [key, STRING]
   func_type: SECURE
-  return_type: VARIANT
+  return_type: OBJECT
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -50,7 +50,7 @@
     - [name, STRING]
     - [secret, OBJECT]
   func_type: SECURE
-  return_type: INTEGER
+  return_type: [INTEGER, the HTTP status code - 200 indicates success]
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -67,7 +67,7 @@
   signature:
     - [name, STRING]
   func_type: SECURE
-  return_type: INTEGER
+  return_type: [INTEGER, the HTTP status code - 200 indicates success]
   options: |
     NULL
     RETURNS NULL ON NULL INPUT
