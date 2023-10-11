@@ -70,4 +70,5 @@ vars:
   API_INTEGRATION: AWS_LIVE_QUERY{{ "_STG" if target.name != "prod" else "" }}
   AWS_REGION: us-east-1
   STUDIO_TEST_USER_ID: '{{ env_var("STUDIO_TEST_USER_ID", "98d15c30-9fa5-43cd-9c69-3d4c0bb269f5") }}'
+  ENABLE_SNOWFLAKE_SECRETS: '{{ env_var("ENABLE_SNOWFLAKE_SECRETS", "") }}'
 
