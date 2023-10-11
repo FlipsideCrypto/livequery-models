@@ -56,6 +56,7 @@
     IMMUTABLE
   sql: |
     {{ fsc_utils.sql_udf_json_rpc_call() }}
+  exclude_from_datashare: true
 - name: {{ schema }}.udf_json_rpc_call
   signature:
     - [method, STRING]
@@ -68,6 +69,7 @@
     IMMUTABLE
   sql: |
     {{ fsc_utils.sql_udf_json_rpc_call() }}
+  exclude_from_datashare: true
 - name: {{ schema }}.udf_json_rpc_call
   signature:
     - [method, STRING]
@@ -81,6 +83,7 @@
     IMMUTABLE
   sql: |
     {{ fsc_utils.sql_udf_json_rpc_call(False) }}
+  exclude_from_datashare: true
 - name: {{ schema }}.udf_json_rpc_call
   signature:
     - [method, STRING]
@@ -94,6 +97,7 @@
     IMMUTABLE
   sql: |
     {{ fsc_utils.sql_udf_json_rpc_call(False) }}
+  exclude_from_datashare: true
 
 - name: {{ schema }}.udf_evm_text_signature
   signature:
