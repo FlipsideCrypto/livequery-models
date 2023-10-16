@@ -6,7 +6,7 @@
 {% endmacro %}
 
 {%- macro construct_api_route(route) -%}
-    'https://{{ var("REST_API_PREFIX_PROD") | lower if target.name == "prod" else var("REST_API_PREFIX_DEV") | lower }}{{ route }}'
+    'https://{{ var("EXTERNAL_FUNCTION_URI") | lower }}{{ route }}'
 {%- endmacro -%}
 
 {%- macro compile_signature(
@@ -161,7 +161,7 @@
         {%- else -%}
             {%- do log("Deploy core udfs: " ~ this.database ~ "." ~ this.schema, true) -%}
         {%- endif -%}
-        {%- do run_query(sql ~ apply_grants_by_schema(this.schema)) -%}
+        {%- do run_query(sql ~  _by_schema(this.schema)) -%}
     {%- endif -%}
     SELECT '{{ model.schema }}' as schema_
 {%- endmacro -%}

@@ -6,9 +6,9 @@
     This can be manually run to grant permissions to a new schema:
     `dbt run-operation apply_grants_by_schema --args '{"schema": "my_schema"}'`
  #}
-    {% if target.name == "prod" %}
+    {% if target.name in ("prod", "hosted") %}
         {%- set outer = namespace(sql="") -%}
-        {% for role in ["VELOCITY_INTERNAL", "VELOCITY_ETHEREUM", "INTERNAL_DEV", "BI_ANALYTICS_READER"] %}
+        {% for role in var("ROLES") %}
                 {% set sql -%}
                     {% if schema.startswith("_") %}
                         REVOKE USAGE ON SCHEMA {{ target.database }}.{{ schema }} FROM {{ role }};

@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'view',
-    grants = {'+select': ['INTERNAL_DEV']}
+    grants = {'+select': ['INTERNAL_DEV'] if target.name != "hosted" else ['DATA_READER'] }
 ) }}
 
 SELECT

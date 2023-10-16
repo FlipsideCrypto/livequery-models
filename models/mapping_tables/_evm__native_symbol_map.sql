@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'view',
-    grants = {'+select': ['INTERNAL_DEV']}
+    grants = {'+select': var('ROLES')}
 ) }}
 
 WITH blockchain_assets AS (
