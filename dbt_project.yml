@@ -77,7 +77,8 @@ vars:
     dev:
       API_INTEGRATION: AWS_LIVE_QUERY_STG
       EXTERNAL_FUNCTION_URI: u5z0tu43sc.execute-api.us-east-1.amazonaws.com/stg/
-      ROLES: []
+      ROLES:
+        - INTERNAL_DEV
     prod:
       API_INTEGRATION: AWS_LIVE_QUERY
       EXTERNAL_FUNCTION_URI: bqco8lkjsb.execute-api.us-east-1.amazonaws.com/prod/
