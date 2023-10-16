@@ -1,0 +1,47 @@
+name: integration test
+run-name: ${{ github.event.inputs.branch }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: DBT Run Environment
+        required: true
+        options:
+          - dev
+          - prod
+        default: dev
+      warehouse:
+        type: choice
+        description: Snowflake warehouse
+        required: true
+        options:
+          - DBT
+          - DBT_CLOUD
+        default: DBT
+  schedule:
+    # Runs “Daily at midnight GMT” (see https://crontab.guru)
+    - cron: '0 0 * * *'
+
+concurrency:
+  group: ${{ github.workflow }}
+
+jobs:
+  scheduled:
+    uses: ./.github/workflows/dbt.yml
+    if: github.event_name == 'schedule' || github.event_name == 'push'
+    secrets: inherit
+    with:
+      warehouse: DBT_CLOUD
+      environment: prod
+      command: test -s test___utils_udf_introspect
+
+  dispached:
+    uses: ./.github/workflows/dbt.yml
+    if:  github.event_name == 'workflow_dispatch'
+    secrets: inherit
+    with:
+      warehouse: ${{ inputs.warehouse }}
+      environment: workflow_${{ inputs.environment }}
+      command: test -s test___utils_udf_introspect
