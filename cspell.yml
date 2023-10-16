@@ -2,10 +2,14 @@ version: "0.2"
 language: en
 words:
   - aave
+  - arbitrum
+  - AVAX
   - bitquery
   - blockpour
+  - CELO
   - chainbase
   - credmark
+  - crosschain
   - dapplooker
   - doseq
   - fromyaml
@@ -15,7 +19,9 @@ words:
   - livequery
   - quicknode
   - reingest
+  - sepolia
   - solana
   - strangelove
   - subquery
   - udfs
+  - zkevm

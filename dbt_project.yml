@@ -13,7 +13,7 @@ profile: "livequery"
 # found in the "models/" directory. You probably won't need to change these!
 model-paths: ["models"]
 analysis-paths: ["analysis"]
-# test-paths: ["tests"]
+test-paths: ["tests"]
 seed-paths: ["data"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
@@ -66,6 +66,7 @@ vars:
   STREAMLINE_INVOKE_STREAMS: False
   STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES: False
   STUDIO_TEST_USER_ID: '{{ env_var("STUDIO_TEST_USER_ID", "98d15c30-9fa5-43cd-9c69-3d4c0bb269f5") }}'
+
   API_INTEGRATION: '{{ var("config")[target.name]["API_INTEGRATION"] }}'
   EXTERNAL_FUNCTION_URI: '{{ var("config")[target.name]["EXTERNAL_FUNCTION_URI"] }}'
   ENABLE_SNOWFLAKE_SECRETS: '{{ env_var("ENABLE_SNOWFLAKE_SECRETS", "") }}'
