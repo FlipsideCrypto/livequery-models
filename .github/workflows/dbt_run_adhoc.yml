@@ -11,6 +11,7 @@ on:
         options:
           - dev
           - prod
+          - hosted
         default: dev
       warehouse:
         type: choice
@@ -35,5 +36,5 @@ jobs:
     secrets: inherit
     with:
       warehouse: ${{ inputs.warehouse }}
-      environment: workflow_${{ inputs.environment }}
+      environment: ${{ inputs.environment }}
       command: ${{ inputs.dbt_command }}
