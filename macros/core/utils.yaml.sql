@@ -1,6 +1,19 @@
 {% macro config_core_utils(schema="utils") %}
 
 
+- name: {{ schema }}.udf_register_secret
+  signature:
+    - [request_id, STRING]
+    - [key, STRING]
+  func_type: SECURE
+  return_type: OBJECT
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    IMMUTABLE
+  sql: |
+    SELECT
+      _utils.UDF_REGISTER_SECRET(REQUEST_ID, _utils.UDF_WHOAMI(), KEY)
 
 - name: {{ schema }}.udf_hex_to_int
   signature:
