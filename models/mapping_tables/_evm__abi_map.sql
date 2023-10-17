@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'view',
-    grants = {'+select': var('ROLES')}
+    grants = {'+select': fromyaml(var('ROLES'))}
 ) }}
 
 SELECT
