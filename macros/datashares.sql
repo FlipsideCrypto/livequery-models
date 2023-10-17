@@ -157,3 +157,40 @@
     {%- do combined_ddl.insert(0, "CREATE DATABASE IF NOT EXISTS __NEW__;") -%}
     {{- "BEGIN\n" ~ (combined_ddl | join("\n")) ~ "\nEND" -}}
 {%- endmacro -%}
+
+{% macro generate_datashare_udf_ddl() %}
+{#
+    generate UDF DDL for datashare
+
+    Return: UDF DDL for datashare
+ #}
+    {%- set schema = "UTILS" -%}
+    {%- set udfs = fromyaml(fsc_utils.udf_configs(schema)) -%}
+    {%- set combined_ddl = [] -%}
+    {%- for udf in udfs -%}
+        {% set name_ = udf ["name"] %}
+        {% set signature = udf ["signature"] %}
+        {% set return_type = udf ["return_type"] %}
+        {% set sql_ = udf ["sql"] %}
+        {% set options = udf ["options"] %}
+        {% set api_integration = udf ["api_integration"] %}
+        {% set func_type = udf ["func_type"] %}
+        {% set exclude_from_datashare = udf.get("exclude_from_datashare",False) %}
+        {% if not exclude_from_datashare %}
+            {%- set udf_ddl = fsc_utils.create_sql_function(
+                name_ = name_,
+                signature = signature,
+                return_type = return_type,
+                sql_ = sql_,
+                options = options,
+                api_integration = api_integration,
+                func_type = func_type
+            ).replace("\\","\\\\").replace("'","\\'") -%}
+            {%- do combined_ddl.append(udf_ddl) -%}       
+        {% endif %} 
+    {% endfor %}
+    {%- do combined_ddl.insert(0, "CREATE DATABASE IF NOT EXISTS __NEW__;") -%}
+    {%- do combined_ddl.insert(1, "USE DATABASE __NEW__;") -%}
+    {%- do combined_ddl.insert(2, "CREATE SCHEMA IF NOT EXISTS "~schema~";") -%}
+    {{- "'BEGIN','" ~ (combined_ddl | join("','")) ~ "','END'" -}}
+{%- endmacro -%}
