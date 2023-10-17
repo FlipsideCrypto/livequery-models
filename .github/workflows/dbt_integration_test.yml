@@ -11,6 +11,7 @@ on:
         options:
           - dev
           - prod
+          - hosted
         default: dev
       warehouse:
         type: choice
@@ -28,7 +29,16 @@ concurrency:
   group: ${{ github.workflow }}
 
 jobs:
-  scheduled:
+  hosted:
+    uses: ./.github/workflows/dbt.yml
+    if: github.event_name == 'schedule' || github.event_name == 'push'
+    secrets: inherit
+    with:
+      warehouse: DBT_CLOUD
+      environment: hosted
+      command: test -s test___utils_udf_introspect
+
+  prod:
     uses: ./.github/workflows/dbt.yml
     if: github.event_name == 'schedule' || github.event_name == 'push'
     secrets: inherit
@@ -37,11 +47,11 @@ jobs:
       environment: prod
       command: test -s test___utils_udf_introspect
 
-  dispached:
+  dispatched:
     uses: ./.github/workflows/dbt.yml
     if:  github.event_name == 'workflow_dispatch'
     secrets: inherit
     with:
       warehouse: ${{ inputs.warehouse }}
-      environment: workflow_${{ inputs.environment }}
+      environment: ${{ inputs.environment }}
       command: test -s test___utils_udf_introspect
