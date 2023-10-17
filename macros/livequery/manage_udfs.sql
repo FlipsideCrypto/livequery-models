@@ -6,7 +6,7 @@
 {% endmacro %}
 
 {%- macro construct_api_route(route) -%}
-    'https://{{ var("REST_API_PREFIX_PROD") | lower if target.name == "prod" else var("REST_API_PREFIX_DEV") | lower }}{{ route }}'
+    'https://{{ var("EXTERNAL_FUNCTION_URI") | lower }}{{ route }}'
 {%- endmacro -%}
 
 {%- macro compile_signature(

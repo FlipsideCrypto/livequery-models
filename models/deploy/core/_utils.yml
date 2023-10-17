@@ -4,6 +4,7 @@ models:
       - name: udf_introspect
         tests:
           - test_udf:
+              name: test___utils_udf_introspect
               args: "'hello'"
               assertions:
                 - result = 'hello'

@@ -6,7 +6,7 @@
     - [request_id, STRING]
     - [key, STRING]
   func_type: SECURE
-  return_type: TEXT
+  return_type: OBJECT
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT

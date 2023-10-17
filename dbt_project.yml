@@ -13,7 +13,7 @@ profile: "livequery"
 # found in the "models/" directory. You probably won't need to change these!
 model-paths: ["models"]
 analysis-paths: ["analysis"]
-# test-paths: ["tests"]
+test-paths: ["tests"]
 seed-paths: ["data"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
@@ -65,10 +65,30 @@ vars:
   UPDATE_SNOWFLAKE_TAGS: true
   STREAMLINE_INVOKE_STREAMS: False
   STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES: False
-  REST_API_PREFIX_PROD: bqco8lkjsb.execute-api.us-east-1.amazonaws.com/prod/
-  REST_API_PREFIX_DEV: u5z0tu43sc.execute-api.us-east-1.amazonaws.com/stg/
-  API_INTEGRATION: AWS_LIVE_QUERY{{ "_STG" if target.name != "prod" else "" }}
-  AWS_REGION: us-east-1
   STUDIO_TEST_USER_ID: '{{ env_var("STUDIO_TEST_USER_ID", "98d15c30-9fa5-43cd-9c69-3d4c0bb269f5") }}'
-  ENABLE_SNOWFLAKE_SECRETS: '{{ env_var("ENABLE_SNOWFLAKE_SECRETS", "") }}'
 
+  API_INTEGRATION: '{{ var("config")[target.name]["API_INTEGRATION"] }}'
+  EXTERNAL_FUNCTION_URI: '{{ var("config")[target.name]["EXTERNAL_FUNCTION_URI"] }}'
+  ENABLE_SNOWFLAKE_SECRETS: '{{ env_var("ENABLE_SNOWFLAKE_SECRETS", "") }}'
+  ROLES: '{{ var("config")[target.name]["ROLES"] }}'
+
+  config:
+  # The keys correspond to dbt profiles and are case sensitive
+    dev:
+      API_INTEGRATION: AWS_LIVE_QUERY_STG
+      EXTERNAL_FUNCTION_URI: u5z0tu43sc.execute-api.us-east-1.amazonaws.com/stg/
+      ROLES:
+        - INTERNAL_DEV
+    prod:
+      API_INTEGRATION: AWS_LIVE_QUERY
+      EXTERNAL_FUNCTION_URI: bqco8lkjsb.execute-api.us-east-1.amazonaws.com/prod/
+      ROLES:
+        - VELOCITY_INTERNAL
+        - VELOCITY_ETHEREUM
+        - INTERNAL_DEV
+        - BI_ANALYTICS_READER
+    hosted:
+      API_INTEGRATION: AWS_LIVEQUERY
+      EXTERNAL_FUNCTION_URI: dlcb3tpiz8.execute-api.us-east-1.amazonaws.com/hosted/
+      ROLES:
+        - DATA_READER

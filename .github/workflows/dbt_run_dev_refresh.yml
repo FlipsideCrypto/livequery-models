@@ -15,5 +15,5 @@ jobs:
     uses: ./.github/workflows/dbt.yml
     secrets: inherit
     with:
-      environment: workflow_prod
+      environment: prod
       command: run-operation run_sp_create_prod_clone

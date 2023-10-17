@@ -34,14 +34,14 @@ jobs:
     secrets: inherit
     with:
       warehouse: DBT_CLOUD
-      environment: workflow_prod
+      environment: prod
       command: test --selector test_udfs --threads 24
 
-  dispached:
+  dispatched:
     uses: ./.github/workflows/dbt.yml
     if:  github.event_name == 'workflow_dispatch'
     secrets: inherit
     with:
       warehouse: ${{ inputs.warehouse }}
-      environment: workflow_${{ inputs.environment }}
+      environment: ${{ inputs.environment }}
       command: test --selector test_udfs --threads 24
