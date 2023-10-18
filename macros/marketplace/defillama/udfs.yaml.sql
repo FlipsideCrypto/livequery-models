@@ -16,7 +16,7 @@
       live.udf_api(
         'GET',
         concat('https://api.llama.fi', PATH, '?', utils.udf_object_to_url_query_string(QUERY_ARGS)),
-        {},
+        {'Accept': '*/*', 'User-Agent': 'livequery/1.0 (Snowflake)', 'Host':'api.llama.fi', 'Connection': 'keep-alive'},
         {}
     ) as response
 
@@ -33,7 +33,7 @@
       live.udf_api(
         'POST',
         CONCAT('https://api.llama.fi', PATH),
-        {},
+        {'Accept': '*/*', 'User-Agent': 'livequery/1.0 (Snowflake)', 'Host':'api.llama.fi', 'Connection': 'keep-alive'},
         BODY
     ) as response
 

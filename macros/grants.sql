@@ -6,25 +6,23 @@
     This can be manually run to grant permissions to a new schema:
     `dbt run-operation apply_grants_by_schema --args '{"schema": "my_schema"}'`
  #}
-    {% if target.name in ("prod", "hosted") %}
-        {%- set outer = namespace(sql="") -%}
-        {% for role in var("ROLES") %}
-                {% set sql -%}
-                    {% if schema.startswith("_") %}
-                        REVOKE USAGE ON SCHEMA {{ target.database }}.{{ schema }} FROM {{ role }};
-                        REVOKE USAGE ON ALL FUNCTIONS IN SCHEMA {{ target.database }}.{{ schema }} FROM {{ role }};
-                    {%- else -%}
-                        GRANT USAGE ON SCHEMA {{ target.database }}.{{ schema }} TO {{ role }};
-                        GRANT USAGE ON ALL FUNCTIONS IN SCHEMA {{ target.database }}.{{ schema }} TO {{ role }};
+    {%- set outer = namespace(sql="") -%}
+    {% for role in fromyaml(var("ROLES")) %}
+            {% set sql -%}
+                {% if schema.startswith("_") %}
+                    REVOKE USAGE ON SCHEMA {{ target.database }}.{{ schema }} FROM {{ role }};
+                    REVOKE USAGE ON ALL FUNCTIONS IN SCHEMA {{ target.database }}.{{ schema }} FROM {{ role }};
+                {%- else -%}
+                    GRANT USAGE ON SCHEMA {{ target.database }}.{{ schema }} TO {{ role }};
+                    GRANT USAGE ON ALL FUNCTIONS IN SCHEMA {{ target.database }}.{{ schema }} TO {{ role }};
 
-                        GRANT SELECT ON ALL TABLES IN SCHEMA {{ target.database }}.{{ schema }} TO {{ role }};
-                        GRANT SELECT ON ALL VIEWS IN SCHEMA {{ target.database }}.{{ schema }} TO {{ role }};
-                    {%- endif -%}
-                {%- endset -%}
-                {%- set outer.sql = outer.sql ~ sql -%}
-        {%- endfor -%}
-        {{ outer.sql }}
-    {%- endif -%}
+                    GRANT SELECT ON ALL TABLES IN SCHEMA {{ target.database }}.{{ schema }} TO {{ role }};
+                    GRANT SELECT ON ALL VIEWS IN SCHEMA {{ target.database }}.{{ schema }} TO {{ role }};
+                {%- endif -%}
+            {%- endset -%}
+            {%- set outer.sql = outer.sql ~ sql -%}
+    {%- endfor -%}
+    {{ outer.sql }}
 {%- endmacro -%}
 
 {% macro apply_grants_to_all_schema() %}

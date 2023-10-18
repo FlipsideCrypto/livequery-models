@@ -29,11 +29,11 @@ models:
     deploy:
       +materialized: ephemeral
       core:
-        +tags: core
+        +tags: lq_core
       evm:
-        +tags: evm
+        +tags: lq_evm
       marketplace:
-        +tags: marketplace
+        +tags: lq_marketplace
 
 tests:
   +store_failures: true # all tests
@@ -66,10 +66,10 @@ vars:
   STREAMLINE_INVOKE_STREAMS: False
   STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES: False
   STUDIO_TEST_USER_ID: '{{ env_var("STUDIO_TEST_USER_ID", "98d15c30-9fa5-43cd-9c69-3d4c0bb269f5") }}'
+  ENABLE_SNOWFLAKE_SECRETS: '{{ env_var("ENABLE_SNOWFLAKE_SECRETS", "") }}'
 
   API_INTEGRATION: '{{ var("config")[target.name]["API_INTEGRATION"] }}'
   EXTERNAL_FUNCTION_URI: '{{ var("config")[target.name]["EXTERNAL_FUNCTION_URI"] }}'
-  ENABLE_SNOWFLAKE_SECRETS: '{{ env_var("ENABLE_SNOWFLAKE_SECRETS", "") }}'
   ROLES: '{{ var("config")[target.name]["ROLES"] }}'
 
   config:
