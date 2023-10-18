@@ -102,6 +102,30 @@ The `fsc_utils` dbt package is a centralized repository consisting of various db
 
     ```
 
+## **LiveQuery Functions**
+
+LiveQuery is now available to be deployed into individual projects. For base functionality, you will need to deploy the core functions using `dbt run` in your project and reference the path to the LiveQuery schema or by tag (LiveQuery dbt tags are prefixed with `lq_`).
+
+### Basic Setup ###
+
+1. Make sure `fsc-utils` package referenced in the project is version `v1.8.0` or greater. Re-run `dbt deps` if revision was changed.
+2. Deploy the core LiveQuery functions by schema or tag
+
+    By Schema
+    ```
+    dbt run -s livequery_models.deploy.core --vars '{UPDATE_UDFS_AND_SPS: true}'
+    ```
+    By Tag
+    ```
+    dbt run -s tag:lq_core --vars '{UPDATE_UDFS_AND_SPS: true}'
+    ```
+3. Deploy any additional functions
+
+    For example, deploy quicknode solana nft function + any dependencies (in this case the quicknode utils function)
+    ```
+    dbt run -s livequery_models.deploy.quicknode.quicknode_utils__quicknode_utils livequery_models.deploy.quicknode.quicknode_solana_nfts__quicknode_utils --vars '{UPDATE_UDFS_AND_SPS: true}'
+    ```
+
 ## Resources
 
 * Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
