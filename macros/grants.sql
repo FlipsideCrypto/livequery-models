@@ -8,7 +8,8 @@
  #}
     {% if target.name in ("prod", "hosted") %}
         {%- set outer = namespace(sql="") -%}
-        {% for role in var("ROLES") %}
+        {%- set roles =  var("ROLES").replace(" ","").replace("['","").replace("']","").split("','") -%}
+        {% for role in roles %}
                 {% set sql -%}
                     {% if schema.startswith("_") %}
                         REVOKE USAGE ON SCHEMA {{ target.database }}.{{ schema }} FROM {{ role }};
