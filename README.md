@@ -104,7 +104,7 @@ The `fsc_utils` dbt package is a centralized repository consisting of various db
 
 ## **LiveQuery Functions**
 
-LiveQuery is now available to be deployed into individual projects. For base functionality, you will need to deploy the core functions using `dbt run` in your project and reference the path to the LiveQuery schema or by tag (LiveQuery dbt tags are prefixed with `lq_`).
+LiveQuery is now available to be deployed into individual projects. For base functionality, you will need to deploy the core functions using `dbt run` in your project and reference the path to the LiveQuery schema or by tag.
 
 ### Basic Setup ###
 
@@ -117,7 +117,7 @@ LiveQuery is now available to be deployed into individual projects. For base fun
     ```
     By Tag
     ```
-    dbt run -s tag:lq_core --vars '{UPDATE_UDFS_AND_SPS: true}'
+    dbt run -s "livequery_models,tag:core" --vars '{UPDATE_UDFS_AND_SPS: true}'
     ```
 3. Deploy any additional functions
 
