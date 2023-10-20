@@ -29,11 +29,11 @@ models:
     deploy:
       +materialized: ephemeral
       core:
-        +tags: lq_core
+        +tags: core
       evm:
-        +tags: lq_evm
+        +tags: evm
       marketplace:
-        +tags: lq_marketplace
+        +tags: marketplace
 
 tests:
   +store_failures: true # all tests
