@@ -30,6 +30,8 @@ models:
       +materialized: ephemeral
       core:
         +tags: core
+        secrets:
+          +enabled: '{{ var("ENABLE_SNOWFLAKE_SECRETS") }}'
       evm:
         +tags: evm
       marketplace:
@@ -43,7 +45,6 @@ tests:
         blockpour:
           # TODO: enable tests for blockpour once we get an API key
           +enabled: false
-
 
 on-run-start:
   - "{{ create_sps() }}"
