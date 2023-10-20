@@ -138,7 +138,7 @@
         {%- do schema_ddl.append("CREATE SCHEMA IF NOT EXISTS __NEW__." ~ s ~ ";") -%}
     {%- endfor -%}
     {% for table in tables %}
-        {%- do view_ddl.append("CREATE OR REPLACE VIEW __NEW__." ~ table ~ " AS SELECT * FROM " ~ "__SOURCE__." ~ table ~";") -%}
+        {%- do view_ddl.append("CREATE OR REPLACE VIEW __NEW__." ~ table ~ " copy grants AS SELECT * FROM " ~ "__SOURCE__." ~ table ~";") -%}
     {%- endfor -%}
     {{- toyaml(schema_ddl + view_ddl) -}}
 {%- endmacro -%}
