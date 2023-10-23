@@ -102,6 +102,46 @@ The `fsc_utils` dbt package is a centralized repository consisting of various db
 
     ```
 
+## **LiveQuery Functions**
+
+LiveQuery is now available to be deployed into individual projects. For base functionality, you will need to deploy the core functions using `dbt run` in your project and reference the path to the LiveQuery schema or by tag.
+
+### Basic Setup ###
+
+1. Make sure `fsc-utils` package referenced in the project is version `v1.8.0` or greater. Re-run `dbt deps` if revision was changed.
+2. Deploy the core LiveQuery functions by schema or tag
+
+    By Schema
+    ```
+    dbt run -s livequery_models.deploy.core --vars '{UPDATE_UDFS_AND_SPS: true}'
+    ```
+    By Tag
+    ```
+    dbt run -s "livequery_models,tag:core" --vars '{UPDATE_UDFS_AND_SPS: true}'
+    ```
+3. Deploy any additional functions
+
+    For example, deploy quicknode solana nft function + any dependencies (in this case the quicknode utils function)
+    ```
+    dbt run -s livequery_models.deploy.quicknode.quicknode_utils__quicknode_utils livequery_models.deploy.quicknode.quicknode_solana_nfts__quicknode_utils --vars '{UPDATE_UDFS_AND_SPS: true}'
+    ```
+
+### Configuring LiveQuery API endpoints
+
+Individual projects have the option to point to a different LiveQuery API endpoint. To do so, modify your project's `dbt_projects.yml` to include the additional configurations within the project `vars`. If no configurations are specified, the default endpoints defined in the `livequery_models` package are used.
+
+Below is a sample configuration. The `API_INTEGRATION` and `EXTERNAL_FUNCTION_URI` should point to the specific resources deployed for your project. The `ROLES` property is a list of Snowflake role names that are granted usage to the LiveQuery functions on deployment.
+
+```
+config:
+    # The keys correspond to dbt profiles and are case sensitive
+    dev:
+      API_INTEGRATION: AWS_MY_PROJECT_LIVE_QUERY
+      EXTERNAL_FUNCTION_URI: myproject.api.livequery.com/path-to-endpoint/
+      ROLES:
+        - INTERNAL_DEV
+```
+
 ## Resources
 
 * Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
