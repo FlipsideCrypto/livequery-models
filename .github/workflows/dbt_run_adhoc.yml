@@ -21,6 +21,7 @@ on:
           - DBT
           - DBT_CLOUD
           - DBT_EMERGENCY
+          - XSMALL
         default: DBT
       dbt_command:
         type: string
