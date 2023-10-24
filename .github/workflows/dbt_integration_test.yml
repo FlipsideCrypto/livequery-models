@@ -20,6 +20,7 @@ on:
         options:
           - DBT
           - DBT_CLOUD
+          - XSMALL
         default: DBT
   schedule:
     # Runs “Daily at midnight GMT” (see https://crontab.guru)
@@ -34,7 +35,7 @@ jobs:
     if: github.event_name == 'schedule' || github.event_name == 'push'
     secrets: inherit
     with:
-      warehouse: DBT_CLOUD
+      warehouse: ${{ vars.WAREHOUSE }}
       environment: hosted
       command: test -s test___utils_udf_introspect
 
@@ -43,7 +44,7 @@ jobs:
     if: github.event_name == 'schedule' || github.event_name == 'push'
     secrets: inherit
     with:
-      warehouse: DBT_CLOUD
+      warehouse: ${{ vars.WAREHOUSE }}
       environment: prod
       command: test -s test___utils_udf_introspect
 
