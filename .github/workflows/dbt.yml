@@ -31,36 +31,7 @@ env:
   TARGET: ${{ vars.TARGET }}
 
 jobs:
-  dispatched:
-    if:  github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    env:
-      WAREHOUSE: ${{ inputs.warehouse }}
-    environment:
-      name: ${{ inputs.environment }}
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: ${{ inputs.python_version }}
-          cache: "pip"
-      - name: install dependencies
-        run: |
-          pip install -r requirements.txt
-          dbt deps
-      - name: Run DBT Jobs
-        run: |
-          ${{ inputs.command }}
-      - name: Store logs
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: dbt-logs
-          path: |
-            logs
-            target
-  not_dispatched:
-    if:  github.event_name != 'workflow_dispatch'
+  dbt:
     runs-on: ubuntu-latest
     environment:
       name: ${{ inputs.environment }}
@@ -74,6 +45,10 @@ jobs:
         run: |
           pip install -r requirements.txt
           dbt deps
+      - name: Set warehouse from input.warehouse if workflow_dispatch
+        if:  github.event_name == 'workflow_dispatch'
+        run: |
+          echo "WAREHOUSE=${{ inputs.warehouse }}" >> "$GITHUB_ENV"
       - name: Run DBT Jobs
         run: |
           ${{ inputs.command }}
