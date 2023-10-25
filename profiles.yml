@@ -1,5 +1,5 @@
 livequery:
-  target: dev
+  target: "{{ env_var('TARGET') }}"
   outputs:
     dev:
       type: snowflake
