@@ -37,7 +37,7 @@ jobs:
     with:
       warehouse: ${{ vars.WAREHOUSE }}
       environment: hosted
-      command: test -s test___utils_udf_introspect
+      command: dbt test -s test___utils_udf_introspect
 
   prod:
     uses: ./.github/workflows/dbt.yml
@@ -46,7 +46,7 @@ jobs:
     with:
       warehouse: ${{ vars.WAREHOUSE }}
       environment: prod
-      command: test -s test___utils_udf_introspect
+      command: dbt test -s test___utils_udf_introspect
 
   dispatched:
     uses: ./.github/workflows/dbt.yml
@@ -55,4 +55,4 @@ jobs:
     with:
       warehouse: ${{ inputs.warehouse }}
       environment: ${{ inputs.environment }}
-      command: test -s test___utils_udf_introspect
+      command: dbt test -s test___utils_udf_introspect

@@ -16,4 +16,4 @@ jobs:
     secrets: inherit
     with:
       environment: prod
-      command: run-operation run_sp_create_prod_clone
+      command: dbt run-operation run_sp_create_prod_clone
