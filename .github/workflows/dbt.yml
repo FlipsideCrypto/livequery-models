@@ -52,6 +52,33 @@ jobs:
         run: |
           ${{ inputs.command }}
       - name: Store logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: dbt-logs
+          path: |
+            logs
+            target
+  not_dispatched:
+    if:  github.event_name != 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ inputs.python_version }}
+          cache: "pip"
+      - name: install dependencies
+        run: |
+          pip install -r requirements.txt
+          dbt deps
+      - name: Run DBT Jobs
+        run: |
+          ${{ inputs.command }}
+      - name: Store logs
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: dbt-logs
