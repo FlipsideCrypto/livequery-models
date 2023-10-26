@@ -97,3 +97,29 @@ def custom_divide(input, adjustment):
     except Exception as e:
         return None
 {% endmacro %}
+
+{% macro create_udf_cron_to_prior_timestamps() %}
+import croniter
+import datetime
+
+class TimestampGenerator:
+    
+    def __init__(self):
+        pass
+    
+    def process(self, workflow_name, workflow_schedule):
+        for timestamp in self.generate_timestamps(workflow_name, workflow_schedule):
+            yield (workflow_name, workflow_schedule, timestamp)
+            
+    def generate_timestamps(self, workflow_name, workflow_schedule):
+        # Create a cron iterator object
+        cron = croniter.croniter(workflow_schedule)
+
+        # Generate timestamps for the prev 10 runs
+        timestamps = []
+        for i in range(10):
+            prev_run = cron.get_prev(datetime.datetime)
+            timestamps.append(prev_run)
+
+        return timestamps
+{% endmacro %}

@@ -132,7 +132,19 @@
     RUNTIME_VERSION = '3.8'
     HANDLER = 'custom_divide'
   sql: |
-    {{ fsc_utils.create_udf_decimal_adjust() | indent(4) }}  
+    {{ fsc_utils.create_udf_decimal_adjust() | indent(4) }}
 
+- name: {{ schema }}.udf_cron_to_prior_timestamps  
+  signature:
+    - [workflow_name, STRING]
+    - [workflow_schedule, STRING]
+  return_type: TABLE(workflow_name STRING, workflow_schedule STRING, timestamp TIMESTAMP_NTZ)
+  options: |
+    LANGUAGE PYTHON
+    RUNTIME_VERSION = '3.8'
+    PACKAGES = ('croniter')
+    HANDLER = 'TimestampGenerator'
+  sql: |
+    {{ fsc_utils.create_udf_cron_to_prior_timestamps() | indent(4) }}
 {% endmacro %}
 
