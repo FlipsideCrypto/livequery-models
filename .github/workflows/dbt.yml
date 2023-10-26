@@ -26,7 +26,7 @@ env:
   PASSWORD: ${{ secrets.PASSWORD }}
   REGION: ${{ vars.REGION }}
   DATABASE: ${{ vars.DATABASE }}
-  WAREHOUSE: ${{ vars.WAREHOUSE }}
+  WAREHOUSE: ${{ inputs.warehouse || vars.WAREHOUSE }}
   SCHEMA: ${{ vars.SCHEMA }}
   TARGET: ${{ vars.TARGET }}
 
