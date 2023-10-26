@@ -38,3 +38,4 @@ vars:
   "dbt_date:time_zone": GMT
   UPDATE_UDFS_AND_SPS: false
   AWS_REGION: us-east-1
+  START_GHA_TASKS: False
