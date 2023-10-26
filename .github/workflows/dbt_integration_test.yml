@@ -3,56 +3,21 @@ run-name: ${{ github.event.inputs.branch }}
 
 on:
   workflow_dispatch:
-    inputs:
-      environment:
-        type: choice
-        description: DBT Run Environment
-        required: true
-        options:
-          - dev
-          - prod
-          - hosted
-        default: dev
-      warehouse:
-        type: choice
-        description: Snowflake warehouse
-        required: true
-        options:
-          - DBT
-          - DBT_CLOUD
-          - XSMALL
-        default: DBT
   schedule:
     # Runs “Daily at midnight GMT” (see https://crontab.guru)
     - cron: '0 0 * * *'
 
+concurrency: ${{ github.workflow }}
+
 jobs:
-  hosted:
+  test:
+    name: ${{ matrix.environment }}
     uses: ./.github/workflows/dbt.yml
-    if: github.event_name == 'schedule' || github.event_name == 'push'
     secrets: inherit
-    concurrency: ${{ github.workflow }}
+    strategy:
+      matrix:
+        environment: [hosted, prod]
     with:
       warehouse: ${{ vars.WAREHOUSE }}
-      environment: hosted
-      command: dbt test -s test___utils_udf_introspect
-
-  prod:
-    uses: ./.github/workflows/dbt.yml
-    if: github.event_name == 'schedule' || github.event_name == 'push'
-    secrets: inherit
-    concurrency: ${{ github.workflow }}
-    with:
-      warehouse: ${{ vars.WAREHOUSE }}
-      environment: prod
-      command: dbt test -s test___utils_udf_introspect
-
-  dispatched:
-    uses: ./.github/workflows/dbt.yml
-    if:  github.event_name == 'workflow_dispatch'
-    secrets: inherit
-    concurrency: ${{ github.workflow }}
-    with:
-      warehouse: ${{ inputs.warehouse }}
-      environment: ${{ inputs.environment }}
+      environment: ${{ matrix.environment }}
       command: dbt test -s test___utils_udf_introspect
