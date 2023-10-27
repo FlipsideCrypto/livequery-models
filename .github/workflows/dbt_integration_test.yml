@@ -16,8 +16,12 @@ jobs:
     secrets: inherit
     strategy:
       matrix:
-        environment: [hosted, prod]
+        include:
+          - environment: hosted
+          - warehouse: XSMALL
+          - environment: prod
+          - warehouse: DBT_CLOUD
     with:
-      warehouse: ${{ vars.WAREHOUSE }}
+      warehouse: ${{ matrix.warehouse }}
       environment: ${{ matrix.environment }}
       command: dbt test -s test___utils_udf_introspect

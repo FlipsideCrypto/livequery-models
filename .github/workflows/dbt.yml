@@ -26,7 +26,7 @@ env:
   PASSWORD: ${{ secrets.PASSWORD }}
   REGION: ${{ vars.REGION }}
   DATABASE: ${{ vars.DATABASE }}
-  WAREHOUSE: ${{ inputs.warehouse || vars.WAREHOUSE }}
+  WAREHOUSE: ${{ inputs.warehouse }}
   SCHEMA: ${{ vars.SCHEMA }}
   TARGET: ${{ vars.TARGET }}
 
@@ -35,6 +35,8 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: ${{ inputs.environment }}
+    env:
+      WAREHOUSE: ${{ inputs.warehouse || vars.WAREHOUSE }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
