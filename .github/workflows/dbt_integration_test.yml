@@ -15,12 +15,13 @@ jobs:
     uses: ./.github/workflows/dbt.yml
     secrets: inherit
     strategy:
+      fail-fast: false
       matrix:
         include:
           - environment: hosted
-          - warehouse: XSMALL
+            warehouse: XSMALL
           - environment: prod
-          - warehouse: DBT_CLOUD
+            warehouse: DBT_CLOUD
     with:
       warehouse: ${{ matrix.warehouse }}
       environment: ${{ matrix.environment }}
