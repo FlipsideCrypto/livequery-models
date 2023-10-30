@@ -167,5 +167,5 @@
 {% endmacro %}
 
 {% macro alter_gha_task(task_name, task_action) %}
-    ALTER TASK IF EXISTS github_actions.{{ task_name }} {{ task_action }};
+    ALTER TASK IF EXISTS github_actions.{{ task_name }} {{ task_action }}
 {% endmacro %}
