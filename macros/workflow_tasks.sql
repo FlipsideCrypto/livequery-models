@@ -167,5 +167,10 @@
 {% endmacro %}
 
 {% macro alter_gha_task(task_name, task_action) %}
-    ALTER TASK IF EXISTS github_actions.{{ task_name }} {{ task_action }}
+    {% set sql %}
+        EXECUTE IMMEDIATE 
+        'ALTER TASK IF EXISTS github_actions.{{ task_name }} {{ task_action }};'
+    {% endset %}
+
+    {% do run_query(sql) %}
 {% endmacro %}
