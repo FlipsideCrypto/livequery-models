@@ -146,5 +146,16 @@
     HANDLER = 'TimestampGenerator'
   sql: |
     {{ fsc_utils.create_udf_cron_to_prior_timestamps() | indent(4) }}
+
+- name: {{ schema }}.udf_transform_logs
+  signature:
+    - [decoded, VARIANT]
+  return_type: VARIANT
+  options: |
+    LANGUAGE PYTHON
+    RUNTIME_VERSION = '3.8'
+    HANDLER = 'transform'
+  sql: |
+    {{ fsc_utils.create_udf_transform_logs() | indent(4) }}
 {% endmacro %}
 
