@@ -156,14 +156,25 @@
 {% endmacro %}
 
 {% macro gha_task_current_status_view() %}
+    WITH base AS (
+        SELECT 
+            task_name,
+            workflow_name,
+            scheduled_time,
+            return_value,
+            return_value IS NOT NULL AS was_successful
+        FROM {{ ref('github_actions__task_performance') }}
+        QUALIFY row_number() OVER (PARTITION BY task_name ORDER BY scheduled_time DESC) <= 2
+    )
     SELECT 
         task_name,
         workflow_name,
-        scheduled_time,
-        return_value,
-        return_value is not null as was_successful
-    FROM {{ ref('github_actions__task_performance') }}
-    QUALIFY row_number() over (partition by task_name order by scheduled_time desc) = 1
+        MAX(scheduled_time) AS recent_scheduled_time,
+        MIN(scheduled_time) AS prior_scheduled_time,
+        SUM(IFF(return_value = 204, 1, 0)) AS successes,
+        successes > 0 AS pipeline_active
+    FROM base 
+    GROUP BY task_name, workflow_name
 {% endmacro %}
 
 {% macro alter_gha_task(task_name, task_action) %}
