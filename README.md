@@ -165,7 +165,7 @@ A set of macros and UDFs have been created to help with the creation of Snowflak
     Use `-t prod` when running in production
 
     Alternatively, you can add  `{{- fsc_utils.create_udfs() -}}` to the `create_udfs` macro in your project to deploy the UDFs from `fsc-utils` on model start and when `UPDATE_UDFS_AND_SPS` is set to `True`.
-5. Add `github_actions__workflows.csv` to the data folder in your project. This file will contain the list of workflows to be created. See [Polygon](https://github.com/FlipsideCrypto/polygon-models/blob/main/data/github_actions__workflows.csv) for sample format.
+5. Add `github_actions__workflows.csv` to the data folder in your project. This file will contain the list of workflows to be created. The workflow name should be the same as the name of the `.yml` file in your project. It is recommended that the file name be the same as the workflow and run name. See [Polygon](https://github.com/FlipsideCrypto/polygon-models/blob/main/data/github_actions__workflows.csv) for sample format.
     
    Seed the file into dbt 
    ```
@@ -189,19 +189,19 @@ A set of macros and UDFs have been created to help with the creation of Snowflak
    ```
    Add `--vars '{UPDATE_UDFS_AND_SPS: true}'` if you have not already created UDFs on version `v1.11.0` or greater.
 
-7. Add the template workflows `dbt_alter_gha_tasks.yml` and `dbt_test_tasks.yml`
+7.  Add the template workflows `dbt_alter_gha_tasks.yml` and `dbt_test_tasks.yml`
    > The [alter workflow](https://github.com/FlipsideCrypto/arbitrum-models/blob/main/.github/workflows/dbt_alter_gha_task.yml) is used to `SUSPEND` or `RESUME` tasks, which you will need to do if you want to pause a workflow while merging a big PR, for example. This is intended to be ran on an ad-hoc basis.
 
    > The [test workflow](https://github.com/FlipsideCrypto/arbitrum-models/blob/main/.github/workflows/dbt_test_tasks.yml) is used to test the workflows. It ensures that workflows are running according to the schedule and that the tasks are completing successfully. You will want to include this workflow within `github_actions__workflows.csv`. You can change the `.yml` included in the `models/github_actions` folder to better suite your testing needs, if necessary.
 
-8. Remove the cron schedule from any workflow `.yml` files that have been added to `github_actions__workflows.csv`, replace with workflow_dispatch:
+8.  Remove the cron schedule from any workflow `.yml` files that have been added to `github_actions__workflows.csv`, replace with workflow_dispatch:
    ```
    on:
     workflow_dispatch:
         branches:
         - "main"
    ```
-9. Add the `START_GHA_TASKS` variable to `dbt_project.yml`
+9.  Add the `START_GHA_TASKS` variable to `dbt_project.yml`
    ```
    START_GHA_TASKS: False
    ``````
