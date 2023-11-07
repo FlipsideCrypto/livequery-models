@@ -150,13 +150,22 @@ A set of macros and UDFs have been created to help with the creation of Snowflak
 
 1. Make sure `fsc-utils` package referenced in the project is version `v1.11.0` or greater. Re-run `dbt deps` if revision was changed. 
 2. Make sure LiveQuery has been deployed to the project. See [LiveQuery Functions](#livequery-functions) for more information.
-   > Note - If you are using tags to run your workflows, it is highly recommend to add the project name to the tag. For example, `"ethereum_models,tag:core"` instead of `tag:core`. This will ensure that the correct workflows are being ran within your project.
+   > If you are using tags to run your workflows, it is highly recommend to add the project name to the tag. For example, `"ethereum_models,tag:core"` instead of `tag:core`. This will ensure that the correct workflows are being ran within your project.
 3. Install the GitHub LiveQuery Functions
     ```
-    dbt run -s livequery_models.deploy.marketplace.github_actions --vars '{UPDATE_UDFS_AND_SPS: true}'
+    dbt run -s livequery_models.deploy.marketplace.github --vars '{UPDATE_UDFS_AND_SPS: true}'
     ```
     Use `-t prod` when running in production
-4. Add `github_actions__workflows.csv` to the data folder in your project. This file will contain the list of workflows to be created. See [Polygon](https://github.com/FlipsideCrypto/polygon-models/blob/main/data/github_actions__workflows.csv) for sample format.
+
+    GitHub secrets have been registered to the Snowflake System account, which is the user that will execute tasks. If you wish to use a different user to interact with the GitHub API, you will need to register the secrets to that user using [Ephit](https://science.flipsidecrypto.xyz/ephit).
+4. Deploy UDFs from `fsc-utils` package
+    ```
+    dbt run-operation fsc_utils.create_udfs --vars '{UPDATE_UDFS_AND_SPS: true}'
+    ```
+    Use `-t prod` when running in production
+
+    Alternatively, you can add  `{{- fsc_utils.create_udfs() -}}` to the `create_udfs` macro in your project to deploy the UDFs from `fsc-utils` on model start and when `UPDATE_UDFS_AND_SPS` is set to `True`.
+5. Add `github_actions__workflows.csv` to the data folder in your project. This file will contain the list of workflows to be created. See [Polygon](https://github.com/FlipsideCrypto/polygon-models/blob/main/data/github_actions__workflows.csv) for sample format.
     
    Seed the file into dbt 
    ```
@@ -172,7 +181,7 @@ A set of macros and UDFs have been created to help with the creation of Snowflak
    ```
    If you would like to test in dev, you will need to seed your file to prod with a separate PR.
 
-5. Add the `github_actions` folder to your project's `models` folder. This folder contains the models that will be used to create and monitor the workflows. See [Polygon](https://github.com/FlipsideCrypto/polygon-models/tree/main/models/github_actions) 
+6. Add the `github_actions` folder to your project's `models` folder. This folder contains the models that will be used to create and monitor the workflows. See [Polygon](https://github.com/FlipsideCrypto/polygon-models/tree/main/models/github_actions) 
    
    Build the GitHub Actions View 
    ```
@@ -180,22 +189,22 @@ A set of macros and UDFs have been created to help with the creation of Snowflak
    ```
    Add `--vars '{UPDATE_UDFS_AND_SPS: true}'` if you have not already created UDFs on version `v1.11.0` or greater.
 
-6. Add the template workflows `dbt_alter_gha_tasks.yml` and `dbt_test_tasks.yml`
+7. Add the template workflows `dbt_alter_gha_tasks.yml` and `dbt_test_tasks.yml`
    > The [alter workflow](https://github.com/FlipsideCrypto/arbitrum-models/blob/main/.github/workflows/dbt_alter_gha_task.yml) is used to `SUSPEND` or `RESUME` tasks, which you will need to do if you want to pause a workflow while merging a big PR, for example. This is intended to be ran on an ad-hoc basis.
 
    > The [test workflow](https://github.com/FlipsideCrypto/arbitrum-models/blob/main/.github/workflows/dbt_test_tasks.yml) is used to test the workflows. It ensures that workflows are running according to the schedule and that the tasks are completing successfully. You will want to include this workflow within `github_actions__workflows.csv`. You can change the `.yml` included in the `models/github_actions` folder to better suite your testing needs, if necessary.
 
-7. Add the `START_GHA_TASKS` variable to `dbt_project.yml`
+8. Add the `START_GHA_TASKS` variable to `dbt_project.yml`
    ```
    START_GHA_TASKS: False
    ```
-8. Create the Tasks
+9. Create the Tasks
    ```
    dbt run-operation fsc_utils.create_gha_tasks --var '{"START_GHA_TASKS":True}'
    ```
    > This will create the tasks in Snowflake and the workflows in GitHub Actions. The tasks will only be started if `START_GHA_TASKS` is set to `True` and the target is the production database for your project.
 
-9.  Add a Data Dog CI Pipeline Alert on the logs of `dbt_test_tasks` to ensure that the test is checking the workflows successfully. See `Polygon Task Alert` in Data Dog for sample alert.
+10. Add a Data Dog CI Pipeline Alert on the logs of `dbt_test_tasks` to ensure that the test is checking the workflows successfully. See `Polygon Task Alert` in Data Dog for sample alert.
     
 ## Resources
 
