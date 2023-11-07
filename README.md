@@ -165,7 +165,7 @@ A set of macros and UDFs have been created to help with the creation of Snowflak
     Use `-t prod` when running in production
 
     Alternatively, you can add  `{{- fsc_utils.create_udfs() -}}` to the `create_udfs` macro in your project to deploy the UDFs from `fsc-utils` on model start and when `UPDATE_UDFS_AND_SPS` is set to `True`.
-5. Add `github_actions__workflows.csv` to the data folder in your project. This file will contain the list of workflows to be created. See [Polygon](https://github.com/FlipsideCrypto/polygon-models/blob/main/data/github_actions__workflows.csv) for sample format.
+5. Add `github_actions__workflows.csv` to the data folder in your project. This file will contain the list of workflows to be created. The workflow name should be the same as the name of the `.yml` file in your project. It is recommended that the file name be the same as the workflow and run name. See [Polygon](https://github.com/FlipsideCrypto/polygon-models/blob/main/data/github_actions__workflows.csv) for sample format.
     
    Seed the file into dbt 
    ```
