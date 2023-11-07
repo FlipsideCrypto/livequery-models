@@ -194,17 +194,24 @@ A set of macros and UDFs have been created to help with the creation of Snowflak
 
    > The [test workflow](https://github.com/FlipsideCrypto/arbitrum-models/blob/main/.github/workflows/dbt_test_tasks.yml) is used to test the workflows. It ensures that workflows are running according to the schedule and that the tasks are completing successfully. You will want to include this workflow within `github_actions__workflows.csv`. You can change the `.yml` included in the `models/github_actions` folder to better suite your testing needs, if necessary.
 
-8. Add the `START_GHA_TASKS` variable to `dbt_project.yml`
+8. Remove the cron schedule from any workflow `.yml` files that have been added to `github_actions__workflows.csv`, replace with workflow_dispatch:
+   ```
+   on:
+    workflow_dispatch:
+        branches:
+        - "main"
+   ```
+9. Add the `START_GHA_TASKS` variable to `dbt_project.yml`
    ```
    START_GHA_TASKS: False
-   ```
-9. Create the Tasks
-   ```
-   dbt run-operation fsc_utils.create_gha_tasks --var '{"START_GHA_TASKS":True}'
-   ```
-   > This will create the tasks in Snowflake and the workflows in GitHub Actions. The tasks will only be started if `START_GHA_TASKS` is set to `True` and the target is the production database for your project.
+   ``````
+10. Create the Tasks
+    ```
+    dbt run-operation fsc_utils.create_gha_tasks --var '{"START_GHA_TASKS":True}'
+    ```
+    > This will create the tasks in Snowflake and the workflows in GitHub Actions. The tasks will only be started if `START_GHA_TASKS` is set to `True` and the target is the production database for your project.
 
-10. Add a Data Dog CI Pipeline Alert on the logs of `dbt_test_tasks` to ensure that the test is checking the workflows successfully. See `Polygon Task Alert` in Data Dog for sample alert.
+11. Add a Data Dog CI Pipeline Alert on the logs of `dbt_test_tasks` to ensure that the test is checking the workflows successfully. See `Polygon Task Alert` in Data Dog for sample alert.
     
 ## Resources
 
