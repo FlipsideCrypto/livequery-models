@@ -1,4 +1,4 @@
-{% docs __overview__ %}
+{% docs __livequery_models__ %}
 
 # Welcome to the Flipside Crypto LiveQuery Models Documentation!
 
@@ -30,7 +30,7 @@ The documentation included here details the design of the LiveQuery functions av
 
     SELECT
         `decimals` AS function_name,
-        livequery.utils.hex_encode_function(`decimals()`) :: STRING AS text_sig, 
+        livequery.utils.hex_encode_function(`decimals()`) :: STRING AS text_sig,
         LEFT(text_sig,10) AS function_sig,
         '0x313ce567' AS expected_sig
     ```
@@ -90,7 +90,7 @@ The documentation included here details the design of the LiveQuery functions av
         solana_addresses;
 
     ex: Hit Quicknode (see instructions below for how to register an API Key with Flipside securely)
-    
+
     SELECT
         livequery.live.udf_api(
             'POST',
@@ -118,7 +118,7 @@ With LiveQuery you can safely store encrypted credentials, such as an API key, w
 ##### **API Endpoints available for use with LiveQuery:**
 Please visit the Flipside discord or open a ticket for questions, concerns or more information.
 
-- Snapshot: [https://hub.snapshot.org/graphql](https://docs.snapshot.org/graphql-api) 
+- Snapshot: [https://hub.snapshot.org/graphql](https://docs.snapshot.org/graphql-api)
 - Defillama: [https://api.llama.fi/](https://defillama.com/docs/api)
 - Defillama: [https://yields.llama.fi/](https://defillama.com/docs/api)
 - Defillama: [https://stablecoins.llama.fi/](https://defillama.com/docs/api)
