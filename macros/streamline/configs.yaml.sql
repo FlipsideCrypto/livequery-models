@@ -169,5 +169,17 @@
   sql: |
     {{ fsc_utils.create_udf_base58() | indent(4) }}
 
+- name: {{ schema }}.udf_bech32
+  signature:
+    - [input, STRING]
+    - [hrp, STRING]
+  return_type: TEXT
+  options: |
+    LANGUAGE PYTHON
+    RUNTIME_VERSION = '3.8'
+    HANDLER = 'transform_bech32'
+  sql: |
+    {{ fsc_utils.create_udf_bech32() | indent(4) }}
+
 {% endmacro %}
 
