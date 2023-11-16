@@ -165,7 +165,7 @@
   options: |
     LANGUAGE PYTHON
     RUNTIME_VERSION = '3.8'
-    HANDLER = 'base58_decode_handler'
+    HANDLER = 'transform_base58'
   sql: |
     {{ fsc_utils.create_udf_base58() | indent(4) }}
 

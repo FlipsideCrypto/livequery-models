@@ -181,15 +181,28 @@ def transform(events: dict):
 
 {% macro create_udf_base58() %}
 
-import base58
-
-def base58_decode_handler(input):
+def transform_base58(input):
     if input is None:
         return None
-    try:
-        decoded_bytes = base58.b58decode(input)
-        return decoded_bytes.decode('utf-8')
-    except Exception as e:
-        return str(e)
+
+    if input.startswith('0x'):
+        input = input[2:]
+
+    ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+    byte_array = bytes.fromhex(input)
+    num = int.from_bytes(byte_array, 'big')
+
+    encoded = ''
+    while num > 0:
+        num, remainder = divmod(num, 58)
+        encoded = ALPHABET[remainder] + encoded
+
+    for byte in byte_array:
+        if byte == 0:
+            encoded = '1' + encoded
+        else:
+            break
+
+    return encoded
 
 {% endmacro %}
