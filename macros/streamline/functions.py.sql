@@ -178,3 +178,16 @@ def transform(events: dict):
         return events
 
 {% endmacro %}
+
+{% macro create_udf_base58() %}
+
+def base58_decode_handler(input):
+    if input is None:
+        return None
+    try:
+        decoded_bytes = base58.b58decode(input)
+        return decoded_bytes.decode('utf-8')
+    except Exception as e:
+        return str(e)
+        
+{% endmacro %}

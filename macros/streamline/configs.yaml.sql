@@ -157,5 +157,17 @@
     HANDLER = 'transform'
   sql: |
     {{ fsc_utils.create_udf_transform_logs() | indent(4) }}
+
+- name: {{ schema }}.udf_base58
+  signature:
+    - [input, STRING]
+  return_type: TEXT
+  options: |
+    LANGUAGE PYTHON
+    RUNTIME_VERSION = '3.8'
+    HANDLER = 'base58_decode_handler'
+  sql: |
+    {{ fsc_utils.create_udf_base58() | indent(4) }}
+
 {% endmacro %}
 
