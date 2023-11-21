@@ -125,6 +125,14 @@ LiveQuery is now available to be deployed into individual projects. For base fun
     ```
     dbt run -s livequery_models.deploy.quicknode.quicknode_utils__quicknode_utils livequery_models.deploy.quicknode.quicknode_solana_nfts__quicknode_utils --vars '{UPDATE_UDFS_AND_SPS: true}'
     ```
+4. Override default LiveQuery configuration values by adding the below lines in the `vars` section of your project's `dbt_project.yml`
+
+    ```
+    API_INTEGRATION: '{{ var("config")[target.name]["API_INTEGRATION"] if var("config")[target.name] else var("config")["dev"]["API_INTEGRATION"] }}'
+    EXTERNAL_FUNCTION_URI: '{{ var("config")[target.name]["EXTERNAL_FUNCTION_URI"] if var("config")[target.name] else var("config")["dev"]["EXTERNAL_FUNCTION_URI"] }}'
+    ROLES: |
+        ["INTERNAL_DEV"]
+    ```
 
 ### Configuring LiveQuery API endpoints
 
