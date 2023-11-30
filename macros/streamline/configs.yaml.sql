@@ -181,5 +181,16 @@
   sql: |
     {{ fsc_utils.create_udf_bech32() | indent(4) }}
 
+- name: {{ schema }}.udf_hex_to_algorand
+  signature:
+    - [input, STRING]
+  return_type: TEXT
+  options: |
+    LANGUAGE PYTHON
+    RUNTIME_VERSION = '3.8'
+    HANDLER = 'transform_hex_to_algorand'
+  sql: |
+    {{ fsc_utils.create_udf_hex_to_algorand() | indent(4) }}
+
 {% endmacro %}
 

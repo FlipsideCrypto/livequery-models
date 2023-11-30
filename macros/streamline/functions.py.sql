@@ -262,3 +262,25 @@ def transform_bech32(input, hrp=''):
     return hrp + '1' + ''.join([CHARSET[d] for d in data5bit + checksum])
 
 {% endmacro %}
+
+{% macro create_udf_hex_to_algorand() %}
+
+import hashlib
+import base64
+
+def transform_hex_to_algorand(input):
+    if input is None or not input.startswith('0x'):
+        return 'Invalid input'
+
+    input = input[2:]
+    public_key_bytes = bytearray.fromhex(input)
+
+    sha512_256_hash = hashlib.new('sha512_256', public_key_bytes).digest()
+
+    checksum = sha512_256_hash[-4:]
+
+    algorand_address = base64.b32encode(public_key_bytes + checksum).decode('utf-8').rstrip('=')
+
+    return algorand_address
+
+{% endmacro %}
