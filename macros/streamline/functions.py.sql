@@ -179,9 +179,9 @@ def transform(events: dict):
 
 {% endmacro %}
 
-{% macro create_udf_base58() %}
+{% macro create_udf_hex_to_base58() %}
 
-def transform_base58(input):
+def transform_hex_to_base58(input):
     if input is None:
         return None
 
@@ -207,9 +207,9 @@ def transform_base58(input):
 
 {% endmacro %}
 
-{% macro create_udf_bech32() %}
+{% macro create_udf_hex_to_bech32() %}
 
-def transform_bech32(input, hrp=''):
+def transform_hex_to_bech32(input, hrp=''):
     CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
 
     def bech32_polymod(values):

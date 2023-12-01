@@ -158,18 +158,18 @@
   sql: |
     {{ fsc_utils.create_udf_transform_logs() | indent(4) }}
 
-- name: {{ schema }}.udf_base58
+- name: {{ schema }}.udf_hex_to_base58
   signature:
     - [input, STRING]
   return_type: TEXT
   options: |
     LANGUAGE PYTHON
     RUNTIME_VERSION = '3.8'
-    HANDLER = 'transform_base58'
+    HANDLER = 'transform_hex_to_base58'
   sql: |
-    {{ fsc_utils.create_udf_base58() | indent(4) }}
+    {{ fsc_utils.create_udf_hex_to_base58() | indent(4) }}
 
-- name: {{ schema }}.udf_bech32
+- name: {{ schema }}.udf_hex_to_bech32
   signature:
     - [input, STRING]
     - [hrp, STRING]
@@ -177,9 +177,9 @@
   options: |
     LANGUAGE PYTHON
     RUNTIME_VERSION = '3.8'
-    HANDLER = 'transform_bech32'
+    HANDLER = 'transform_hex_to_bech32'
   sql: |
-    {{ fsc_utils.create_udf_bech32() | indent(4) }}
+    {{ fsc_utils.create_udf_hex_to_bech32() | indent(4) }}
 
 - name: {{ schema }}.udf_hex_to_algorand
   signature:
