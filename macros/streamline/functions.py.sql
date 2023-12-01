@@ -284,3 +284,59 @@ def transform_hex_to_algorand(input):
     return algorand_address
 
 {% endmacro %}
+
+{% macro create_udf_hex_to_tezos() %}
+
+import hashlib
+
+def transform_hex_to_tezos(input, prefix='tz1'):
+    if input is None or not input.startswith('0x'):
+        return 'Invalid input'
+
+    input = input[2:]
+
+    if len(input) != 40:
+        return 'Invalid length'
+
+    hash_bytes = bytes.fromhex(input)
+
+    prefixes = {
+        'tz1': '06a19f',  # Ed25519
+        'tz2': '06a1a1',  # Secp256k1
+        'tz3': '06a1a4'   # P-256
+    }
+
+    prefix_bytes = bytes.fromhex(prefixes.get(prefix, '06a19f'))
+
+    prefixed_hash = prefix_bytes + hash_bytes
+
+    checksum = hashlib.sha256(hashlib.sha256(prefixed_hash).digest()).digest()[:4]
+
+    full_hash = prefixed_hash + checksum
+
+    tezos_address = transform_hex_to_base58(full_hash.hex())
+
+    return tezos_address
+
+def transform_hex_to_base58(input):
+    if input is None:
+        return None
+
+    ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+    byte_array = bytes.fromhex(input)
+    num = int.from_bytes(byte_array, 'big')
+
+    encoded = ''
+    while num > 0:
+        num, remainder = divmod(num, 58)
+        encoded = ALPHABET[remainder] + encoded
+
+    for byte in byte_array:
+        if byte == 0:
+            encoded = '1' + encoded
+        else:
+            break
+
+    return encoded
+
+{% endmacro %}
