@@ -289,7 +289,7 @@ def transform_hex_to_algorand(input):
 
 import hashlib
 
-def transform_hex_to_tezos(input, prefix='tz1'):
+def transform_hex_to_tezos(input, prefix):
     if input is None or not input.startswith('0x'):
         return 'Invalid input'
 
@@ -306,7 +306,10 @@ def transform_hex_to_tezos(input, prefix='tz1'):
         'tz3': '06a1a4'   # P-256
     }
 
-    prefix_bytes = bytes.fromhex(prefixes.get(prefix, '06a19f'))
+    if prefix not in prefixes:
+        return 'Invalid prefix'
+
+    prefix_bytes = bytes.fromhex(prefixes[prefix])
 
     prefixed_hash = prefix_bytes + hash_bytes
 
