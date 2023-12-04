@@ -342,4 +342,4 @@ def transform_hex_to_base58(input):
 
     return encoded
 
-{% endmacro %}
+{% endmacro %} 
