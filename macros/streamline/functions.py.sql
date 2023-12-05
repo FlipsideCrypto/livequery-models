@@ -317,8 +317,29 @@ def transform_hex_to_tezos(input, prefix):
 
     full_hash = prefixed_hash + checksum
 
-    tezos_address = fsc_utils.create_udf_hex_to_base58(full_hash.hex())
+    tezos_address = transform_hex_to_base58(full_hash.hex())
 
     return tezos_address
+
+def transform_hex_to_base58(input):
+    if input is None:
+        return None
+
+    ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+    byte_array = bytes.fromhex(input)
+    num = int.from_bytes(byte_array, 'big')
+
+    encoded = ''
+    while num > 0:
+        num, remainder = divmod(num, 58)
+        encoded = ALPHABET[remainder] + encoded
+
+    for byte in byte_array:
+        if byte == 0:
+            encoded = '1' + encoded
+        else:
+            break
+
+    return encoded
 
 {% endmacro %} 
