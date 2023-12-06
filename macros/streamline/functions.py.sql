@@ -182,11 +182,10 @@ def transform(events: dict):
 {% macro create_udf_hex_to_base58() %}
 
 def transform_hex_to_base58(input):
-    if input is None:
-        return None
+    if input is None or not input.startswith('0x'):
+        return 'Invalid input'
 
-    if input.startswith('0x'):
-        input = input[2:]
+    input = input[2:]
 
     ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
     byte_array = bytes.fromhex(input)
@@ -307,7 +306,7 @@ def transform_hex_to_tezos(input, prefix):
     }
 
     if prefix not in prefixes:
-        return 'Invalid prefix'
+        return 'Invalid prefix: Must be tz1, tz2, or tz3'
 
     prefix_bytes = bytes.fromhex(prefixes[prefix])
 
