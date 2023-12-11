@@ -157,5 +157,52 @@
     HANDLER = 'transform'
   sql: |
     {{ fsc_utils.create_udf_transform_logs() | indent(4) }}
+
+- name: {{ schema }}.udf_hex_to_base58
+  signature:
+    - [input, STRING]
+  return_type: TEXT
+  options: |
+    LANGUAGE PYTHON
+    RUNTIME_VERSION = '3.8'
+    HANDLER = 'transform_hex_to_base58'
+  sql: |
+    {{ fsc_utils.create_udf_hex_to_base58() | indent(4) }}
+
+- name: {{ schema }}.udf_hex_to_bech32
+  signature:
+    - [input, STRING]
+    - [hrp, STRING]
+  return_type: TEXT
+  options: |
+    LANGUAGE PYTHON
+    RUNTIME_VERSION = '3.8'
+    HANDLER = 'transform_hex_to_bech32'
+  sql: |
+    {{ fsc_utils.create_udf_hex_to_bech32() | indent(4) }}
+
+- name: {{ schema }}.udf_hex_to_algorand
+  signature:
+    - [input, STRING]
+  return_type: TEXT
+  options: |
+    LANGUAGE PYTHON
+    RUNTIME_VERSION = '3.8'
+    HANDLER = 'transform_hex_to_algorand'
+  sql: |
+    {{ fsc_utils.create_udf_hex_to_algorand() | indent(4) }}
+
+- name: {{ schema }}.udf_hex_to_tezos
+  signature:
+    - [input, STRING]
+    - [prefix, STRING]
+  return_type: TEXT
+  options: |
+    LANGUAGE PYTHON
+    RUNTIME_VERSION = '3.8'
+    HANDLER = 'transform_hex_to_tezos'
+  sql: |
+    {{ fsc_utils.create_udf_hex_to_tezos() | indent(4) }}
+
 {% endmacro %}
 
