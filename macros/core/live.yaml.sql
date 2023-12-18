@@ -134,4 +134,16 @@
     COMMENT = $$Executes an JSON RPC call on a blockchain.$$
   sql: |
     {{ sql_live_rpc_call("method", "parameters", "blockchain", "network") | indent(4) -}}
+
+- name: {{ schema }}.udf_allow_list
+  signature: []
+  return_type: ARRAY
+  func_type: EXTERNAL
+  api_integration: '{{ var("API_INTEGRATION") }}'
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns a list of allowed domains.$$
+  sql: allowed
 {% endmacro %}
