@@ -3,10 +3,9 @@
     grants = {'+select': fromyaml(var('ROLES'))}
 ) }}
 
-select
-  '*.' || t.value as ALLOWED_DOMAINS
-from table(flatten(input=>{{ this.database }}.live.udf_allow_list())) t
-order by
-  split_part(ALLOWED_DOMAINS, '.', -1)
-  ,split_part(ALLOWED_DOMAINS, '.', -2)
-  ,split_part(ALLOWED_DOMAINS, '.', -3)
+SELECT '*.' || t.value AS allowed_domains
+FROM table(flatten(input => {{ this.database }}.live.udf_allow_list())) AS t
+ORDER BY
+    split_part(allowed_domains, '.', -1),
+    split_part(allowed_domains, '.', -2),
+    split_part(allowed_domains, '.', -3)
