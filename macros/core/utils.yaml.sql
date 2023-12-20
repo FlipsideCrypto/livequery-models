@@ -238,4 +238,27 @@
     RETURNS NULL ON NULL INPUT
   sql: evm/decode/log
 
+- name: {{ schema }}.udf_hex_to_base58
+  signature:
+    - [hex, STRING]
+  return_type: TEXT
+  options: |
+    LANGUAGE PYTHON
+    RUNTIME_VERSION = '3.8'
+    HANDLER = 'transform_hex_to_base58'
+  sql: |
+    {{ create_udf_hex_to_base58() | indent(4) }}
+
+- name: {{ schema }}.udf_hex_to_bech32
+  signature:
+    - [hex, STRING]
+    - [hrp, STRING]
+  return_type: TEXT
+  options: |
+    LANGUAGE PYTHON
+    RUNTIME_VERSION = '3.8'
+    HANDLER = 'transform_hex_to_bech32'
+  sql: |
+    {{ create_udf_hex_to_bech32() | indent(4) }}
+
 {% endmacro %}
