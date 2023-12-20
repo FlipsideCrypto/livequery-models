@@ -36,7 +36,7 @@
   return_type: TEXT
   options: |
     NULL
-    LANGUAGE SQL 
+    LANGUAGE SQL
     STRICT IMMUTABLE
   sql: |
     SELECT
@@ -120,8 +120,8 @@
     PACKAGES = ('pycryptodome==3.15.0')
     HANDLER = 'udf_encode'
   sql: |
-    {{ fsc_utils.create_udf_keccak256() | indent(4) }}  
-  
+    {{ fsc_utils.create_udf_keccak256() | indent(4) }}
+
 - name: {{ schema }}.udf_decimal_adjust
   signature:
     - [input, string]
@@ -134,7 +134,7 @@
   sql: |
     {{ fsc_utils.create_udf_decimal_adjust() | indent(4) }}
 
-- name: {{ schema }}.udf_cron_to_prior_timestamps  
+- name: {{ schema }}.udf_cron_to_prior_timestamps
   signature:
     - [workflow_name, STRING]
     - [workflow_schedule, STRING]
@@ -203,6 +203,42 @@
     HANDLER = 'transform_hex_to_tezos'
   sql: |
     {{ fsc_utils.create_udf_hex_to_tezos() | indent(4) }}
+
+- name: {{ schema }}.udf_detect_overflowed_responses
+  signature:
+    - [file_url, STRING]
+    - [index_cols, ARRAY]
+  return_type: ARRAY
+  options: |
+    LANGUAGE PYTHON
+    RUNTIME_VERSION = '3.8'
+    COMMENT = 'Detect overflowed responses larger than 16MB'
+    PACKAGES = ('snowflake-snowpark-python', 'pandas')
+    HANDLER = 'main'
+  sql: |
+    {{ fsc_utils.create_udf_detect_overflowed_responses() | indent(4) }}
+
+- name: {{ schema }}.udtf_flatten_overflowed_responses
+  signature:
+    - [file_url, STRING]
+    - [index_cols, ARRAY]
+    - [index_vals, ARRAY]
+  return_type: |
+    table(block_number NUMBER,
+          metadata OBJECT,
+          seq NUMBER,
+          key STRING,
+          path STRING,
+          index NUMBER,
+          value_ VARIANT)
+  options: |
+    LANGUAGE PYTHON
+    RUNTIME_VERSION = '3.8'
+    COMMENT = 'Flatten rows from a JSON file with overflowed responses larger than 16MB'
+    PACKAGES = ('snowflake-snowpark-python', 'pandas', 'simplejson', 'numpy')
+    HANDLER = 'FlattenRows'
+  sql: |
+    {{ fsc_utils.create_udtf_flatten_overflowed_responses() | indent(4) }}
 
 {% endmacro %}
 
