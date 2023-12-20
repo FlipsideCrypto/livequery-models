@@ -121,3 +121,86 @@ def transform(events: list):
         return events
 
 {% endmacro %}
+
+{% macro create_udf_hex_to_base58() %}
+
+def transform_hex_to_base58(hex):
+    if hex is None or not hex.startswith('0x'):
+        return 'Invalid input'
+
+    hex = hex[2:]
+
+    ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+    byte_array = bytes.fromhex(hex)
+    num = int.from_bytes(byte_array, 'big')
+
+    encoded = ''
+    while num > 0:
+        num, remainder = divmod(num, 58)
+        encoded = ALPHABET[remainder] + encoded
+
+    for byte in byte_array:
+        if byte == 0:
+            encoded = '1' + encoded
+        else:
+            break
+
+    return encoded
+
+{% endmacro %}
+
+{% macro create_udf_hex_to_bech32() %}
+
+def transform_hex_to_bech32(hex, hrp=''):
+    CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
+
+    def bech32_polymod(values):
+        generator = [0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3]
+        checksum = 1
+        for value in values:
+            top = checksum >> 25
+            checksum = ((checksum & 0x1ffffff) << 5) ^ value
+            for i in range(5):
+                checksum ^= generator[i] if ((top >> i) & 1) else 0
+        return checksum
+
+    def bech32_hrp_expand(hrp):
+        return [ord(x) >> 5 for x in hrp] + [0] + [ord(x) & 31 for x in hrp]
+
+    def bech32_create_checksum(hrp, data):
+        values = bech32_hrp_expand(hrp) + data
+        polymod = bech32_polymod(values + [0, 0, 0, 0, 0, 0]) ^ 1
+        return [(polymod >> 5 * (5 - i)) & 31 for i in range(6)]
+
+    def bech32_convertbits(data, from_bits, to_bits, pad=True):
+        acc = 0
+        bits = 0
+        ret = []
+        maxv = (1 << to_bits) - 1
+        max_acc = (1 << (from_bits + to_bits - 1)) - 1
+        for value in data:
+            acc = ((acc << from_bits) | value) & max_acc
+            bits += from_bits
+            while bits >= to_bits:
+                bits -= to_bits
+                ret.append((acc >> bits) & maxv)
+        if pad and bits:
+            ret.append((acc << (to_bits - bits)) & maxv)
+        return ret
+
+    if hex is None or not hex.startswith('0x'):
+        return 'Invalid input'
+
+    hex = hex[2:]
+
+    data = bytes.fromhex(hex)
+    data5bit = bech32_convertbits(list(data), 8, 5)
+
+    if data5bit is None:
+        return 'Data conversion failed'
+
+    checksum = bech32_create_checksum(hrp, data5bit)
+    
+    return hrp + '1' + ''.join([CHARSET[d] for d in data5bit + checksum])
+
+{% endmacro %}
