@@ -198,8 +198,8 @@ def transform_base58_to_hex(input):
 
     hex_string = hex(num)[2:]
 
-    if len(hex_string) <= 64:
-        hex_string = hex_string.zfill(64)
+    if len(hex_string) % 2 != 0:
+        hex_string = '0' + hex_string
 
     return '0x' + hex_string
 
