@@ -247,7 +247,7 @@
     RUNTIME_VERSION = '3.8'
     HANDLER = 'transform_base58_to_hex'
   sql: |
-    {{ fsc_utils.create_udf_base58_to_hex() | indent(4) }}
+    {{ create_udf_base58_to_hex() | indent(4) }}
 
 - name: {{ schema }}.udf_hex_to_base58
   signature:
