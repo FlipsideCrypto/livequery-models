@@ -211,7 +211,7 @@
   return_type: ARRAY
   options: |
     LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.11'
     COMMENT = 'Detect overflowed responses larger than 16MB'
     PACKAGES = ('snowflake-snowpark-python', 'pandas')
     HANDLER = 'main'
@@ -224,16 +224,19 @@
     - [index_cols, ARRAY]
     - [index_vals, ARRAY]
   return_type: |
-    table(block_number NUMBER,
+    table(
+          index_vals ARRAY,
+          block_number NUMBER,
           metadata OBJECT,
           seq NUMBER,
           key STRING,
           path STRING,
           index NUMBER,
-          value_ VARIANT)
+          value_ VARIANT
+        )
   options: |
     LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.11'
     COMMENT = 'Flatten rows from a JSON file with overflowed responses larger than 16MB'
     PACKAGES = ('snowflake-snowpark-python', 'pandas', 'simplejson', 'numpy')
     HANDLER = 'FlattenRows'
