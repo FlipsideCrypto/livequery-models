@@ -179,6 +179,32 @@ def transform(events: dict):
 
 {% endmacro %}
 
+{% macro create_udf_base58_to_hex() %}
+
+def transform_base58_to_hex(input):
+    if input is None:
+        return 'Invalid input'
+
+    ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+    base_count = len(ALPHABET)
+
+    num = 0
+    for char in input:
+        num *= base_count
+        if char in ALPHABET:
+            num += ALPHABET.index(char)
+        else:
+            return 'Invalid character in input'
+
+    hex_string = hex(num)[2:]
+
+    if len(hex_string) % 2 != 0:
+        hex_string = '0' + hex_string
+
+    return '0x' + hex_string
+
+{% endmacro %}
+
 {% macro create_udf_hex_to_base58() %}
 
 def transform_hex_to_base58(input):
