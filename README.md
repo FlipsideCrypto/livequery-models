@@ -52,7 +52,7 @@ The `fsc_utils` dbt package is a centralized repository consisting of various db
 1. Navigate to the `create_udfs.sql` macro in your respective repo where you want to install the package.
 2. Add the following: 
 ```
-{% set name %}
+{% set name %} 
 {{- fsc_utils.create_udfs() -}}
 {% endset %}
 {% do run_query(sql) %}
