@@ -2,7 +2,7 @@ version: 2
 models:
   - name: allday__
     columns:
-      - name: get
+      - name: graphql
         tests:
           - test_udf:
               name: test_allday__graphql_status_200
