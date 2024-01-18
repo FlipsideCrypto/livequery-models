@@ -148,7 +148,7 @@
         h
         ON s.task_name = h.task_name
         AND TO_TIMESTAMP_NTZ(DATE_TRUNC('minute', s.scheduled_time)) = TO_TIMESTAMP_NTZ(DATE_TRUNC('minute', h.scheduled_time))
-        AND h.return_value between 200 and 299
+        AND try_to_number(h.return_value) between 200 and 299
         AND h.state = 'SUCCEEDED'
     ORDER BY
         task_name,
