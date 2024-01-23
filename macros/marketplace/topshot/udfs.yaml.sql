@@ -15,7 +15,7 @@
       live.udf_api(
         'POST',
         'https://public-api.nbatopshot.com/graphql',
-        {'User-Agent': 'Flipside_LQ/0.1','Accept-Encoding': 'gzip', 'Content-Type': 'application/json', 'Accept': 'application/json','Connection': 'keep-alive'},
+        {'User-Agent': 'Flipside_Flow_metadata/0.1','Accept-Encoding': 'gzip', 'Content-Type': 'application/json', 'Accept': 'application/json','Connection': 'keep-alive'},
         QUERY,
         '_FSC_SYS/TOPSHOT'
     ) as response
