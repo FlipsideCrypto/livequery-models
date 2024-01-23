@@ -5,7 +5,7 @@
     - [method, STRING]
     - [url, STRING]
     - [headers, OBJECT]
-    - [data, OBJECT]
+    - [data, VARIANT]
     - [secret_name, STRING]
   return_type: VARIANT
   options: |
@@ -27,7 +27,7 @@
     - [method, STRING]
     - [url, STRING]
     - [headers, OBJECT]
-    - [data, OBJECT]
+    - [data, VARIANT]
   return_type: VARIANT
   options: |
     NOT NULL
@@ -46,7 +46,7 @@
 - name: {{ schema }}.udf_api
   signature:
     - [url, STRING]
-    - [data, OBJECT]
+    - [data, VARIANT]
   return_type: VARIANT
   options: |
     NOT NULL
@@ -65,7 +65,7 @@
 - name: {{ schema }}.udf_api
   signature:
     - [url, STRING]
-    - [data, OBJECT]
+    - [data, VARIANT]
     - [secret_name, STRING]
   return_type: VARIANT
   options: |
