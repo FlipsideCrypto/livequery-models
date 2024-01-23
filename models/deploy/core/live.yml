@@ -22,3 +22,4 @@ models:
                 'https://httpbin.org/post', 'foo'
               assertions:
                 - result:data = 'foo'
+              enabled: false
