@@ -28,7 +28,7 @@ test AS
     $${{ context ~ "\n" }}SELECT {{ call ~ "\n" }};$$ AS sql
     FROM test
     WHERE NOT {{ assertion }}
-    {%- if not loop.last -%}
+    {%- if not loop.last %}
     UNION ALL
     {%- endif -%}
   {%- endfor -%}
