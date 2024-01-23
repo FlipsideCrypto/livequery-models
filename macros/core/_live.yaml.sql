@@ -5,7 +5,7 @@
     - [method, STRING]
     - [url, STRING]
     - [headers, OBJECT]
-    - [DATA, OBJECT]
+    - [DATA, VARIANT]
     - [user_id, STRING]
     - [SECRET, STRING]
   return_type: VARIANT
