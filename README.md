@@ -215,12 +215,64 @@ A set of macros and UDFs have been created to help with the creation of Snowflak
    ``````
 10. Create the Tasks
     ```
-    dbt run-operation fsc_utils.create_gha_tasks --var '{"START_GHA_TASKS":True}'
+    dbt run-operation fsc_utils.create_gha_tasks --vars '{"START_GHA_TASKS":True}'
     ```
     > This will create the tasks in Snowflake and the workflows in GitHub Actions. The tasks will only be started if `START_GHA_TASKS` is set to `True` and the target is the production database for your project.
 
 11. Add a Data Dog CI Pipeline Alert on the logs of `dbt_test_tasks` to ensure that the test is checking the workflows successfully. See `Polygon Task Alert` in Data Dog for sample alert.
+
+## Dynamic Merge Predicate
+
+A macro to help with generating merge predicate statements for models in chain projects. Specifically this will output a concatenanted set of BETWEEN statements.
+
+### Setup and Usage ###
+
+The macro only supports generating predicates for column types of DATE and INTEGER
+
+
+#### Inline Usage ####
+
+    {% set between_stmts = fsc_utils.dynamic_range_predicate("silver.my_temp_table", "block_timestamp::date") %}
     
+    ...
+
+    SELECT 
+        *
+    FROM 
+        some_other_table
+    WHERE 
+        {{ between_stmts }}
+
+#### DBT Snowflake incremental_predicate Usage ####
+
+ 1. Requires overriding behavior of `get_merge_sql` macro
+
+ 2. Create a file in `macros/dbt/` ex: `macros/dbt/get_merge.sql`
+
+ 3. Copy this to the new file
+    ```
+    {% macro get_merge_sql(target, source, unique_key, dest_columns, incremental_predicates) -%}
+        {% set predicate_override = "" %}
+        {% if incremental_predicates[0] == "dynamic_range_predicate" %}
+            -- run some queries to dynamically determine the min + max of this 'date_column' in the new data
+            {% set predicate_override = dynamic_range_predicate(source, incremental_predicates[1], "DBT_INTERNAL_DEST") %}
+        {% endif %}
+        {% set predicates = [predicate_override] if predicate_override else incremental_predicates %}
+        -- standard merge from here
+        {% set merge_sql = dbt.get_merge_sql(target, source, unique_key, dest_columns, predicates) %}
+        {{ return(merge_sql) }}
+    {% endmacro %}
+    ```
+    
+4. Example usage 
+    ```
+    {{ config(
+        ...
+        incremental_predicates = ["dynamic_range_predicate", "block_id"],
+        ...
+    ) }}
+    ```
+
 ## Resources
 
 * Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
