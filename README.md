@@ -229,6 +229,7 @@ A set of macros to help with generating dynamic merge predicate statements for m
 
 The macro only supports generating predicates for column types of DATE and INTEGER
 
+  1. Make sure fsc-utils package referenced in the project is version `v1.16.0` or greater. Re-run dbt deps if revision was changed.
 
 #### Inline Usage ####
 
