@@ -223,7 +223,7 @@ A set of macros and UDFs have been created to help with the creation of Snowflak
 
 ## Dynamic Merge Predicate
 
-A macro to help with generating merge predicate statements for models in chain projects. Specifically this will output a concatenanted set of BETWEEN statements.
+A set of macros to help with generating dynamic merge predicate statements for models in chain projects. Specifically this will output a concatenanted set of BETWEEN statements of contiguous ranges.
 
 ### Setup and Usage ###
 
@@ -252,19 +252,13 @@ The macro only supports generating predicates for column types of DATE and INTEG
  3. Copy this to the new file
     ```
     {% macro get_merge_sql(target, source, unique_key, dest_columns, incremental_predicates) -%}
-        {% set predicate_override = "" %}
-        {% if incremental_predicates[0] == "dynamic_range_predicate" %}
-            -- run some queries to dynamically determine the min + max of this 'date_column' in the new data
-            {% set predicate_override = dynamic_range_predicate(source, incremental_predicates[1], "DBT_INTERNAL_DEST") %}
-        {% endif %}
-        {% set predicates = [predicate_override] if predicate_override else incremental_predicates %}
-        -- standard merge from here
-        {% set merge_sql = dbt.get_merge_sql(target, source, unique_key, dest_columns, predicates) %}
+        {% set merge_sql = fsc_utils.get_merge_sql(target, source, unique_key, dest_columns, incremental_predicates) %}
         {{ return(merge_sql) }}
     {% endmacro %}
     ```
+    **NOTE**:  This is backwards compatible with the default dbt merge behavior, however it does override the default macro. If additional customization is needed, the above macro should be modified.
     
-4. Example usage 
+4. Example usage to create predicates using block_id
     ```
     {{ config(
         ...
@@ -272,6 +266,7 @@ The macro only supports generating predicates for column types of DATE and INTEG
         ...
     ) }}
     ```
+    Example Output:  ```(DBT_INTERNAL_DEST.block_id between 100 and 200 OR DBT_INTERNAL_DEST.block_id between 100000 and 150000)```
 
 ## Resources
 
