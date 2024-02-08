@@ -6,7 +6,11 @@
         WHERE {{predicate_column}} IS NOT NULL
         LIMIT 1;
     {% endset %}
-    {% set predicate_column_data_type = run_query(predicate_column_data_type_query).columns[0].values()[0] %}
+    {% set predicate_column_data_type_result = run_query(predicate_column_data_type_query) %}
+    {% if predicate_column_data_type_result.rows|length == 0 %}
+        {{ return('1=1') }}
+    {% endif %}
+    {% set predicate_column_data_type = predicate_column_data_type_result.columns[0].values()[0] %}
     
 
     {% if predicate_column_data_type not in supported_data_types %}
