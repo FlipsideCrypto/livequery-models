@@ -12,5 +12,5 @@
         {{ var("API_INTEGRATION") }} AS https://{{ var("EXTERNAL_FUNCTION_URI") | lower }}/udf_bulk_rest_api
     {%- endif %}
     {% endset %}
-    {% do log(sql) %}
+    {% do run_query(sql) %}
 {% endmacro %}
