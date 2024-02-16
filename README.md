@@ -111,63 +111,85 @@ The `fsc_utils` dbt package is a centralized repository consisting of various db
 
 The `Streamline V 2.0` functions are a set of macros and UDFs that are designed to be used with `Streamline V 2.0` deployments. 
 
-### Available macros
-- `if_data_call_function_v2` - This macro is used to call a udf in the `Streamline V 2.0` deployment. It is defined in the dbt model config block and accepts the  `udf name` and the `udf` parameters. For legibility the `udf` parameters are passed as a `JSON object`. 
-**NOTE**: Ensure your project has registered the `udf` being invoked here prior to using this macro.
+### Available macros:
 
-`Parameters`:
--  `func` - The name of the udf to be called.
-- `target` - The target table for the udf to be called on, interpolated in the [if_data_call_function_v2 macro](/macros/streamline/utils.sql#L101).
-- `params` - The parameters to be passed to the udf, a `JSON object` that contains the minimum parameters required by the udf all Streamline 2.0 udfs.
+- [if_data_call_function_v2](/macros/streamline/utils.sql#L86): This macro is used to call a udf in the `Streamline V 2.0` deployment. It is defined in the dbt model config block and accepts the  `udf name` and the `udf` parameters. For legibility the `udf` parameters are passed as a `JSON object`. 
+
+    **NOTE**: Ensure your project has registered the `udf` being invoked here prior to using this macro.
+
+    **`Parameters`**:
+    -  `func` - The name of the udf to be called.
+    - `target` - The target table for the udf to be called on, interpolated in the [if_data_call_function_v2 macro](/macros/streamline/utils.sql#L101).
+    - `params` - The parameters to be passed to the udf, a `JSON object` that contains the minimum parameters required by the udf all Streamline 2.0 udfs.
 
 
-```sql
--- Example usage in a dbt model config block
-{{ config (
-    materialized = "view",
-    post_hook = fsc_utils.if_data_call_function_v2(
-        func = 'udf_bulk_rest_api_v2',
-        target = "{{this.schema}}.{{this.identifier}}",
-        params = {
-            "external_table": "external_table",
-            "sql_limit": "10",
-            "producer_batch_size": "10",
-            "worker_batch_size": "10",
-            "sm_secret_name": "aws/sm/path",
-            "sql_source": "{{this.identifier}}"
-        }
-    ),
-    tags = ['model_tags']
-) }} 
-```
-When a dbt model with this config block is run we will see the following in the logs:
+    ```sql
+    -- Example usage in a dbt model config block
+    {{ config (
+        materialized = "view",
+        post_hook = fsc_utils.if_data_call_function_v2(
+            func = 'udf_bulk_rest_api_v2',
+            target = "{{this.schema}}.{{this.identifier}}",
+            params = {
+                "external_table": "external_table",
+                "sql_limit": "10",
+                "producer_batch_size": "10",
+                "worker_batch_size": "10",
+                "sm_secret_name": "aws/sm/path",
+                "sql_source": "{{this.identifier}}"
+            }
+        ),
+        tags = ['model_tags']
+    ) }} 
+    ```
+    When a dbt model with this config block is run we will see the following in the logs:
 
-```sh
+    ```sh
 
-# Example dbt run logs
+    # Example dbt run logs
 
-21:59:44  Found 244 models, 15 seeds, 7 operations, 5 analyses, 875 tests, 282 sources, 0 exposures, 0 metrics, 1024 macros, 0 groups, 0 semantic models
-21:59:44  
-21:59:49  
-21:59:49  Running 6 on-run-start hooks
-...
-21:59:50  
-21:59:51  Concurrency: 12 threads (target='dev')
-21:59:51  
-21:59:51  1 of 1 START sql view model streamline.coingecko_realtime_ohlc ................. [RUN]
-21:59:51  Running macro `if_data_call_function`: Calling udf udf_bulk_rest_api_v2 with params: 
-{
-  "external_table": "ASSET_OHLC_API/COINGECKO",
-  "producer_batch_size": "10",
-  "sm_secret_name": "prod/coingecko/rest",
-  "sql_limit": "10",
-  "sql_source": "{{this.identifier}}",
-  "worker_batch_size": "10"
-}
- on {{this.schema}}.{{this.identifier}}
-22:00:03  1 of 1 OK created sql view model streamline.coingecko_realtime_ohlc ............ [SUCCESS 1 in 12.75s]
-22:00:03  
-```
+    21:59:44  Found 244 models, 15 seeds, 7 operations, 5 analyses, 875 tests, 282 sources, 0 exposures, 0 metrics, 1024 macros, 0 groups, 0 semantic models
+    21:59:44  
+    21:59:49  
+    21:59:49  Running 6 on-run-start hooks
+    ...
+    21:59:50  
+    21:59:51  Concurrency: 12 threads (target='dev')
+    21:59:51  
+    21:59:51  1 of 1 START sql view model streamline.coingecko_realtime_ohlc ................. [RUN]
+    21:59:51  Running macro `if_data_call_function`: Calling udf udf_bulk_rest_api_v2 with params: 
+    {
+    "external_table": "ASSET_OHLC_API/COINGECKO",
+    "producer_batch_size": "10",
+    "sm_secret_name": "prod/coingecko/rest",
+    "sql_limit": "10",
+    "sql_source": "{{this.identifier}}",
+    "worker_batch_size": "10"
+    }
+    on {{this.schema}}.{{this.identifier}}
+    22:00:03  1 of 1 OK created sql view model streamline.coingecko_realtime_ohlc ............ [SUCCESS 1 in 12.75s]
+    22:00:03  
+    ```
+- [create_udf_bulk_rest_api_v2](/macros/streamline/udfs.sql#L1): This macro is used to create a `udf` named `udf_bulk_rest_api_v2` in the `streamline` schema of the database this is invoked in. This function returns a `variant` type and uses an API integration. The API integration and the external function URI are determined based on the target environment (`prod`, `dev`, or `sbx`).
+    The [macro interpolates](/macros/streamline/udfs.sql#L9) the `API_INTEGRATION` and `EXTERNAL_FUNCTION_URI` vars from the `dbt_project.yml` file.
+
+    ```yml
+    # Setup variables in dbt_project.yml
+    API_INTEGRATION: '{{ var("config")[target.name]["API_INTEGRATION"] }}' 
+    EXTERNAL_FUNCTION_URI: '{{ var("config")[target.name]["EXTERNAL_FUNCTION_URI"] }}'
+
+    config:
+    # The keys correspond to dbt profiles and are case sensitive
+    dev:
+        API_INTEGRATION: AWS_CROSSCHAIN_API_STG
+        EXTERNAL_FUNCTION_URI: q0bnjqvs9a.execute-api.us-east-1.amazonaws.com/stg
+
+    prod:
+        API_INTEGRATION: AWS_CROSSCHAIN_API_PROD
+        EXTERNAL_FUNCTION_URI: 35hm1qhag9.execute-api.us-east-1.amazonaws.com/prod 
+    ```
+
+
 
 ## **LiveQuery Functions**
 
