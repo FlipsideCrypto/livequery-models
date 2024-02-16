@@ -4,16 +4,19 @@ Dbt repo for managing the Flipside Utility Functions (FSC_UTILS) dbt package.
 
 ## Variables
 
-To control the creation of UDF or SP macros with dbt run:
+Control the creation of `UDF` or `SP` macros with dbt run:
 
-* UPDATE_UDFS_AND_SPS
-When True, executes all macros included in the on-run-start hooks within dbt_project.yml on model run as normal
+* `UPDATE_UDFS_AND_SPS` - 
+When `True`, executes all macros included in the on-run-start hooks within dbt_project.yml on model run as normal
 When False, none of the on-run-start macros are executed on model run
 
-Default values are False
+Default values is `False`
 
-* Usage:
+Usage:
+
+```sh
 dbt run --var 'UPDATE_UDFS_AND_SPS": True'  -m ...
+```
 
 Dropping and creating udfs can also be done without running a model:
 
@@ -29,12 +32,14 @@ dbt run-operation create_udfs --var 'UPDATE_UDFS_AND_SPS": True' --args 'drop_:t
 3. Tag your commit with a version number using `git tag -a v1.1.0 -m "version 1.1.0"`.
 4. Push your commits to the remote repository with `git push origin ...`.
 5. Push your tags to the remote repository with `git push origin --tags`.
-6. In the packages.yml file of your other dbt project, specify the new version of the package with:
+6. In the `packages.yml` file of your other dbt project, specify the new version of the package with:
+
 ```
 packages:
   - git: "https://github.com/FlipsideCrypto/fsc-utils.git"
     revision: "v1.1.0"
 ```  
+
 7. Run dbt deps in the other dbt project to pull the specific version of the package or follow the steps on `adding the dbt package` below.
 
 Regarding Semantic Versioning;
@@ -101,6 +106,68 @@ The `fsc_utils` dbt package is a centralized repository consisting of various db
     NOTE: The expression 64 * 2 + 3 in the query navigates to the 131st character of the hexadecimal string returned by an EVM blockchain contract's function, skipping metadata and adjusting for Snowflake's 1-based indexing. Keep in mind that the exact start of relevant data may vary between different contracts and functions.
 
     ```
+
+## **Streamline V 2.0 Functions**
+
+The `Streamline V 2.0` functions are a set of macros and UDFs that are designed to be used with `Streamline V 2.0` deployments. 
+
+### Available macros
+- `if_data_call_function_v2` - This macro is used to call a udf in the `Streamline V 2.0` deployment. It is defined in the dbt model config block and accepts the  `udf name` and the `udf` parameters. For legibility the `udf` parameters are passed as a `JSON object`. 
+**NOTE**: Ensure your project has registered the `udf` being invoked here prior to using this macro.
+
+`Parameters`:
+-  `func` - The name of the udf to be called.
+- `target` - The target table for the udf to be called on, interpolated in the [if_data_call_function_v2 macro](/macros/streamline/utils.sql#L101).
+- `params` - The parameters to be passed to the udf, a `JSON object` that contains the minimum parameters required by the udf all Streamline 2.0 udfs.
+
+
+```sql
+-- Example usage in a dbt model config block
+{{ config (
+    materialized = "view",
+    post_hook = fsc_utils.if_data_call_function_v2(
+        func = 'udf_bulk_rest_api_v2',
+        target = "{{this.schema}}.{{this.identifier}}",
+        params = {
+            "external_table": "external_table",
+            "sql_limit": "10",
+            "producer_batch_size": "10",
+            "worker_batch_size": "10",
+            "sm_secret_name": "aws/sm/path",
+            "sql_source": "{{this.identifier}}"
+        }
+    ),
+    tags = ['model_tags']
+) }} 
+```
+When a dbt model with this config block is run we will see the following in the logs:
+
+```sh
+
+# Example dbt run logs
+
+21:59:44  Found 244 models, 15 seeds, 7 operations, 5 analyses, 875 tests, 282 sources, 0 exposures, 0 metrics, 1024 macros, 0 groups, 0 semantic models
+21:59:44  
+21:59:49  
+21:59:49  Running 6 on-run-start hooks
+...
+21:59:50  
+21:59:51  Concurrency: 12 threads (target='dev')
+21:59:51  
+21:59:51  1 of 1 START sql view model streamline.coingecko_realtime_ohlc ................. [RUN]
+21:59:51  Running macro `if_data_call_function`: Calling udf udf_bulk_rest_api_v2 with params: 
+{
+  "external_table": "ASSET_OHLC_API/COINGECKO",
+  "producer_batch_size": "10",
+  "sm_secret_name": "prod/coingecko/rest",
+  "sql_limit": "10",
+  "sql_source": "{{this.identifier}}",
+  "worker_batch_size": "10"
+}
+ on {{this.schema}}.{{this.identifier}}
+22:00:03  1 of 1 OK created sql view model streamline.coingecko_realtime_ohlc ............ [SUCCESS 1 in 12.75s]
+22:00:03  
+```
 
 ## **LiveQuery Functions**
 
