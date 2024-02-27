@@ -260,3 +260,22 @@ def int_to_binary(num):
     return binary_string 
 
 {% endmacro %}
+
+{% macro create_udf_binary_to_int() %}
+
+def binary_to_int(binary):
+
+  for char in binary:
+    if char not in "01":
+      raise ValueError("Input string must be a valid binary string.")
+      
+  integer = 0
+
+  for i, digit in enumerate(binary[::-1]):
+    digit_int = int(digit)
+
+    integer += digit_int * 2**i
+
+  return integer
+    
+{% endmacro %}

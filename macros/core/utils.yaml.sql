@@ -274,7 +274,7 @@
 
 - name: {{ schema }}.udf_int_to_binary
   signature:
-    - [int, INTEGER]
+    - [num, INTEGER]
   return_type: TEXT
   options: |
     LANGUAGE PYTHON
@@ -282,5 +282,16 @@
     HANDLER = 'int_to_binary'
   sql: |
     {{ create_udf_int_to_binary() | indent(4) }}
+
+- name: {{ schema }}.udf_int_to_binary
+  signature:
+    - [binary, STRING]
+  return_type: TEXT
+  options: |
+    LANGUAGE PYTHON
+    RUNTIME_VERSION = '3.8'
+    HANDLER = 'binary_to_int'
+  sql: |
+    {{ create_udf_binary_to_int() | indent(4) }}
 
 {% endmacro %}
