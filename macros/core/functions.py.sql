@@ -276,6 +276,6 @@ def binary_to_int(binary):
 
     integer += digit_int * 2**i
 
-  return integer
+  return str(integer)
     
 {% endmacro %}
