@@ -283,7 +283,7 @@
   sql: |
     {{ create_udf_int_to_binary() | indent(4) }}
 
-- name: {{ schema }}.udf_int_to_binary
+- name: {{ schema }}.udf_binary_to_int
   signature:
     - [binary, STRING]
   return_type: TEXT
