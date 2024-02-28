@@ -234,6 +234,7 @@ def transform_hex_to_bech32(hex, hrp=''):
 {% macro create_udf_int_to_binary() %}
 
 def int_to_binary(num):
+    num = int(num)
     is_negative = num < 0
     if is_negative:
         num = -num
