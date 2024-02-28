@@ -272,4 +272,26 @@
   sql: |
     {{ create_udf_hex_to_bech32() | indent(4) }}
 
+- name: {{ schema }}.udf_int_to_binary
+  signature:
+    - [num, STRING]
+  return_type: TEXT
+  options: |
+    LANGUAGE PYTHON
+    RUNTIME_VERSION = '3.8'
+    HANDLER = 'int_to_binary'
+  sql: |
+    {{ create_udf_int_to_binary() | indent(4) }}
+
+- name: {{ schema }}.udf_binary_to_int
+  signature:
+    - [binary, STRING]
+  return_type: TEXT
+  options: |
+    LANGUAGE PYTHON
+    RUNTIME_VERSION = '3.8'
+    HANDLER = 'binary_to_int'
+  sql: |
+    {{ create_udf_binary_to_int() | indent(4) }}
+
 {% endmacro %}

@@ -230,3 +230,52 @@ def transform_hex_to_bech32(hex, hrp=''):
     return hrp + '1' + ''.join([CHARSET[d] for d in data5bit + checksum])
 
 {% endmacro %}
+
+{% macro create_udf_int_to_binary() %}
+
+def int_to_binary(num):
+    num = int(num)
+    is_negative = num < 0
+    if is_negative:
+        num = -num
+
+    binary_string = bin(num)[2:]
+
+    if is_negative:
+        inverted_string = "".join("1" if bit == "0" else "0" for bit in binary_string)
+
+        carry = 1
+        result = ""
+        for i in range(len(inverted_string) - 1, -1, -1):
+            if inverted_string[i] == "1" and carry == 1:
+                result = "0" + result
+            elif inverted_string[i] == "0" and carry == 1:
+                result = "1" + result 
+                carry = 0
+            else:
+                result = inverted_string[i] + result
+
+        binary_string = result 
+
+    return binary_string 
+
+{% endmacro %}
+
+{% macro create_udf_binary_to_int() %}
+
+def binary_to_int(binary):
+
+  for char in binary:
+    if char not in "01":
+      raise ValueError("Input string must be a valid binary string.")
+      
+  integer = 0
+
+  for i, digit in enumerate(binary[::-1]):
+    digit_int = int(digit)
+
+    integer += digit_int * 2**i
+
+  return str(integer)
+    
+{% endmacro %}
