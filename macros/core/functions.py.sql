@@ -254,7 +254,6 @@ def int_to_binary(num):
                 carry = 0
             else:
                 result = inverted_string[i] + result
-                break  
 
         binary_string = result 
 
