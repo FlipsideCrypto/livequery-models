@@ -204,6 +204,12 @@ models:
               args: 123456789
               assertions: 
               - result = '111010110111100110100010101'
+        tests:
+          - test_udf:
+              name: test_utils__udf_int_to_binary_large_number
+              args: 123456789123456789
+              assertions: 
+              - result = '110110110100110110100101110101100110100000101111100010101'
       - name: udf_binary_to_int
         tests:
           - test_udf:
