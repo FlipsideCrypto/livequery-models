@@ -40,6 +40,43 @@ packages:
     revision: "v1.1.0"
 ```  
 
+---
+**NOTE** Steps `2-5` above can also be automated using `make tag` directive:
+
+### Tag Makefile Directives
+
+#### `tag`
+
+The `tag` directive is used to tag the current commit with a version number.
+
+**Usage**:
+
+```sh
+make tag version=<version_number>
+```
+Replace <version_number> with the version number you want to use.
+
+What it does:
+
+Adds all changes to the staging area with `git add .`
+Commits the changes with a commit message of `Bump version to <version_number>`.
+Creates a new `git tag` with the name `v<version_number>` and a message of `version <version_number>`.
+Pushes the new tag to the origin remote.
+
+#### get_latest_tags
+The get_latest_tags directive is used to display the latest git tags. By default, it displays the latest tag. You can change the number of tags displayed by setting the MAX_COUNT variable.
+
+Usage:
+
+```sh
+make get_latest_tags MAX_COUNT=<count>
+```
+Replace <count> with the number of latest tags you want to display. If you don't specify a count, it defaults to `1`.
+
+What it does:
+Displays the latest `<count> git tags` in green text.
+---
+
 7. Run dbt deps in the other dbt project to pull the specific version of the package or follow the steps on `adding the dbt package` below.
 
 Regarding Semantic Versioning;
