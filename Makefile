@@ -9,4 +9,6 @@ tag:
 
 get_latest_tags:
 	@echo "Latest $(MAX_COUNT) tags:"
-	@echo $$(tput setaf 2) `git describe --tags $(git rev-list --tags --max-count=$(MAX_COUNT))` $$(tput sgr0)
+	@git rev-list --tags --max-count=$(MAX_COUNT) | while read hash; do \
+        echo $$(tput setaf 2) `git describe --tags $$hash` $$(tput sgr0); \
+    done
