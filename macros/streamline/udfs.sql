@@ -1,11 +1,6 @@
 {% macro create_udf_bulk_rest_api_v2() %}    
     {{ log("Creating udf udf_bulk_rest_api for target:" ~ target.name ~ ", schema: " ~ target.schema ~ ", DB: " ~ target.database, info=True) }}
     {{ log("role:" ~ target.role ~ ", user:" ~ target.user, info=True) }}
-    {{ log("var(\"config\")[target.name]: " ~ var("config")[target.name], info=True) }}
-    {{ log("var(\"config\")[\"dev\"]: " ~ var("config")["dev"], info=True) }}
-
-    {{ log("var(\"API_INTEGRATION\") : " ~ var("API_INTEGRATION"), info=True) }}
-    {{ log("var(\"EXTERNAL_FUNCTION_URI\"): " ~ var("EXTERNAL_FUNCTION_URI"), info=True) }}
 
     {% set sql %}
     CREATE OR REPLACE EXTERNAL FUNCTION streamline.udf_bulk_rest_api_v2(json variant) returns variant api_integration = 
