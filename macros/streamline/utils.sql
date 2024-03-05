@@ -98,7 +98,7 @@
             ) }}
         {% endif %}
     SELECT
-        {{ this.schema }}.{{ func  }}( parse_json($${{ params | tojson }}$$) )
+        {{ func }}( parse_json($${{ params | tojson }}$$) )
     WHERE
         EXISTS(
             SELECT
