@@ -22,7 +22,7 @@
     - [url, STRING]
     - [headers, OBJECT]
     - [DATA, VARIANT]
-    - [SECRET, STRING]
+    - [SECRET_NAME, STRING]
   return_type: OBJECT
   func_type: SECRET
   options: |
@@ -34,7 +34,7 @@
       'url': url,
       'headers': headers,
       'data': data,
-      'secret_name': SECRET
+      'secret_name': SECRET_NAME
     }
 
 - name: {{ schema }}.udf_api
