@@ -24,7 +24,7 @@
     - [DATA, VARIANT]
     - [SECRET_NAME, STRING]
   return_type: OBJECT
-  func_type: SECRET
+  func_type: SECURE
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
