@@ -1,6 +1,6 @@
 {% macro config_core__live(schema="_live") %}
 
-- name: {{ schema }}.udf_api
+- name: {{ schema }}._udf_api
   signature:
     - [method, STRING]
     - [url, STRING]
@@ -15,22 +15,29 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
   sql: udf_api
-- name: {{ schema }}.udf_streamline
+
+- name: {{ schema }}.udf_rest_api_args_only
   signature:
     - [method, STRING]
     - [url, STRING]
     - [headers, OBJECT]
     - [DATA, VARIANT]
-    - [user_id, STRING]
     - [SECRET, STRING]
-  return_type: VARIANT
-  func_type: EXTERNAL
-  api_integration: '{{ var("API_INTEGRATION") }}'
+  return_type: OBJECT
+  func_type: SECRET
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
-  sql: udf_bulk_rest_api
-- name: {{ schema }}.udf_function_selector
+  sql: |
+    {
+      'method': method,
+      'url': url,
+      'headers': headers,
+      'data': data,
+      'secret_name': SECRET
+    }
+
+- name: {{ schema }}.udf_api
   description: |
     This function is used to select the appropriate function to call based on the user_id
   signature:
@@ -42,7 +49,6 @@
     - [SECRET, STRING]
   return_type: VARIANT
   func_type: SECURE
-  api_integration: '{{ var("API_INTEGRATION") }}'
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -50,7 +56,7 @@
     SELECT
       CASE
         WHEN user_id ilike 'AWS_%'
-        THEN {{ schema }}.udf_streamline(method, url, headers, DATA, user_id, SECRET)
+        THEN {{ schema }}.udf_rest_api_args_only(method, url, headers, DATA, SECRET)
         ELSE {{ schema }}.udf_api(method, url, headers, DATA, user_id, SECRET)
       END
 
