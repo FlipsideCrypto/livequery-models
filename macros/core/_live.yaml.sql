@@ -56,7 +56,7 @@
     SELECT
       CASE
         WHEN user_id ilike 'AWS_%'
-        THEN {{ schema }}.udf_rest_api_args_only(method, url, headers, DATA, SECRET)
+        THEN {{ schema }}.udf_rest_api_args_only(method, url, headers, DATA, SECRET)::VARIANT
         ELSE {{ schema }}._udf_api(method, url, headers, DATA, user_id, SECRET)
       END
 
