@@ -26,3 +26,22 @@ models:
               args: null, null, null, null, null
               assertions:
                 - result = {}
+          - test_udf:
+            name: test___live_udf_api
+            args: >
+              'GET',
+              'https://api.example.com',
+              {'Content-Type': 'application/json'},
+              {'hello': 'world'},
+              'non_streamline_user'
+              'my_secret'
+            assertions:
+              - |
+                result = {
+                  'method': 'GET',
+                  'url': 'https://httpbin.org/get',
+                  'headers': {'Content-Type': 'application/json'},
+                  'data': {'hello': 'world'},
+                  'user': 'non_streamline_user',
+                  'secret_name': 'my_secret'
+                }
