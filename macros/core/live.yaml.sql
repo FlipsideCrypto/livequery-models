@@ -126,7 +126,7 @@
   return_type: VARIANT
   options: |
     NOT NULL
-    IMMUTABLE
+    VOLATILE
   sql: |
     SELECT
       _live.UDF_API(
