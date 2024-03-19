@@ -235,7 +235,21 @@ LiveQuery is now available to be deployed into individual projects. For base fun
 ### Basic Setup ###
 
 1. Make sure `fsc-utils` package referenced in the project is version `v1.8.0` or greater. Re-run `dbt deps` if revision was changed.
+    
+    ** NOTE: `livequery_models deploy core` uses ephemeral models, therefore it is recommended to specify the materialization for `livequery_models` in your project's `dbt_project.yml` to `ephemeral` to avoid any conflicts.**
+
+    ```yml
+    # dbt_project.yml
+    ...
+    models:
+        livequery_models:
+          deploy:
+            core:
+              materialized: ephemeral
+    ...
+    ```
 2. Deploy the core LiveQuery functions by schema or tag
+     
 
     By Schema
     ```
