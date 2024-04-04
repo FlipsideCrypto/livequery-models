@@ -210,6 +210,10 @@ The `Streamline V 2.0` functions are a set of macros and UDFs that are designed 
 - [create_udf_bulk_rest_api_v2](/macros/streamline/udfs.sql#L1): This macro is used to create a `udf` named `udf_bulk_rest_api_v2` in the `streamline` schema of the database this is invoked in. This function returns a `variant` type and uses an API integration. The API integration and the external function URI are determined based on the target environment (`prod`, `dev`, or `sbx`).
     The [macro interpolates](/macros/streamline/udfs.sql#L9) the `API_INTEGRATION` and `EXTERNAL_FUNCTION_URI` vars from the `dbt_project.yml` file.
 
+    **NOTE**: To be congruent with how `EXTERNAL_FUNCTION_URI` is being used by other macros and maintain consistency, starting from `v1.21.7` we need to append a trailing `/` to the `EXTERNAL_FUNCTION_URI` in the `dbt_project.yml` file. 
+
+    ```sql
+
     ```yml
     # Setup variables in dbt_project.yml
     API_INTEGRATION: '{{ var("config")[target.name]["API_INTEGRATION"] }}' 
@@ -219,11 +223,11 @@ The `Streamline V 2.0` functions are a set of macros and UDFs that are designed 
     # The keys correspond to dbt profiles and are case sensitive
     dev:
         API_INTEGRATION: AWS_CROSSCHAIN_API_STG
-        EXTERNAL_FUNCTION_URI: q0bnjqvs9a.execute-api.us-east-1.amazonaws.com/stg
+        EXTERNAL_FUNCTION_URI: q0bnjqvs9a.execute-api.us-east-1.amazonaws.com/stg/
 
     prod:
         API_INTEGRATION: AWS_CROSSCHAIN_API_PROD
-        EXTERNAL_FUNCTION_URI: 35hm1qhag9.execute-api.us-east-1.amazonaws.com/prod 
+        EXTERNAL_FUNCTION_URI: 35hm1qhag9.execute-api.us-east-1.amazonaws.com/prod/ 
     ```
 
 
