@@ -16,7 +16,7 @@
     RETURNS NULL ON NULL INPUT
   sql: udf_api
 
-{# - name: {{ schema }}.udf_rest_api_args_only
+- name: {{ schema }}.udf_rest_api_args_only
   signature:
     - [method, STRING]
     - [url, STRING]
@@ -35,7 +35,7 @@
       'headers': headers,
       'data': data,
       'secret_name': SECRET_NAME
-    } #}
+    }
 
 {# - name: {{ schema }}.udf_api
   description: |
