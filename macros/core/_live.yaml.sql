@@ -13,6 +13,5 @@
   api_integration: '{{ var("API_INTEGRATION") }}'
   options: |
     NOT NULL
-    RETURNS NULL ON NULL INPUT
   sql: udf_api
 {% endmacro %}

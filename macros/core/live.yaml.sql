@@ -9,8 +9,6 @@
     - [secret_name, STRING]
   return_type: VARIANT
   options: |
-    NOT NULL
-    RETURNS NULL ON NULL INPUT
     VOLATILE
   sql: |
     SELECT
@@ -30,8 +28,6 @@
     - [data, VARIANT]
   return_type: VARIANT
   options: |
-    NOT NULL
-    RETURNS NULL ON NULL INPUT
     VOLATILE
   sql: |
     SELECT
@@ -49,8 +45,6 @@
     - [data, VARIANT]
   return_type: VARIANT
   options: |
-    NOT NULL
-    RETURNS NULL ON NULL INPUT
     VOLATILE
   sql: |
     SELECT
@@ -69,8 +63,6 @@
     - [secret_name, STRING]
   return_type: VARIANT
   options: |
-    NOT NULL
-    RETURNS NULL ON NULL INPUT
     VOLATILE
   sql: |
     SELECT
@@ -87,8 +79,6 @@
     - [url, STRING]
   return_type: VARIANT
   options: |
-    NOT NULL
-    RETURNS NULL ON NULL INPUT
     VOLATILE
   sql: |
     SELECT
@@ -106,8 +96,6 @@
     - [secret_name, STRING]
   return_type: VARIANT
   options: |
-    NOT NULL
-    RETURNS NULL ON NULL INPUT
     VOLATILE
   sql: |
     SELECT
@@ -128,8 +116,6 @@
     - [parameters, VARIANT]
   return_type: VARIANT
   options: |
-    NOT NULL
-    RETURNS NULL ON NULL INPUT
     VOLATILE
     COMMENT = $$Executes an JSON RPC call on a blockchain.$$
   sql: |
@@ -141,9 +127,8 @@
   func_type: EXTERNAL
   api_integration: '{{ var("API_INTEGRATION") }}'
   options: |
-    NOT NULL
-    RETURNS NULL ON NULL INPUT
     VOLATILE
+    RETURNS NULL ON NULL INPUT
     COMMENT = $$Returns a list of allowed domains.$$
   sql: allowed
 {% endmacro %}
