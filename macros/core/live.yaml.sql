@@ -127,8 +127,8 @@
   func_type: EXTERNAL
   api_integration: '{{ var("API_INTEGRATION") }}'
   options: |
-    VOLATILE
     RETURNS NULL ON NULL INPUT
+    VOLATILE
     COMMENT = $$Returns a list of allowed domains.$$
   sql: allowed
 {% endmacro %}
