@@ -33,7 +33,8 @@
         sql_,
         api_integration = none,
         options = none,
-        func_type = none
+        func_type = none,
+        api_integration_options = none
     ) %}
     CREATE OR REPLACE {{ func_type }} FUNCTION {{ name_ }}(
             {{- compile_signature(signature) }}
@@ -45,6 +46,8 @@
     {% endif %}
     {%- if api_integration -%}
     api_integration = {{ api_integration }}
+    {% if api_integration_options %}
+        {{ api_integration_options }}
     AS {{ construct_api_route(sql_) ~ ";" }}
     {% else -%}
     AS
@@ -65,6 +68,7 @@
     {% set options = config ["options"] %}
     {% set api_integration = config ["api_integration"] %}
     {% set func_type = config ["func_type"] %}
+    {% set api_integration_options = config ["api_integration_options"] if config ["api_integration_options"] else none%}
 
     {% if not drop_ -%}
         {{ create_sql_function(
@@ -74,6 +78,7 @@
             sql_ = sql_,
             options = options,
             api_integration = api_integration,
+            api_integration_options = api_integration_options,
             func_type = func_type
         ) }}
     {%- else -%}
