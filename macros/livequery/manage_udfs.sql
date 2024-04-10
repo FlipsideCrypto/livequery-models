@@ -46,8 +46,9 @@
     {% endif %}
     {%- if api_integration -%}
     api_integration = {{ api_integration }}
-    {% if api_integration_options %}
-        {{ api_integration_options }}
+        {% if api_integration_options %}
+            {{ api_integration_options }}
+        {% endif %}
     AS {{ construct_api_route(sql_) ~ ";" }}
     {% else -%}
     AS
