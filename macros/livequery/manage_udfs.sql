@@ -68,7 +68,7 @@
     {% set options = config ["options"] %}
     {% set api_integration = config ["api_integration"] %}
     {% set func_type = config ["func_type"] %}
-    {% set api_integration_options = config ["api_integration_options"] if config ["api_integration_options"] else none%}
+    {% set api_integration_options = config ["api_integration_options"] if config ["api_integration_options"] else none %}
 
     {% if not drop_ -%}
         {{ create_sql_function(
