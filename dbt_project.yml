@@ -71,7 +71,7 @@ vars:
   API_INTEGRATION: '{{ var("config")[target.name]["API_INTEGRATION"] }}'
   EXTERNAL_FUNCTION_URI: '{{ var("config")[target.name]["EXTERNAL_FUNCTION_URI"] }}'
   ROLES: '{{ var("config")[target.name]["ROLES"] }}'
-  API_INTEGRATION_OPTIONS: '{{ var("config")[target.name]["API_INTEGRATION_OPTIONS"] }}'
+  API_INTEGRATION_OPTIONS: '{{ var("config")[target.name]["API_INTEGRATION_OPTIONS"]|tojson }}'
 
   config:
   # The keys correspond to dbt profiles and are case sensitive
