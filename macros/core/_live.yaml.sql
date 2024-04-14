@@ -11,7 +11,7 @@
   return_type: VARIANT
   func_type: EXTERNAL
   api_integration: '{{ var("API_INTEGRATION") }}'
-  api_integration_options : '{{ var("API_INTEGRATION_OPTIONS") }}'
+  api_integration_options : '{{ var("API_INTEGRATION_OPTIONS")[this.name]  if this.name in var("API_INTEGRATION_OPTIONS") else none }}'
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
