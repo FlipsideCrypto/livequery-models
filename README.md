@@ -478,6 +478,28 @@ dbt run-operation create_udfs --vars '{"UPDATE_UDFS_AND_SPS":True}' --args '{"dr
 dbt run-operation create_udfs --vars '{"UPDATE_UDFS_AND_SPS":True}' --args '{"drop_":true}'
 ```
 
+### MAX_BATCH_ROWS
+
+You can control the number of rows that are sent to the `livequery` backend via the `_live.udf_api` UDF using the [MAX_BATCH_ROWS](https://docs.snowflake.com/en/sql-reference/sql/create-external-function) param for when creating the `snowflake UDF`. You can set this value in the `dbt_project.yml` file under the `API_INTEGRATION_OPTIONS` key per udf defined in `vars.config.<TARGET_NAME>.<SCHEMA.UDF_NAME>`.
+
+**NOTE** Leaving `vars.config.<TARGET_NAME>.<SCHEMA.UDF_NAME>` empty will cause Snowflake to estimate the optimal batch size and use that, this can cause timeouts from the livequery backend if the result set rows are too large to process for a AWS LAMBA.
+
+```yml
+# dbt_project.yml
+... 
+
+vars:
+
+  # Setup variables in dbt_project.yml
+  API_INTEGRATION_OPTIONS: '{{ var("config")[target.name]["API_INTEGRATION_OPTIONS"]|default({})|tojson }}'
+
+  config:
+  # The keys correspond to dbt profiles and are case sensitive
+    dev:
+        API_INTEGRATION_OPTIONS:
+          _live.udf_api: MAX_BATCH_ROWS = 30
+```
+
 ## Resources
 
 * Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
