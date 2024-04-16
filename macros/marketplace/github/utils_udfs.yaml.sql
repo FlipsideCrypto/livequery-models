@@ -17,7 +17,7 @@
         {'Authorization': 'Bearer {TOKEN}',
         'X-GitHub-Api-Version': '2022-11-28'},
         {},
-        '_FSC_SYS/GITHUB'
+        'vault/github/api'
     ) as response
 
 - name: {{ schema_name -}}.headers
@@ -48,7 +48,7 @@
         CONCAT_WS('/', 'https://api.github.com',  route || '?') || utils.udf_urlencode(query),
         PARSE_JSON({{ schema_name -}}.headers()),
         {},
-        '_FSC_SYS/GITHUB'
+        'vault/github/api'
     )
 - name: {{ schema_name -}}.post
   signature:
@@ -65,7 +65,7 @@
         CONCAT_WS('/', 'https://api.github.com', route),
         PARSE_JSON({{ schema_name -}}.headers()),
         data,
-        '_FSC_SYS/GITHUB'
+        'vault/github/api'
     )
 - name: {{ schema_name -}}.put
   signature:
@@ -82,6 +82,6 @@
         CONCAT_WS('/', 'https://api.github.com', route),
         PARSE_JSON({{ schema_name -}}.headers()),
         data,
-        '_FSC_SYS/GITHUB'
+        'vault/github/api'
     )
 {% endmacro %}
