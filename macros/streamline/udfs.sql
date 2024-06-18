@@ -44,6 +44,7 @@
     {% endif %};
     {% endset %}
     {{ log(sql, info=True) }}
+    {% do adapter.execute(sql) %}
 {% endmacro %}
 
 {% macro create_udf_bulk_rest_api_v2_evm() %}    
@@ -67,4 +68,5 @@
     {% endif %};
     {% endset %}
     {{ log(sql, info=True) }}
+    {% do adapter.execute(sql) %}
 {% endmacro %}
