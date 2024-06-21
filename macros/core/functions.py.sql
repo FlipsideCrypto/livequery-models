@@ -132,6 +132,14 @@ def transform_base58_to_hex(base58):
     base_count = len(ALPHABET)
 
     num = 0
+    leading_zeros = 0
+
+    for char in base58:
+        if char == '1':
+            leading_zeros += 1
+        else:
+            break
+
     for char in base58:
         num *= base_count
         if char in ALPHABET:
@@ -144,7 +152,9 @@ def transform_base58_to_hex(base58):
     if len(hex_string) % 2 != 0:
         hex_string = '0' + hex_string
 
-    return '0x' + hex_string
+    hex_leading_zeros = '00' * leading_zeros
+
+    return '0x' + hex_leading_zeros + hex_string
 
 {% endmacro %}
 
