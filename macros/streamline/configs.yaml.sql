@@ -160,7 +160,7 @@
 
 - name: {{ schema }}.udf_base58_to_hex
   signature:
-    - [input, STRING]
+    - [base58, STRING]
   return_type: TEXT
   options: |
     LANGUAGE PYTHON
