@@ -208,8 +208,6 @@ The `Streamline V 2.0` functions are a set of macros and UDFs that are designed 
     22:00:03  
     ```
 
-- [create_aws_api_integrations](/macros/streamline/udfs.sql#L49): This macro is used to build the API Integrations necessary for the streamline UDFs. It requires the `API_INTEGRATION`, `EXTERNAL_FUNCTION_URI`, `API_AWS_ROLE_ARN`, and `ROLES` vars from the `dbt_project.yml` file and is available starting with `v1.25.0`. The API integration is determined based on the target environment. `prod` and `dev` are the two options. If you use a target other than `prod` or `dev`, it will default to `dev`. 
-
     ```yml
     # Setup variables in dbt_project.yml
     API_INTEGRATION: '{{ var("config")[target.name]["API_INTEGRATION"] }}' 
@@ -238,7 +236,7 @@ The `Streamline V 2.0` functions are a set of macros and UDFs that are designed 
     ```
   
 - [create_udf_bulk_rest_api_v2](/macros/streamline/udfs.sql#L1): This macro is used to create a `udf` named `udf_bulk_rest_api_v2` in the `streamline` schema of the database this is invoked in. This function returns a `variant` type and uses an API integration. The API integration and the external function URI are determined based on the target environment (`prod`, `dev`, or `sbx`).
-    The [macro interpolates](/macros/streamline/udfs.sql#L9) the `API_INTEGRATION` and `EXTERNAL_FUNCTION_URI` vars from the `dbt_project.yml` file.
+    The [macro interpolates](/macros/streamline/udfs.sql#L9) the `API_INTEGRATION` and `EXTERNAL_FUNCTION_URI` vars from the `dbt_project.yml` file. This is available starting with `v1.27.0`.
 
     **NOTE**: To be congruent with how `EXTERNAL_FUNCTION_URI` is being used by other macros and maintain consistency, starting from `v1.21.7` we need to append a trailing `/` to the `EXTERNAL_FUNCTION_URI` in the `dbt_project.yml` file. 
 
