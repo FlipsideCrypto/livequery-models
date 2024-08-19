@@ -20,7 +20,6 @@
   api_integration_options : '{{ api_integration_options[udf_api_opts] }}'
   options: |
     NOT NULL
-    RETURNS NULL ON NULL INPUT
   sql: udf_api
 {% endmacro %}
 

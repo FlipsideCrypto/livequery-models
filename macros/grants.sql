@@ -33,7 +33,7 @@
 
     `dbt run-operation apply_grants_to_all_schema`
  #}
-    {% if execute and target.name == "prod" %}
+    {% if execute and target.name in ("prod", "hosted",) %}
         {% set sql_get_schema %}
             SELECT SCHEMA_NAME
             FROM {{ target.database }}.INFORMATION_SCHEMA.SCHEMATA
