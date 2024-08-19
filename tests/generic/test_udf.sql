@@ -1,4 +1,9 @@
-{% test test_udf(model, column_name, args, assertions) %}
+{% test test_udf(model, column_name, args, assertions, integration_test=False) %}
+
+    {% if integration_test %}
+        {{ config(tags=["integration_test"]) }}
+    {% endif %}
+
     {#
         This is a generic test for UDFs.
         The udfs are deployed using ephemeral models, so we need to
