@@ -41,6 +41,8 @@ tests:
   +store_failures: true # all tests
   livequery_models:
     deploy:
+      core:
+        +tags: integration_test
       marketplace:
         blockpour:
           # TODO: enable tests for blockpour once we get an API key

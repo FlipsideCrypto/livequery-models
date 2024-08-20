@@ -9,4 +9,4 @@ models:
               args: "'hello'"
               assertions:
                 - result = 'hello'
-              integration_test: true
+              
