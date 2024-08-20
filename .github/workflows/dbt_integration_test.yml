@@ -25,4 +25,4 @@ jobs:
     with:
       warehouse: ${{ matrix.warehouse }}
       environment: ${{ matrix.environment }}
-      command: dbt test -s test___utils_udf_introspect
+      command: dbt test -s tag:integration_test

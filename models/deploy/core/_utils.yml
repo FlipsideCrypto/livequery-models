@@ -9,4 +9,3 @@ models:
               args: "'hello'"
               assertions:
                 - result = 'hello'
-              
