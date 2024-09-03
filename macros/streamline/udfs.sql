@@ -69,16 +69,3 @@
     {{ log(sql, info=True) }}
     {% do adapter.execute(sql) %}
 {% endmacro %}
-
-{% macro create_aws_api_integrations() %}    
-    {{ log("Creating api integration for target:" ~ target.name ~ ", schema: " ~ target.schema ~ ", DB: " ~ target.database, info=True) }}
-    {{ log("role:" ~ target.role ~ ", user:" ~ target.user, info=True) }}
-
-    {% set sql %}
-    CREATE OR REPLACE api integration {{ var("API_INTEGRATION") }} api_provider = aws_api_gateway api_aws_role_arn = '{{ var("API_AWS_ROLE_ARN") }}' api_allowed_prefixes = (
-    'https://{{ var("EXTERNAL_FUNCTION_URI") | lower }}'
-    ) enabled = TRUE;
-    {% endset %}
-    {{ log(sql, info=True) }}
-    {% do adapter.execute(sql) %}
-{% endmacro %}
