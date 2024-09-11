@@ -212,7 +212,6 @@ The `Streamline V 2.0` functions are a set of macros and UDFs that are designed 
     # Setup variables in dbt_project.yml
     API_INTEGRATION: '{{ var("config")[target.name]["API_INTEGRATION"] }}' 
     EXTERNAL_FUNCTION_URI: '{{ var("config")[target.name]["EXTERNAL_FUNCTION_URI"] }}'
-    API_AWS_ROLE_ARN: '{{ var("config")[target.name]["API_AWS_ROLE_ARN"] if var("config")[target.name] else var("config")["dev"]["API_AWS_ROLE_ARN"] }}'
     ROLES: '{{ var("config")[target.name]["ROLES"] }}'
 
     config:
@@ -220,7 +219,6 @@ The `Streamline V 2.0` functions are a set of macros and UDFs that are designed 
     dev:
         API_INTEGRATION: AWS_CROSSCHAIN_API_STG
         EXTERNAL_FUNCTION_URI: q0bnjqvs9a.execute-api.us-east-1.amazonaws.com/stg/
-        API_AWS_ROLE_ARN: arn:aws:iam::704693948482:role/crosschain-api-stg-rolesnowflakeudfsAF733095-CCDPFHsmlGmu
         ROLES:
           - AWS_LAMBDA_CROSSCHAIN_API
           - INTERNAL_DEV
@@ -228,7 +226,6 @@ The `Streamline V 2.0` functions are a set of macros and UDFs that are designed 
     prod:
         API_INTEGRATION: AWS_CROSSCHAIN_API_PROD
         EXTERNAL_FUNCTION_URI: 35hm1qhag9.execute-api.us-east-1.amazonaws.com/prod/ 
-        API_AWS_ROLE_ARN: arn:aws:iam::924682671219:role/crosschain-api-prod-rolesnowflakeudfsAF733095-jBvAIUHiR70D
         ROLES:
           - AWS_LAMBDA_CROSSCHAIN_API
           - INTERNAL_DEV
@@ -243,10 +240,9 @@ The `Streamline V 2.0` functions are a set of macros and UDFs that are designed 
 - [create_udf_bulk_decode_logs](/macros/streamline/udfs.sql#L25): This macro is used to create a `udf` name `udf_bulk_decode_logs_v2 ` in the `streamline` schema of the databae this is invoked in. This function returns a `variant` type and uses an API integration. The API integration and the external function URI are determined based on the target environment (`prod`, `dev`, or `sbx`).
     The [macro interpolates](/macros/streamline/udfs.sql#L32) the `API_INTEGRATION` and `EXTERNAL_FUNCTION_URI` vars from the `dbt_project.yml` file.
 
-- [create_streamline_udfs](macros/create_streamline_udfs.sql#L1). This macro runs [create_aws_api_integrations](/macros/streamline/udfs.sql#L49) and [create_udf_bulk_rest_api_v2](/macros/streamline/udfs.sql#L1) when ran with `--vars '{UPDATE_UDFS_AND_SPS: true}'`.
+- [create_streamline_udfs](macros/create_streamline_udfs.sql#L1). This macro runs [create_udf_bulk_rest_api_v2](/macros/streamline/udfs.sql#L1) when ran with `--vars '{UPDATE_UDFS_AND_SPS: true}'`.
   
-- [create_evm_streamline_udfs](macros/create_streamline_udfs.sql#L8). This macro runs [create_aws_api_integrations](/macros/streamline/udfs.sql#L49), [create_udf_bulk_rest_api_v2](/macros/streamline/udfs.sql#L1), and [create_udf_bulk_decode_logs](/macros/streamline/udfs.sql#L25) when ran with `--vars '{UPDATE_UDFS_AND_SPS: true}'`. This is designed to be used on the EVM chains due to the inclusion of `create_udf_bulk_decode_logs`.
-
+- [create_evm_streamline_udfs](macros/create_streamline_udfs.sql#L8). This macro runs [create_udf_bulk_rest_api_v2](/macros/streamline/udfs.sql#L1), [create_udf_bulk_decode_logs](/macros/streamline/udfs.sql#L25), and [create_udf_bulk_decode_traces](/macros/streamline/udfs.sql#L49) when ran with `--vars '{UPDATE_UDFS_AND_SPS: true}'`. This is designed to be used on the EVM chains due to the inclusion of `create_udf_bulk_decode_logs` and `create_udf_bulk_decode_traces`.
 
 
 ## **LiveQuery Functions**
