@@ -362,7 +362,25 @@
     COMMENT = $$Returns the latest decoded events emitted by multiple contracts within the last `lookback` blocks. Submit missing ABIs [here](https://science.flipsidecrypto.xyz/abi-requestor/). *Please note there are RPC limitations on this method.* $$
   sql: |
     {{ evm_latest_contract_events_decoded_ai(schema,  blockchain, network) | indent(4) -}}
+
+- name: {{ schema -}}.tf_live_view_ez_native_transfers
+  signature:
+    - [block_height, INTEGER, The start block height to get the transfers from]
+    - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
+    - [native_token_address, STRING, The address of the native token to get the transfers of]
+  return_type:
+        - "TABLE (tx_hash STRING, block_number INTEGER, block_timestamp TIMESTAMP_NTZ, tx_position INTEGER, trace_index INTEGER, identifier STRING, origin_from_address STRING, origin_to_address STRING, origin_function_signature STRING, from_address STRING, to_address STRING, amount FLOAT, amount_precise_raw NUMBER, amount_precise FLOAT, amount_usd FLOAT, ez_native_transfers_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns the native transfers for a given block height. If to_latest is true, it will continue fetching transfers until the latest block. Otherwise, it will fetch transfers until the block height is reached.$$
+  sql: |
+    {{ evm_live_view_ez_native_transfers(schema,  blockchain, network) | indent(4) -}}
+
 {%- endmacro -%}
+
+
 
 {% macro config_eth_high_level_abstractions(blockchain, network) -%}
 {#
