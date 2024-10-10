@@ -384,7 +384,7 @@
     - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
     - [ez_token_transfers_id, STRING, The topic of the token transfers to get]
   return_type:
-    - "TABLE(block_number INTEGER, block_timestamp TIMESTAMP_NTZ, tx_hash STRING, event_index INTEGER, origin_funcion_signature STRING, origin_from_address STRING, origin_to_address STRING, contract_address STRING, from_address STRING, to_address STRING, raw_amount_precise NUMBER, raw_amount FLOAT, amount_precise STRING, amount FLOAT, amount_usd FLOAT, decimals INTEGER, symbol STRING, token_price FLOAT, has_decimal STRING, has_price STRING, ez_token_transfers_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
+    - "TABLE(block_number INTEGER, block_timestamp TIMESTAMP_NTZ, tx_hash STRING, event_index INTEGER, origin_funcion_signature STRING, origin_from_address STRING, origin_to_address STRING, contract_address STRING, from_address STRING, to_address STRING, raw_amount_precise STRING, raw_amount FLOAT, amount_precise FLOAT, amount FLOAT, amount_usd FLOAT, decimals INTEGER, symbol STRING, token_price FLOAT, has_decimal STRING, has_price STRING, ez_token_transfers_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
