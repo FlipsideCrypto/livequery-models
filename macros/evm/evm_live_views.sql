@@ -29,17 +29,16 @@
                 NULL
         ) - 1 + COALESCE(block_height, 0)::integer AS block_number,
         min_height,
-        iff(
+        IFF(
             COALESCE(to_latest, false),
-            latest_block_height,
+            block_height,
             min_height
         ) AS max_height,
         latest_block_height
     FROM
         TABLE(generator(ROWCOUNT => 500)),
-        heights
-    QUALIFY block_number BETWEEN min_height
-    AND max_height
+        heights qualify block_number BETWEEN min_height
+        AND max_height
 {% endmacro %}
 
 -- Get Raw EVM chain data
@@ -54,7 +53,7 @@ SELECT
         )
     ):data.result AS DATA
 FROM
-    {{ table_name }}
+    {{ table_name | replace('\'', '')}}
 {% endmacro %}
 
 {% macro evm_live_view_bronze_receipts(table_name) %}
@@ -167,39 +166,31 @@ from
     {{ table_name }}
 {% endmacro %}
 
-{% macro evm_live_view_silver_logs(table_name) %}
-SELECT
-    latest_block_height,
-    block_number,
-    DATA:blockHash::STRING AS block_hash,
-    utils.udf_hex_to_int(DATA:blockNumber::STRING)::INT AS block_number,
-    utils.udf_hex_to_int(DATA:cumulativeGasUsed::STRING)::INT AS cumulative_gas_used,
-    utils.udf_hex_to_int(DATA:effectiveGasPrice::STRING)::INT / POW(10, 9) AS effective_gas_price,
-    DATA:from::STRING AS from_address,
-    utils.udf_hex_to_int(DATA:gasUsed::STRING)::INT AS gas_used,
-    DATA:logs AS logs,
-    DATA:logsBloom::STRING AS logs_bloom,
-    utils.udf_hex_to_int(DATA:status::STRING)::INT AS status,
+{% macro evm_live_view_silver_logs(silver_receipts, silver_transactions) %}
+select
+    r.latest_block_height,
+    r.block_number,
+    r.tx_hash,
+    txs.block_timestamp,
+    txs.origin_function_signature,
+    r.from_address AS origin_from_address,
+    r.to_address AS origin_to_address,
+    r.tx_status,
+    v.VALUE :address::STRING AS contract_address,
+    v.VALUE :blockHash::STRING AS block_hash,
+    v.VALUE :data::STRING AS DATA,
+    utils.udf_hex_to_int(v.VALUE :logIndex::STRING)::INT AS event_index,
+    v.VALUE :removed::BOOLEAN AS event_removed,
+    v.VALUE :topics AS topics,
     CASE
-        WHEN status = 1 THEN TRUE
+        WHEN txs.block_timestamp IS NULL
+        OR txs.origin_function_signature IS NULL THEN TRUE
         ELSE FALSE
-    END AS tx_success,
-    CASE
-        WHEN status = 1 THEN 'SUCCESS'
-        ELSE 'FAIL'
-    END AS tx_status,
-    DATA:to::STRING AS to_address1,
-    CASE
-        WHEN to_address1 = '' THEN NULL
-        ELSE to_address1
-    END AS to_address,
-    DATA:transactionHash::STRING AS tx_hash,
-    utils.udf_hex_to_int(DATA:transactionIndex::STRING)::INT AS position,
-    utils.udf_hex_to_int(DATA:type::STRING)::INT AS type,
-    utils.udf_hex_to_int(DATA:effectiveGasPrice::STRING)::INT AS blob_gas_price,
-    utils.udf_hex_to_int(DATA:gasUsed::STRING)::INT AS blob_gas_used
-FROM
-    {{ table_name }}
+    END AS is_pending,
+from
+    {{ bronze_receipts }} r
+    left join {{ silver_transactions }} txs on txs.tx_hash = r.tx_hash,
+    lateral flatten(r.logs) v
 {% endmacro %}
 
 {% macro evm_live_view_silver_transactions(bronze_transactions, silver_blocks, silver_logs) %}
@@ -260,52 +251,47 @@ from
         {{ evm_live_view_target_blocks(blockchain, network) }}
     ),
     raw_block_txs AS (
-        {{ evm_live_view_bronze_blocks(spine) }}
+        {{ evm_live_view_bronze_blocks('spine') }}
     )
-    {{ evm_live_view_silver_blocks(raw_block_txs) }}
+    {{ evm_live_view_silver_blocks('raw_block_txs') }}
 {% endmacro %}
 
 {% macro evm_live_view_fact_logs(blockchain, network) %}
     WITH spine AS (
         {{ evm_live_view_target_blocks(blockchain, network) }}
     ),
+    raw_block_txs AS (
+        {{ evm_live_view_bronze_blocks('spine') }}
+    ),
     raw_receipts AS (
-        {{ evm_live_view_bronze_receipts(spine) }}
+        {{ evm_live_view_bronze_receipts('spine') }}
     ),
     raw_logs AS (
-        {{ evm_live_view_bronze_logs(raw_receipts) }}
+        {{ evm_live_view_bronze_logs('raw_receipts') }}
+    ),
+    raw_transactions AS (
+        {{ evm_live_view_bronze_transactions('raw_receipts') }}
+    ),
+    blocks AS (
+        {{ evm_live_view_silver_blocks('raw_block_txs') }}
+    ),
+    receipts AS (
+        {{ evm_live_view_silver_receipts('raw_receipts') }}
+    ),
+    transactions AS (
+        {{ evm_live_view_silver_transactions('raw_transactions', 'blocks', 'receipts') }}
+    ),
+    logs AS (
+        {{ evm_live_view_silver_logs('receipts', 'transactions') }}
     )
-    {{ evm_live_view_silver_logs(raw_logs) }}
+
+    SELECT * FROM logs
 {% endmacro %}
 
 -- Get EVM chain ez data
 {% macro evm_live_view_ez_token_transfers(schema, blockchain, network) %}
-WITH spine AS (
-    {{ evm_live_view_target_blocks(blockchain, network) }}
-),
-raw_block_txs AS (
-    {{ evm_live_view_bronze_blocks(spine) }}
-),
-raw_receipts AS (
-    {{ evm_live_view_bronze_receipts(spine) }}
-),
-raw_logs AS (
-    {{ evm_live_view_bronze_logs(raw_receipts) }}
-),
-raw_transactions AS (
-    {{ evm_live_view_bronze_transactions(raw_receipts) }}
-),
-blocks AS (
-    {{ evm_live_view_silver_blocks(raw_block_txs) }}
-),
-receipts AS (
-    {{ evm_live_view_silver_receipts(raw_receipts) }}
-),
-transactions AS (
-    {{ evm_live_view_silver_transactions(raw_transactions, blocks, receipts) }}
-),
-logs AS (
-    {{ evm_live_view_silver_logs(raw_logs) }}
+WITH fact_logs AS (
+    {{ evm_live_view_fact_logs(blockchain, network) }}
 )
 
 SELECT
@@ -358,10 +344,10 @@ SELECT
     sysdate() as inserted_timestamp,
     sysdate() as modified_timestamp
 FROM
-    logs l
-    LEFT JOIN {{ schema }}.price.EZ_PRICES_HOURLY p ON l.contract_address = p.token_address
+    fact_logs l
+    LEFT JOIN {{ blockchain }}.price.EZ_PRICES_HOURLY p ON l.contract_address = p.token_address
     AND DATE_TRUNC('hour', l.block_timestamp) = HOUR
-    LEFT JOIN {{ schema }}.core.DIM_CONTRACTS C ON l.contract_address = C.address
+    LEFT JOIN {{ blockchain }}.core.DIM_CONTRACTS C ON l.contract_address = C.address
 WHERE
     topics [0]::STRING = ez_token_transfers_id
     AND tx_status = 'SUCCESS'
@@ -377,12 +363,12 @@ WITH spine AS (
 
 raw_block_data AS (
     SELECT
-        s.spine_block_number AS block_number,
+        s.block_number AS block_number,
         live.udf_api(
             '{service}/{Authentication}',
             utils.udf_json_rpc_call(
                 'eth_getBlockByNumber',
-                [utils.udf_int_to_hex(s.spine_block_number), true]
+                [utils.udf_int_to_hex(s.block_number), true]
             )
         ):data AS block_data,
         b.value AS tx_data,
@@ -450,7 +436,7 @@ price_data AS (
         AVG(p.price) AS price
     FROM
         eth_base e
-        JOIN {{ schema }}.PRICE.EZ_PRICES_HOURLY p
+        JOIN {{ blockchain }}.PRICE.EZ_PRICES_HOURLY p
             ON DATE_TRUNC('hour', e.block_timestamp) = p.hour
             AND p.token_address = native_token_address
     GROUP BY 1
