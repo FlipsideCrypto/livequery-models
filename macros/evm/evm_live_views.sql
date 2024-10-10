@@ -21,7 +21,7 @@
 
 {% macro evm_live_view_target_blocks(blockchain, network) %}
     WITH heights AS (
-        {{ evm_live_view_latest_block_height(blockchain, network) }}
+        {{ evm_live_view_latest_block_height(blockchain, network) | indent(4) -}}
     )
     SELECT
         ROW_NUMBER() OVER (
@@ -188,7 +188,7 @@ select
         ELSE FALSE
     END AS is_pending,
 from
-    {{ bronze_receipts }} r
+    {{ silver_receipts }} r
     left join {{ silver_transactions }} txs on txs.tx_hash = r.tx_hash,
     lateral flatten(r.logs) v
 {% endmacro %}
@@ -248,41 +248,41 @@ from
 -- Get EVM chain fact data
 {% macro evm_live_view_fact_blocks(blockchain, network) %}
     WITH spine AS (
-        {{ evm_live_view_target_blocks(blockchain, network) }}
+        {{ evm_live_view_target_blocks(blockchain, network) | indent(4) -}}
     ),
     raw_block_txs AS (
-        {{ evm_live_view_bronze_blocks('spine') }}
+        {{ evm_live_view_bronze_blocks('spine') | indent(4) -}}
     )
-    {{ evm_live_view_silver_blocks('raw_block_txs') }}
+    {{ evm_live_view_silver_blocks('raw_block_txs') | indent(4) -}}
 {% endmacro %}
 
 {% macro evm_live_view_fact_logs(blockchain, network) %}
     WITH spine AS (
-        {{ evm_live_view_target_blocks(blockchain, network) }}
+        {{ evm_live_view_target_blocks(blockchain, network) | indent(4) -}}
     ),
     raw_block_txs AS (
-        {{ evm_live_view_bronze_blocks('spine') }}
+        {{ evm_live_view_bronze_blocks('spine') | indent(4) -}}
     ),
     raw_receipts AS (
-        {{ evm_live_view_bronze_receipts('spine') }}
+        {{ evm_live_view_bronze_receipts('spine') | indent(4) -}}
     ),
     raw_logs AS (
-        {{ evm_live_view_bronze_logs('raw_receipts') }}
+        {{ evm_live_view_bronze_logs('raw_receipts') | indent(4) -}}
     ),
     raw_transactions AS (
-        {{ evm_live_view_bronze_transactions('raw_receipts') }}
+        {{ evm_live_view_bronze_transactions('raw_receipts') | indent(4) -}}
     ),
     blocks AS (
-        {{ evm_live_view_silver_blocks('raw_block_txs') }}
+        {{ evm_live_view_silver_blocks('raw_block_txs') | indent(4) -}}
     ),
     receipts AS (
-        {{ evm_live_view_silver_receipts('raw_receipts') }}
+        {{ evm_live_view_silver_receipts('raw_receipts') | indent(4) -}}
     ),
     transactions AS (
-        {{ evm_live_view_silver_transactions('raw_transactions', 'blocks', 'receipts') }}
+        {{ evm_live_view_silver_transactions('raw_transactions', 'blocks', 'receipts') | indent(4) -}}
     ),
     logs AS (
-        {{ evm_live_view_silver_logs('receipts', 'transactions') }}
+        {{ evm_live_view_silver_logs('receipts', 'transactions') | indent(4) -}}
     )
 
     SELECT * FROM logs
@@ -291,7 +291,7 @@ from
 -- Get EVM chain ez data
 {% macro evm_live_view_ez_token_transfers(schema, blockchain, network) %}
 WITH fact_logs AS (
-    {{ evm_live_view_fact_logs(blockchain, network) }}
+    {{ evm_live_view_fact_logs(blockchain, network) | indent(4) -}}
 )
 
 SELECT
