@@ -369,7 +369,7 @@
     - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
     - [native_token_address, STRING, The address of the native token to get the transfers of]
   return_type:
-        - "TABLE (tx_hash STRING, block_number INTEGER, block_timestamp TIMESTAMP_NTZ, tx_position INTEGER, trace_index INTEGER, identifier STRING, origin_from_address STRING, origin_to_address STRING, origin_function_signature STRING, from_address STRING, to_address STRING, amount FLOAT, amount_precise_raw NUMBER, amount_precise FLOAT, amount_usd FLOAT, ez_native_transfers_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
+        - "TABLE(tx_hash STRING, block_number INTEGER, block_timestamp TIMESTAMP_NTZ, tx_position INTEGER, trace_index INTEGER, identifier STRING, origin_from_address STRING, origin_to_address STRING, origin_function_signature STRING, from_address STRING, to_address STRING, amount FLOAT, amount_precise_raw NUMBER, amount_precise FLOAT, amount_usd FLOAT, ez_native_transfers_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -384,7 +384,7 @@
     - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
     - [ez_token_transfers_id, STRING, The topic of the token transfers to get]
   return_type:
-    - "TABLE (block_number INTEGER, block_timestamp TIMESTAMP_NTZ, tx_hash STRING, event_index INTEGER, origin_funcion_signature STRING, origin_from_address STRING, origin_to_address STRING, contract_address STRING, from_address STRING, to_address STRING, raw_amount_precise NUMBER, raw_amount FLOAT, amount_precise STRING, amount FLOAT, amount_usd FLOAT, decimals INTEGER, symbol STRING, token_price FLOAT, has_decimal STRING, has_price STRING, ez_token_transfers_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
+    - "TABLE(block_number INTEGER, block_timestamp TIMESTAMP_NTZ, tx_hash STRING, event_index INTEGER, origin_funcion_signature STRING, origin_from_address STRING, origin_to_address STRING, contract_address STRING, from_address STRING, to_address STRING, raw_amount_precise NUMBER, raw_amount FLOAT, amount_precise STRING, amount FLOAT, amount_usd FLOAT, decimals INTEGER, symbol STRING, token_price FLOAT, has_decimal STRING, has_price STRING, ez_token_transfers_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
