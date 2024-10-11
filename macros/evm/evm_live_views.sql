@@ -27,7 +27,7 @@
         ROW_NUMBER() OVER (
             ORDER BY
                 NULL
-        ) - 1 + COALESCE(block_height, 0)::integer AS block_number,
+        ) - 1 + COALESCE(block_height, latest_block_height)::integer AS block_number,
         min_height,
         IFF(
             COALESCE(to_latest, false),
