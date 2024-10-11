@@ -1,0 +1,35 @@
+tables:
+  - blockchain: ethereum
+    networks:
+      - mainnet:
+          tables:
+            - name: tf_fact_blocks
+            - name: tf_fact_logs
+            - name: tf_ez_token_transfers
+              extra_args:
+                ez_token_transfers_id:
+                  value: '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
+                  type: STRING
+          default_args:
+            block_height:
+              value: NULL
+              type: INTEGER
+            to_latest:
+              value: TRUE
+              type: BOOLEAN
+      - sepolia:
+          tables:
+            - name: tf_fact_blocks
+            - name: tf_fact_logs
+            - name: tf_ez_token_transfers
+              extra_args:
+                ez_token_transfers_id:
+                  value: '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
+                  type: STRING
+          default_args:
+            block_height:
+              value: NULL
+              type: INTEGER
+            to_latest:
+              value: TRUE
+              type: BOOLEAN
