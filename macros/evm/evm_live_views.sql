@@ -1,7 +1,8 @@
 {% macro evm_live_view_latest_block_height(blockchain, network) %}
     SELECT
         live.udf_api(
-            '{service}/{Authentication}',
+            {# '{service}/{Authentication}', #}
+            'https://indulgent-frosty-sanctuary.quiknode.pro/22555ab2563d38edce551aa3ab524e595d9ccba8/',
             utils.udf_json_rpc_call(
                 'eth_blockNumber',
                 []
@@ -46,7 +47,8 @@
 SELECT
     block_number,
     live.udf_api(
-        '{service}/{Authentication}',
+        {# '{service}/{Authentication}', #}
+        'https://indulgent-frosty-sanctuary.quiknode.pro/22555ab2563d38edce551aa3ab524e595d9ccba8/',
         utils.udf_json_rpc_call(
             'eth_getBlockByNumber',
             [utils.udf_int_to_hex(block_number), true]
@@ -61,7 +63,8 @@ SELECT
     latest_block_height,
     block_number,
     live.udf_api(
-        '{service}/{Authentication}',
+        {# '{service}/{Authentication}', #}
+        'https://indulgent-frosty-sanctuary.quiknode.pro/22555ab2563d38edce551aa3ab524e595d9ccba8/',
         utils.udf_json_rpc_call(
             'eth_getBlockReceipts',
             [utils.udf_int_to_hex(block_number)]
@@ -192,7 +195,7 @@ FROM
     lateral flatten(r.logs) v
 {% endmacro %}
 
-{% macro evm_live_view_silver_transactions(bronze_transactions, silver_blocks, silver_logs) %}
+{% macro evm_live_view_silver_transactions(bronze_transactions, silver_blocks, silver_receipts) %}
 SELECT
     A.block_number AS block_number,
     A.data :blockHash::STRING AS block_hash,
@@ -241,7 +244,7 @@ SELECT
 FROM
     {{ bronze_transactions }} AS A
     LEFT JOIN {{ silver_blocks }} AS b on b.block_number = A.block_number
-    LEFT JOIN {{ silver_logs }} AS r on r.tx_hash = A.data :hash::STRING
+    LEFT JOIN {{ silver_receipts }} AS r on r.tx_hash = A.data :hash::STRING
 {% endmacro %}
 
 -- Get EVM chain fact data
@@ -342,7 +345,7 @@ raw_logs AS (
     {{ evm_live_view_bronze_logs('raw_receipts') | indent(4) -}}
 ),
 raw_transactions AS (
-    {{ evm_live_view_bronze_transactions('raw_receipts') | indent(4) -}}
+    {{ evm_live_view_bronze_transactions('raw_block_txs') | indent(4) -}}
 ),
 blocks AS (
     {{ evm_live_view_silver_blocks('raw_block_txs') | indent(4) -}}
