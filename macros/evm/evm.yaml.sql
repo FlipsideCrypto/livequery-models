@@ -363,7 +363,7 @@
   sql: |
     {{ evm_latest_contract_events_decoded_ai(schema,  blockchain, network) | indent(4) -}}
 
-- name: {{ schema -}}.tf_live_view_fact_blocks
+- name: {{ schema -}}.tf_fact_blocks
   signature:
     - [block_height, INTEGER, The start block height to get the transfers from]
     - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
@@ -377,7 +377,7 @@
   sql: |
     {{ evm_live_view_fact_blocks(schema, blockchain, network) | indent(4) -}}
 
-- name: {{ schema -}}.tf_live_view_fact_logs
+- name: {{ schema -}}.tf_fact_logs
   signature:
     - [block_height, INTEGER, The start block height to get the logs from]
     - [to_latest, BOOLEAN, Whether to continue fetching logs until the latest block or not]
@@ -391,7 +391,7 @@
   sql: |
     {{ evm_live_view_fact_logs(schema, blockchain, network) | indent(4) -}}
 
-- name: {{ schema -}}.tf_live_view_ez_native_transfers
+- name: {{ schema -}}.tf_ez_native_transfers
   signature:
     - [block_height, INTEGER, The start block height to get the transfers from]
     - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
@@ -406,7 +406,7 @@
   sql: |
     {{ evm_live_view_ez_native_transfers(schema,  blockchain, network) | indent(4) -}}
 
-- name: {{ schema -}}.tf_live_view_ez_token_transfers
+- name: {{ schema -}}.tf_ez_token_transfers
   signature:
     - [block_height, INTEGER, The start block height to get the transfers from]
     - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
