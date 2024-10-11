@@ -1,8 +1,7 @@
 {% macro evm_live_view_latest_block_height(blockchain, network) %}
     SELECT
         live.udf_api(
-            {# '{service}/{Authentication}', #}
-            'https://indulgent-frosty-sanctuary.quiknode.pro/22555ab2563d38edce551aa3ab524e595d9ccba8/',
+            '{service}/{Authentication}',
             utils.udf_json_rpc_call(
                 'eth_blockNumber',
                 []
@@ -47,8 +46,7 @@
 SELECT
     block_number,
     live.udf_api(
-        {# '{service}/{Authentication}', #}
-        'https://indulgent-frosty-sanctuary.quiknode.pro/22555ab2563d38edce551aa3ab524e595d9ccba8/',
+        '{service}/{Authentication}',
         utils.udf_json_rpc_call(
             'eth_getBlockByNumber',
             [utils.udf_int_to_hex(block_number), true]
@@ -63,8 +61,7 @@ SELECT
     latest_block_height,
     block_number,
     live.udf_api(
-        {# '{service}/{Authentication}', #}
-        'https://indulgent-frosty-sanctuary.quiknode.pro/22555ab2563d38edce551aa3ab524e595d9ccba8/',
+        '{service}/{Authentication}',
         utils.udf_json_rpc_call(
             'eth_getBlockReceipts',
             [utils.udf_int_to_hex(block_number)]
