@@ -53,7 +53,7 @@ SELECT
         )
     ):data.result AS DATA
 FROM
-    {{ table_name | replace('\'', '')}}
+    {{ table_name }}
 {% endmacro %}
 
 {% macro evm_live_view_bronze_receipts(table_name) %}
@@ -77,8 +77,8 @@ FROM
 SELECT
     r.block_number,
     v.value
-from
-    {{ table_name }} r,
+FROM
+    {{ table_name }} AS r,
     lateral flatten(r.data:logs) v
 {% endmacro %}
 
@@ -86,8 +86,8 @@ from
 SELECT
     block_number,
     v.value as DATA
-from
-    {{ table_name }} r,
+FROM
+    {{ table_name }} AS r,
     lateral flatten(r.data:transactions) v
 {% endmacro %}
 
@@ -95,6 +95,7 @@ from
 {% macro evm_live_view_silver_blocks(table_name) %}
 SELECT
     block_number,
+    utils.udf_hex_to_int(DATA:timestamp::STRING)::TIMESTAMP AS block_timestamp,
     utils.udf_hex_to_int(DATA:baseFeePerGas::STRING)::INT AS base_fee_per_gas,
     utils.udf_hex_to_int(DATA:difficulty::STRING)::INT AS difficulty,
     DATA:extraData::STRING AS extra_data,
@@ -110,7 +111,6 @@ SELECT
     DATA:sha3Uncles::STRING AS sha3_uncles,
     utils.udf_hex_to_int(DATA:size::STRING)::INT AS SIZE,
     DATA:stateRoot::STRING AS state_root,
-    utils.udf_hex_to_int(DATA:timestamp::STRING)::TIMESTAMP AS block_timestamp,
     utils.udf_hex_to_int(DATA:totalDifficulty::STRING)::INT AS total_difficulty,
     ARRAY_SIZE(DATA:transactions) AS tx_count,
     DATA:transactionsRoot::STRING AS transactions_root,
@@ -132,7 +132,7 @@ FROM
 {% endmacro %}
 
 {% macro evm_live_view_silver_receipts(table_name) %}
-select
+SELECT
     latest_block_height,
     block_number,
     DATA :blockHash::STRING AS block_hash,
@@ -162,39 +162,38 @@ select
     utils.udf_hex_to_int(DATA :type::STRING)::INT AS TYPE,
     utils.udf_hex_to_int(DATA :effectiveGasPrice::STRING)::INT AS blob_gas_price,
     utils.udf_hex_to_int(DATA :gasUsed::STRING)::INT AS blob_gas_used
-from
+FROM
     {{ table_name }}
 {% endmacro %}
 
 {% macro evm_live_view_silver_logs(silver_receipts, silver_transactions) %}
-select
-    r.latest_block_height,
+SELECT
     r.block_number,
-    r.tx_hash,
     txs.block_timestamp,
+    r.tx_hash,
     txs.origin_function_signature,
     r.from_address AS origin_from_address,
     r.to_address AS origin_to_address,
-    r.tx_status,
+    utils.udf_hex_to_int(v.VALUE :logIndex::STRING)::INT AS event_index,
     v.VALUE :address::STRING AS contract_address,
     v.VALUE :blockHash::STRING AS block_hash,
     v.VALUE :data::STRING AS DATA,
-    utils.udf_hex_to_int(v.VALUE :logIndex::STRING)::INT AS event_index,
     v.VALUE :removed::BOOLEAN AS event_removed,
     v.VALUE :topics AS topics,
+    r.tx_status,
     CASE
         WHEN txs.block_timestamp IS NULL
         OR txs.origin_function_signature IS NULL THEN TRUE
         ELSE FALSE
     END AS is_pending,
-from
-    {{ silver_receipts }} r
-    left join {{ silver_transactions }} txs on txs.tx_hash = r.tx_hash,
+FROM
+    {{ silver_receipts }} AS r
+    LEFT JOIN {{ silver_transactions }} AS txs on txs.tx_hash = r.tx_hash,
     lateral flatten(r.logs) v
 {% endmacro %}
 
 {% macro evm_live_view_silver_transactions(bronze_transactions, silver_blocks, silver_logs) %}
-select
+SELECT
     A.block_number AS block_number,
     A.data :blockHash::STRING AS block_hash,
     utils.udf_hex_to_int(A.data :blockNumber::STRING)::INT AS blockNumber,
@@ -239,59 +238,162 @@ select
     r.type as tx_type,
     r.blob_gas_used,
     r.blob_gas_price,
-from
-    {{ bronze_transactions }} A
-    left join {{ silver_blocks }} b on b.block_number = A.block_number
-    left join {{ silver_logs }} as r on r.tx_hash = A.data :hash::STRING
+FROM
+    {{ bronze_transactions }} AS A
+    LEFT JOIN {{ silver_blocks }} AS b on b.block_number = A.block_number
+    LEFT JOIN {{ silver_logs }} AS r on r.tx_hash = A.data :hash::STRING
 {% endmacro %}
 
 -- Get EVM chain fact data
-{% macro evm_live_view_fact_blocks(blockchain, network) %}
-    WITH spine AS (
+{% macro evm_live_view_fact_blocks(schema, blockchain, network) %}
+WITH spine AS (
         {{ evm_live_view_target_blocks(blockchain, network) | indent(4) -}}
     ),
     raw_block_txs AS (
         {{ evm_live_view_bronze_blocks('spine') | indent(4) -}}
+    ),
+    silver_blocks AS (
+        {{ evm_live_view_silver_blocks('raw_block_txs') | indent(4) -}}
     )
-    {{ evm_live_view_silver_blocks('raw_block_txs') | indent(4) -}}
+    select
+        block_number,
+        block_timestamp,
+        '{{ network }}' AS network,
+        '{{ blockchain }}' AS blockchain,
+        tx_count,
+        difficulty,
+        total_difficulty,
+        extra_data,
+        gas_limit,
+        gas_used,
+        HASH,
+        parent_hash,
+        miner,
+        nonce,
+        receipts_root,
+        sha3_uncles,
+        SIZE,
+        uncles AS uncle_blocks,
+        OBJECT_CONSTRUCT(
+            'baseFeePerGas',
+            base_fee_per_gas,
+            'difficulty',
+            difficulty,
+            'extraData',
+            extra_data,
+            'gasLimit',
+            gas_limit,
+            'gasUsed',
+            gas_used,
+            'hash',
+            HASH,
+            'logsBloom',
+            logs_bloom,
+            'miner',
+            miner,
+            'nonce',
+            nonce,
+            'number',
+            NUMBER,
+            'parentHash',
+            parent_hash,
+            'receiptsRoot',
+            receipts_root,
+            'sha3Uncles',
+            sha3_uncles,
+            'size',
+            SIZE,
+            'stateRoot',
+            state_root,
+            'timestamp',
+            block_timestamp,
+            'totalDifficulty',
+            total_difficulty,
+            'transactionsRoot',
+            transactions_root,
+            'uncles',
+            uncles,
+            'excessBlobGas',
+            excess_blob_gas,
+            'blobGasUsed',
+            blob_gas_used
+        ) AS block_header_json,
+        excess_blob_gas,
+        blob_gas_used,
+        block_number::STRING AS fact_blocks_id,
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        withdrawals,
+        withdrawals_root
+    from silver_blocks
 {% endmacro %}
 
-{% macro evm_live_view_fact_logs(blockchain, network) %}
-    WITH spine AS (
-        {{ evm_live_view_target_blocks(blockchain, network) | indent(4) -}}
-    ),
-    raw_block_txs AS (
-        {{ evm_live_view_bronze_blocks('spine') | indent(4) -}}
-    ),
-    raw_receipts AS (
-        {{ evm_live_view_bronze_receipts('spine') | indent(4) -}}
-    ),
-    raw_logs AS (
-        {{ evm_live_view_bronze_logs('raw_receipts') | indent(4) -}}
-    ),
-    raw_transactions AS (
-        {{ evm_live_view_bronze_transactions('raw_receipts') | indent(4) -}}
-    ),
-    blocks AS (
-        {{ evm_live_view_silver_blocks('raw_block_txs') | indent(4) -}}
-    ),
-    receipts AS (
-        {{ evm_live_view_silver_receipts('raw_receipts') | indent(4) -}}
-    ),
-    transactions AS (
-        {{ evm_live_view_silver_transactions('raw_transactions', 'blocks', 'receipts') | indent(4) -}}
-    ),
-    logs AS (
-        {{ evm_live_view_silver_logs('receipts', 'transactions') | indent(4) -}}
-    )
-
-    SELECT * FROM logs
+{% macro evm_live_view_fact_logs(schema, blockchain, network) %}
+WITH spine AS (
+    {{ evm_live_view_target_blocks(blockchain, network) | indent(4) -}}
+),
+raw_block_txs AS (
+    {{ evm_live_view_bronze_blocks('spine') | indent(4) -}}
+),
+raw_receipts AS (
+    {{ evm_live_view_bronze_receipts('spine') | indent(4) -}}
+),
+raw_logs AS (
+    {{ evm_live_view_bronze_logs('raw_receipts') | indent(4) -}}
+),
+raw_transactions AS (
+    {{ evm_live_view_bronze_transactions('raw_receipts') | indent(4) -}}
+),
+blocks AS (
+    {{ evm_live_view_silver_blocks('raw_block_txs') | indent(4) -}}
+),
+receipts AS (
+    {{ evm_live_view_silver_receipts('raw_receipts') | indent(4) -}}
+),
+transactions AS (
+    {{ evm_live_view_silver_transactions('raw_transactions', 'blocks', 'receipts') | indent(4) -}}
+),
+logs AS (
+    {{ evm_live_view_silver_logs('receipts', 'transactions') | indent(4) -}}
+)
+SELECT
+    block_number,
+    block_timestamp,
+    tx_hash,
+    origin_function_signature,
+    origin_from_address,
+    origin_to_address,
+    event_index,
+    contract_address,
+    topics,
+    DATA,
+    event_removed,
+    tx_status,
+    CONCAT(
+        tx_hash :: STRING,
+        '-',
+        event_index :: STRING
+    ) AS _log_id,
+    md5(
+        cast(
+            coalesce(
+                cast(tx_hash as TEXT),
+                '_dbt_utils_surrogate_key_null_'
+            ) || '-' || coalesce(
+                cast(event_index as TEXT),
+                '_dbt_utils_surrogate_key_null_'
+            ) as TEXT
+        )
+    ) AS fact_event_logs_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp
+FROM logs
 {% endmacro %}
 
 -- Get EVM chain ez data
 {% macro evm_live_view_ez_token_transfers(schema, blockchain, network) %}
 WITH fact_logs AS (
-    {{ evm_live_view_fact_logs(blockchain, network) | indent(4) -}}
+    {{ evm_live_view_fact_logs(schema, blockchain, network) | indent(4) -}}
 )
 
 SELECT

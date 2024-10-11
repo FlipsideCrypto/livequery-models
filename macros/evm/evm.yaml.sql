@@ -363,6 +363,34 @@
   sql: |
     {{ evm_latest_contract_events_decoded_ai(schema,  blockchain, network) | indent(4) -}}
 
+- name: {{ schema -}}.tf_live_view_fact_blocks
+  signature:
+    - [block_height, INTEGER, The start block height to get the transfers from]
+    - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
+  return_type:
+    - "TABLE(block_number INTEGER, block_timestamp TIMESTAMP_NTZ, network STRING, blockchain STRING, tx_count INTEGER, difficulty INTEGER, total_difficulty INTEGER, extra_data STRING, gas_limit INTEGER, gas_used INTEGER, hash STRING, parent_hash STRING, miner STRING, nonce INTEGER, receipts_root STRING, sha3_uncles STRING, size INTEGER, uncle_blocks VARIANT, block_header_json OBJECT, excess_blob_gas INTEGER, blob_gas_used INTEGER, fact_blocks_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ, withdrawals VARIANT, withdrawals_root STRING)"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns the block data for a given block height. If to_latest is true, it will continue fetching blocks until the latest block. Otherwise, it will fetch blocks until the block height is reached.$$
+  sql: |
+    {{ evm_live_view_fact_blocks(schema, blockchain, network) | indent(4) -}}
+
+- name: {{ schema -}}.tf_live_view_fact_logs
+  signature:
+    - [block_height, INTEGER, The start block height to get the logs from]
+    - [to_latest, BOOLEAN, Whether to continue fetching logs until the latest block or not]
+  return_type:
+    - "TABLE(block_number INTEGER, block_timestamp TIMESTAMP_NTZ, tx_hash STRING, origin_function_signature STRING, origin_from_address STRING, origin_to_address STRING, event_index INTEGER, contract_address STRING, topics VARIANT, data STRING, event_removed BOOLEAN, tx_status STRING, _log_id STRING, fact_event_logs_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns the logs for a given block height. If to_latest is true, it will continue fetching logs until the latest block. Otherwise, it will fetch logs until the block height is reached.$$
+  sql: |
+    {{ evm_live_view_fact_logs(schema, blockchain, network) | indent(4) -}}
+
 - name: {{ schema -}}.tf_live_view_ez_native_transfers
   signature:
     - [block_height, INTEGER, The start block height to get the transfers from]
