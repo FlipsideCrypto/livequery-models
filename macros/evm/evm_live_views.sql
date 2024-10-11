@@ -37,7 +37,7 @@
         ) AS max_height,
         latest_block_height
     FROM
-        TABLE(generator(ROWCOUNT => 500)),
+        TABLE(generator(ROWCOUNT => 1000)),
         heights qualify block_number BETWEEN min_height
         AND max_height
 {% endmacro %}
