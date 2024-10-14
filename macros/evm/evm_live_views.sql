@@ -390,6 +390,107 @@ SELECT
 FROM logs
 {% endmacro %}
 
+{% macro evm_live_view_fact_decoded_event_logs(schema, blockchain, network) %}
+WITH _fact_event_logs AS (
+    {{ evm_live_view_fact_logs(schema, blockchain, network) | indent(4) -}}
+),
+
+_silver_decoded_logs AS (
+    SELECT
+        block_number,
+        block_timestamp,
+        tx_hash,
+        origin_function_signature,
+        origin_from_address,
+        origin_to_address,
+        event_index,
+        topics,
+        DATA,
+        contract_address,
+        OBJECT_CONSTRUCT('topics', topics, 'data', data, 'address', contract_address) AS event_data,
+        abi,
+        utils.udf_evm_decode_log(abi, event_data)[0] AS decoded_data,
+        event_removed,
+        decoded_data:name::string AS event_name,
+        {{ blockchain }}.utils.udf_transform_logs(decoded_data) AS transformed,
+        _log_id,
+        inserted_timestamp,
+        tx_status
+    FROM
+        _fact_event_logs
+    JOIN
+        {{ blockchain }}.core.dim_contract_abis
+    USING
+        (contract_address)
+    WHERE
+        tx_status = 'SUCCESS'
+),
+
+_flatten_logs AS (
+    SELECT
+        b.tx_hash,
+        b.block_number,
+        b.event_index,
+        b.event_name,
+        b.contract_address,
+        b.decoded_data,
+        b.transformed,
+        b._log_id,
+        b.inserted_timestamp,
+        OBJECT_AGG(
+            DISTINCT CASE
+                WHEN v.value :name = '' THEN CONCAT(
+                    'anonymous_',
+                    v.index
+                )
+                ELSE v.value :name
+            END,
+            v.value :value
+        ) AS decoded_flat
+    FROM
+        _silver_decoded_logs b,
+        LATERAL FLATTEN(
+            input => b.transformed :data
+        ) v
+    GROUP BY
+        b.tx_hash,
+        b.block_number,
+        b.event_index,
+        b.event_name,
+        b.contract_address,
+        b.decoded_data,
+        b.transformed,
+        b._log_id,
+        b.inserted_timestamp
+)
+
+SELECT
+    block_number,
+    C.block_timestamp,
+    B.tx_hash,
+    B.event_index,
+    B.contract_address,
+    D.name AS contract_name,
+    B.event_name,
+    B.decoded_flat AS decoded_log,
+    B.decoded_data AS full_decoded_log,
+    C.origin_function_signature,
+    C.origin_from_address,
+    C.origin_to_address,
+    C.topics,
+    C.DATA,
+    C.event_removed :: STRING AS event_removed,
+    C.tx_status,
+    _log_id,
+    md5(_log_id) AS fact_event_logs_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp
+FROM _flatten_logs AS B
+LEFT JOIN _silver_decoded_logs AS C USING (block_number, _log_id)
+LEFT JOIN  {{ blockchain }}.core.dim_contracts AS D
+    ON B.contract_address = D.address
+{% endmacro %}
+
 -- Get EVM chain ez data
 {% macro evm_live_view_ez_token_transfers(schema, blockchain, network) %}
 WITH fact_logs AS (
