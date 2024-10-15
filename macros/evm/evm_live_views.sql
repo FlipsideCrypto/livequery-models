@@ -571,11 +571,11 @@ WITH heights AS (
         ):data AS result,
         livequery_dev.utils.udf_hex_to_int(result:result)::integer as latest_block_height,
         coalesce(
-            arg_block_height,
+            block_height,
             latest_block_height
         ) as min_height,
         iff(
-            coalesce(arg_to_latest, false),
+            coalesce(to_latest, false),
             latest_block_height,
             min_height
         ) as max_height
@@ -585,10 +585,10 @@ WITH heights AS (
             row_number() over (
                 order by
                     null
-            ) -1 + coalesce(arg_block_height, 0)::integer as block_number,
+            ) -1 + coalesce(block_height, 0)::integer as block_number,
             min_height,
             iff(
-                coalesce(arg_to_latest, false),
+                coalesce(to_latest, false),
                 latest_block_height,
                 min_height
             ) as max_height,
