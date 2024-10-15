@@ -409,9 +409,8 @@
   signature:
     - [block_height, INTEGER, The start block height to get the transfers from]
     - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
-    - [native_token_address, STRING, The address of the native token to get the transfers of]
   return_type:
-        - "TABLE(tx_hash STRING, block_number INTEGER, block_timestamp TIMESTAMP_NTZ, tx_position INTEGER, trace_index INTEGER, identifier STRING, origin_from_address STRING, origin_to_address STRING, origin_function_signature STRING, from_address STRING, to_address STRING, amount FLOAT, amount_precise_raw NUMBER, amount_precise FLOAT, amount_usd FLOAT, ez_native_transfers_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
+        - "TABLE(tx_hash STRING, block_number NUMBER(38,0), block_timestamp TIMESTAMP_NTZ(9), tx_position NUMBER(38,0), trace_index NUMBER(19,0), identifier STRING, origin_from_address STRING, origin_to_address STRING, origin_function_signature STRING, from_address STRING, to_address STRING, amount FLOAT, amount_precise_raw STRING, amount_precise STRING, amount_usd FLOAT, ez_native_transfers_id STRING, inserted_timestamp TIMESTAMP_NTZ(9), modified_timestamp TIMESTAMP_NTZ(9))"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
