@@ -409,7 +409,7 @@
     - [block_height, INTEGER, The start block height to get the transfers from]
     - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
   return_type: 
-    - "TABLE(tx_hash STRING, block_number NUMBER, block_timestamp TIMESTAMP_NTZ(9), from_address STRING, to_address STRING, eth_value FLOAT, eth_value_precise_raw STRING, eth_value_precise STRING, gas NUMBER, gas_used NUMBER, input STRING, output STRING, TYPE STRING, identifier STRING, DATA OBJECT, tx_status STRING, sub_traces NUMBER, trace_status STRING, error_reason STRING, trace_index NUMBER, fact_traces_id STRING, inserted_timestamp TIMESTAMP_NTZ(9), modified_timestamp TIMESTAMP_NTZ(9))"
+    - "TABLE(tx_hash STRING, block_number NUMBER, block_timestamp TIMESTAMP_NTZ(9), from_address STRING, to_address STRING, value FLOAT, value_precise_raw STRING, value_precise STRING, gas NUMBER, gas_used NUMBER, input STRING, output STRING, TYPE STRING, identifier STRING, DATA OBJECT, tx_status STRING, sub_traces NUMBER, trace_status STRING, error_reason STRING, trace_index NUMBER, fact_traces_id STRING, inserted_timestamp TIMESTAMP_NTZ(9), modified_timestamp TIMESTAMP_NTZ(9))"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
