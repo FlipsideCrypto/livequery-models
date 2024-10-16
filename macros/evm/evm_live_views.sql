@@ -1,12 +1,6 @@
-{% macro evm_live_view_latest_block_height(blockchain, network) %}
+{% macro evm_live_view_latest_block_height(schema, blockchain, network) %}
     SELECT
-        live.udf_api(
-            '{service}/{Authentication}',
-            utils.udf_json_rpc_call(
-                'eth_blockNumber',
-                []
-            )
-        ):data AS result,
+        {{ schema }}.udf_rpc('eth_blockNumber', []) as result,
         utils.udf_hex_to_int(result:result)::integer AS latest_block_height,
         COALESCE(
             block_height,
@@ -19,9 +13,9 @@
         ) AS max_height
 {% endmacro %}
 
-{% macro evm_live_view_target_blocks(blockchain, network) %}
+{% macro evm_live_view_target_blocks(schema, blockchain, network) %}
     WITH heights AS (
-        {{ evm_live_view_latest_block_height(blockchain, network) | indent(4) -}}
+        {{ evm_live_view_latest_block_height(schema, blockchain, network) | indent(4) -}}
     )
     SELECT
         ROW_NUMBER() OVER (
@@ -42,16 +36,12 @@
 {% endmacro %}
 
 -- Get Raw EVM chain data
-{% macro evm_live_view_bronze_blocks(table_name) %}
+{% macro evm_live_view_bronze_blocks(schema, table_name) %}
 SELECT
     block_number,
-    live.udf_api(
-        '{service}/{Authentication}',
-        utils.udf_json_rpc_call(
-            'eth_getBlockByNumber',
-            [utils.udf_int_to_hex(block_number), true]
-        )
-    ):data.result AS DATA
+    {{ schema }}.udf_rpc(
+        'eth_getBlockByNumber', 
+        [utils.udf_int_to_hex(block_number), true]) AS DATA
 FROM
     {{ table_name }}
 {% endmacro %}
@@ -247,10 +237,10 @@ FROM
 -- Get EVM chain fact data
 {% macro evm_live_view_fact_blocks(schema, blockchain, network) %}
 WITH spine AS (
-        {{ evm_live_view_target_blocks(blockchain, network) | indent(4) -}}
+        {{ evm_live_view_target_blocks(schema, blockchain, network) | indent(4) -}}
     ),
     raw_block_txs AS (
-        {{ evm_live_view_bronze_blocks('spine') | indent(4) -}}
+        {{ evm_live_view_bronze_blocks( schema, 'spine') | indent(4) -}}
     ),
     silver_blocks AS (
         {{ evm_live_view_silver_blocks('raw_block_txs') | indent(4) -}}
@@ -330,7 +320,7 @@ WITH spine AS (
 
 {% macro evm_live_view_fact_logs(schema, blockchain, network) %}
 WITH spine AS (
-    {{ evm_live_view_target_blocks(blockchain, network) | indent(4) -}}
+    {{ evm_live_view_target_blocks(schema, blockchain, network) | indent(4) -}}
 ),
 raw_block_txs AS (
     {{ evm_live_view_bronze_blocks('spine') | indent(4) -}}
