@@ -418,6 +418,20 @@
   sql: |
     {{ evm_live_view_fact_traces(schema,  blockchain, network) | indent(4) -}}
 
+- name: {{ schema -}}.tf_fact_transactions
+  signature:
+    - [block_height, INTEGER, The start block height to get the transfers from]
+    - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
+  return_type: 
+    - "TABLE(block_number NUMBER, block_timestamp TIMESTAMP_NTZ, block_hash STRING, tx_hash STRING, nonce NUMBER, POSITION NUMBER, origin_function_signature STRING, from_address STRING, to_address STRING, VALUE FLOAT, value_precise_raw STRING, value_precise STRING, tx_fee FLOAT, tx_fee_precise STRING, gas_price FLOAT, gas_limit NUMBER, gas_used NUMBER, cumulative_gas_used NUMBER, input_data STRING, status STRING, effective_gas_price FLOAT, max_fee_per_gas FLOAT, max_priority_fee_per_gas FLOAT, r STRING, s STRING, v STRING, tx_type NUMBER, chain_id NUMBER, blob_versioned_hashes ARRAY, max_fee_per_blob_gas NUMBER, blob_gas_used NUMBER, blob_gas_price NUMBER, fact_transactions_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns the transactions for a given block height. If to_latest is true, it will continue fetching transactions until the latest block. Otherwise, it will fetch transactions until the block height is reached.$$
+  sql: |
+    {{ evm_live_view_fact_transactions(schema,  blockchain, network) | indent(4) -}}
+
 - name: {{ schema -}}.tf_ez_native_transfers
   signature:
     - [block_height, INTEGER, The start block height to get the transfers from]
