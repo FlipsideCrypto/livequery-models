@@ -396,7 +396,7 @@
     - [block_height, INTEGER, The start block height to get the logs from]
     - [to_latest, BOOLEAN, Whether to continue fetching logs until the latest block or not]
   return_type:
-    - "TABLE(block_number INTEGER, block_timestamp TIMESTAMP_NTZ, tx_hash STRING, event_index INTEGER, contract_address STRING, contract_name STRING, event_name STRING, decoded_log OBJECT, full_decoded_log VARIANT, fact_decoded_event_logs_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
+    - "TABLE(block_number INTEGER, block_timestamp TIMESTAMP_NTZ, tx_hash STRING, event_index INTEGER, contract_address STRING, event_name STRING, decoded_log OBJECT, full_decoded_log VARIANT, fact_decoded_event_logs_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT

@@ -456,7 +456,6 @@ SELECT
     B.tx_hash,
     B.event_index,
     B.contract_address,
-    D.name AS contract_name,
     B.event_name,
     B.decoded_flat AS decoded_log,
     B.decoded_data AS full_decoded_log,
@@ -465,8 +464,6 @@ SELECT
     SYSDATE() AS modified_timestamp
 FROM _flatten_logs AS B
 LEFT JOIN _silver_decoded_logs AS C USING (block_number, _log_id)
-LEFT JOIN  {{ blockchain }}.core.dim_contracts AS D
-    ON B.contract_address = D.address
 {% endmacro %}
 
 {% macro evm_live_view_fact_transactions(schema, blockchain, network) %}
