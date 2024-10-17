@@ -40,7 +40,7 @@
 SELECT
     block_number,
     {{ schema }}.udf_rpc(
-        'eth_getBlockByNumber', 
+        'eth_getBlockByNumber',
         [utils.udf_int_to_hex(block_number), true]) AS DATA
 FROM
     {{ table_name }}
@@ -51,7 +51,7 @@ SELECT
     latest_block_height,
     block_number,
     {{ schema }}.udf_rpc(
-        'eth_getBlockReceipts', 
+        'eth_getBlockReceipts',
         [utils.udf_int_to_hex(block_number)]) AS result,
     v.value AS DATA
 FROM
@@ -460,15 +460,8 @@ SELECT
     B.event_name,
     B.decoded_flat AS decoded_log,
     B.decoded_data AS full_decoded_log,
-    C.origin_function_signature,
-    C.origin_from_address,
-    C.origin_to_address,
-    C.topics,
-    C.DATA,
-    C.event_removed :: STRING AS event_removed,
-    C.tx_status,
-    _log_id,
-    md5(_log_id) AS fact_event_logs_id,
+    md5(_log_id) AS fact_decoded_event_logs_id,
+    SYSDATE() AS _inserted_timestamp,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp
 FROM _flatten_logs AS B
@@ -508,7 +501,7 @@ WITH heights AS (
             latest_block_height
         from
             table(generator(ROWCOUNT => 1000)),
-            heights 
+            heights
         qualify block_number between min_height and max_height
     ),
     raw_receipts as (
@@ -516,7 +509,7 @@ WITH heights AS (
             latest_block_height,
             block_number,
             {{ schema }}.udf_rpc(
-                'eth_getBlockReceipts', 
+                'eth_getBlockReceipts',
                 [utils.udf_int_to_hex(block_number)]) AS result,
             v.value as DATA
         from
@@ -527,7 +520,7 @@ WITH heights AS (
             SELECT
                 block_number,
                 {{ schema }}.udf_rpc(
-                    'eth_getBlockByNumber', 
+                    'eth_getBlockByNumber',
                     [utils.udf_int_to_hex(block_number), true]) AS DATA
             from
                 spine
@@ -662,7 +655,7 @@ WITH heights AS (
             raw_txs A
             left join blocks b on b.block_number = A.block_number
             left join receipts as r on r.tx_hash = A.data :hash::STRING
-    ) 
+    )
     SELECT
         block_number,
         block_timestamp,
@@ -741,7 +734,7 @@ WITH heights AS (
             latest_block_height
         from
             table(generator(ROWCOUNT => 1000)),
-            heights 
+            heights
         qualify block_number between min_height and max_height
     ),
     raw_receipts as (
@@ -749,7 +742,7 @@ WITH heights AS (
             latest_block_height,
             block_number,
             {{ schema }}.udf_rpc(
-                'eth_getBlockReceipts', 
+                'eth_getBlockReceipts',
                 [utils.udf_int_to_hex(block_number)]) AS result,
             v.value as DATA
         from
@@ -760,7 +753,7 @@ WITH heights AS (
             SELECT
                 block_number,
                 {{ schema }}.udf_rpc(
-                    'eth_getBlockByNumber', 
+                    'eth_getBlockByNumber',
                     [utils.udf_int_to_hex(block_number), true]) AS DATA
             from
                 spine
@@ -905,7 +898,7 @@ WITH heights AS (
         FROM spine s,
         LATERAL FLATTEN(input => PARSE_JSON(
             {{ schema }}.udf_rpc(
-                'debug_traceBlockByNumber', 
+                'debug_traceBlockByNumber',
                 [utils.udf_int_to_hex(s.block_number), {'tracer': 'callTracer'}])
         )) v
     ),
@@ -1249,6 +1242,7 @@ SELECT
         WHEN price IS NULL THEN 'false'
         ELSE 'true'
     END AS has_price,
+    _log_id,
     md5(
         cast(
             coalesce(
@@ -1305,7 +1299,7 @@ WITH heights AS (
             latest_block_height
         from
             table(generator(ROWCOUNT => 1000)),
-            heights 
+            heights
         qualify block_number between min_height and max_height
     ),
     raw_receipts as (
@@ -1313,7 +1307,7 @@ WITH heights AS (
             latest_block_height,
             block_number,
             {{ schema }}.udf_rpc(
-                'eth_getBlockReceipts', 
+                'eth_getBlockReceipts',
                 [utils.udf_int_to_hex(block_number)]) AS result,
             v.value as DATA
         from
@@ -1324,7 +1318,7 @@ WITH heights AS (
             SELECT
                 block_number,
                 {{ schema }}.udf_rpc(
-                    'eth_getBlockByNumber', 
+                    'eth_getBlockByNumber',
                     [utils.udf_int_to_hex(block_number), true]) AS DATA
             from
                 spine
@@ -1469,7 +1463,7 @@ WITH heights AS (
         FROM spine s,
         LATERAL FLATTEN(input => PARSE_JSON(
             {{ schema }}.udf_rpc(
-                'debug_traceBlockByNumber', 
+                'debug_traceBlockByNumber',
                 [utils.udf_int_to_hex(s.block_number), {'tracer': 'callTracer'}])
         )) v
     ),
