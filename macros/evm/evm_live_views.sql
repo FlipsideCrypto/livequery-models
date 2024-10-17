@@ -46,17 +46,13 @@ FROM
     {{ table_name }}
 {% endmacro %}
 
-{% macro evm_live_view_bronze_receipts(table_name) %}
+{% macro evm_live_view_bronze_receipts(schema, table_name) %}
 SELECT
     latest_block_height,
     block_number,
-    live.udf_api(
-        '{service}/{Authentication}',
-        utils.udf_json_rpc_call(
-            'eth_getBlockReceipts',
-            [utils.udf_int_to_hex(block_number)]
-        )
-    ):data.result AS result,
+    {{ schema }}.udf_rpc(
+        'eth_getBlockReceipts', 
+        [utils.udf_int_to_hex(block_number)]) AS result,
     v.value AS DATA
 FROM
     {{ table_name }},
@@ -323,10 +319,10 @@ WITH spine AS (
     {{ evm_live_view_target_blocks(schema, blockchain, network) | indent(4) -}}
 ),
 raw_block_txs AS (
-    {{ evm_live_view_bronze_blocks('spine') | indent(4) -}}
+    {{ evm_live_view_bronze_blocks(schema, 'spine') | indent(4) -}}
 ),
 raw_receipts AS (
-    {{ evm_live_view_bronze_receipts('spine') | indent(4) -}}
+    {{ evm_live_view_bronze_receipts(schema, 'spine') | indent(4) -}}
 ),
 raw_logs AS (
     {{ evm_live_view_bronze_logs('raw_receipts') | indent(4) -}}
