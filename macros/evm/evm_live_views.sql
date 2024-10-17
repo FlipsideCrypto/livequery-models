@@ -1096,7 +1096,7 @@ FROM
     AND DATE_TRUNC('hour', l.block_timestamp) = HOUR
     LEFT JOIN {{ blockchain }}.core.DIM_CONTRACTS C ON l.contract_address = C.address
 WHERE
-    topics [0]::STRING = ez_token_transfers_id
+    topics [0]::STRING = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
     AND tx_status = 'SUCCESS'
     and raw_amount IS NOT NULL
     AND to_address IS NOT NULL
