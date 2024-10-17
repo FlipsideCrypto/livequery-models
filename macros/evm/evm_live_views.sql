@@ -481,13 +481,7 @@ LEFT JOIN  {{ blockchain }}.core.dim_contracts AS D
 
 WITH heights AS (
     SELECT
-        livequery_dev.live.udf_api(
-            'https://indulgent-frosty-sanctuary.quiknode.pro/22555ab2563d38edce551aa3ab524e595d9ccba8/',
-            livequery_Dev.utils.udf_json_rpc_call(
-                'eth_blockNumber',
-                []
-            )
-        ):data AS result,
+        {{ schema }}.udf_rpc('eth_blockNumber', []) as result,
         livequery_dev.utils.udf_hex_to_int(result:result)::integer as latest_block_height,
         coalesce(
             block_height,
@@ -521,13 +515,9 @@ WITH heights AS (
         SELECT
             latest_block_height,
             block_number,
-            livequery_dev.live.udf_api(
-                'https://indulgent-frosty-sanctuary.quiknode.pro/22555ab2563d38edce551aa3ab524e595d9ccba8/',
-                livequery_Dev.utils.udf_json_rpc_call(
-                    'eth_getBlockReceipts',
-                    [livequery_dev.utils.udf_int_to_hex(block_number)]
-                )
-            ):data.result AS result,
+            {{ schema }}.udf_rpc(
+                'eth_getBlockReceipts', 
+                [utils.udf_int_to_hex(block_number)]) AS result,
             v.value as DATA
         from
             spine,
@@ -536,13 +526,9 @@ WITH heights AS (
     raw_block_txs as (
             SELECT
                 block_number,
-                livequery_dev.live.udf_api(
-                    'https://indulgent-frosty-sanctuary.quiknode.pro/22555ab2563d38edce551aa3ab524e595d9ccba8/',
-                    livequery_Dev.utils.udf_json_rpc_call(
-                        'eth_getBlockByNumber',
-                        [livequery_dev.utils.udf_int_to_hex(block_number), true]
-                    )
-                ):data.result AS DATA
+                {{ schema }}.udf_rpc(
+                    'eth_getBlockByNumber', 
+                    [utils.udf_int_to_hex(block_number), true]) AS DATA
             from
                 spine
         ),
@@ -728,13 +714,7 @@ WITH heights AS (
 {% macro evm_live_view_fact_traces(schema, blockchain, network) %}
 WITH heights AS (
     SELECT
-        livequery_dev.live.udf_api(
-            'https://indulgent-frosty-sanctuary.quiknode.pro/22555ab2563d38edce551aa3ab524e595d9ccba8/',
-            livequery_Dev.utils.udf_json_rpc_call(
-                'eth_blockNumber',
-                []
-            )
-        ):data AS result,
+        {{ schema }}.udf_rpc('eth_blockNumber', []) as result,
         livequery_dev.utils.udf_hex_to_int(result:result)::integer as latest_block_height,
         coalesce(
             block_height,
@@ -768,13 +748,9 @@ WITH heights AS (
         SELECT
             latest_block_height,
             block_number,
-            livequery_dev.live.udf_api(
-                'https://indulgent-frosty-sanctuary.quiknode.pro/22555ab2563d38edce551aa3ab524e595d9ccba8/',
-                livequery_Dev.utils.udf_json_rpc_call(
-                    'eth_getBlockReceipts',
-                    [livequery_dev.utils.udf_int_to_hex(block_number)]
-                )
-            ):data.result AS result,
+            {{ schema }}.udf_rpc(
+                'eth_getBlockReceipts', 
+                [utils.udf_int_to_hex(block_number)]) AS result,
             v.value as DATA
         from
             spine,
@@ -783,13 +759,9 @@ WITH heights AS (
     raw_block_txs as (
             SELECT
                 block_number,
-                livequery_dev.live.udf_api(
-                    'https://indulgent-frosty-sanctuary.quiknode.pro/22555ab2563d38edce551aa3ab524e595d9ccba8/',
-                    livequery_Dev.utils.udf_json_rpc_call(
-                        'eth_getBlockByNumber',
-                        [livequery_dev.utils.udf_int_to_hex(block_number), true]
-                    )
-                ):data.result AS DATA
+                {{ schema }}.udf_rpc(
+                    'eth_getBlockByNumber', 
+                    [utils.udf_int_to_hex(block_number), true]) AS DATA
             from
                 spine
         ),
@@ -932,13 +904,9 @@ WITH heights AS (
             SYSDATE() AS _inserted_timestamp
         FROM spine s,
         LATERAL FLATTEN(input => PARSE_JSON(
-            livequery_dev.live.udf_api(
-                'https://indulgent-frosty-sanctuary.quiknode.pro/22555ab2563d38edce551aa3ab524e595d9ccba8/',
-                livequery_Dev.utils.udf_json_rpc_call(
-                    'debug_traceBlockByNumber',
-                    [livequery_dev.utils.udf_int_to_hex(s.block_number), {'tracer': 'callTracer'}]
-                )
-            ):data.result
+            {{ schema }}.udf_rpc(
+                'debug_traceBlockByNumber', 
+                [utils.udf_int_to_hex(s.block_number), {'tracer': 'callTracer'}])
         )) v
     ),
     flatten_traces AS (
@@ -1310,13 +1278,7 @@ AND from_address IS NOT NULL
 {% macro evm_live_view_ez_native_transfers(schema, blockchain, network) %}
 WITH heights AS (
     SELECT
-        livequery_dev.live.udf_api(
-            'https://indulgent-frosty-sanctuary.quiknode.pro/22555ab2563d38edce551aa3ab524e595d9ccba8/',
-            livequery_Dev.utils.udf_json_rpc_call(
-                'eth_blockNumber',
-                []
-            )
-        ):data AS result,
+        {{ schema }}.udf_rpc('eth_blockNumber', []) as result,
         livequery_dev.utils.udf_hex_to_int(result:result)::integer as latest_block_height,
         coalesce(
             block_height,
@@ -1350,13 +1312,9 @@ WITH heights AS (
         SELECT
             latest_block_height,
             block_number,
-            livequery_dev.live.udf_api(
-                'https://indulgent-frosty-sanctuary.quiknode.pro/22555ab2563d38edce551aa3ab524e595d9ccba8/',
-                livequery_Dev.utils.udf_json_rpc_call(
-                    'eth_getBlockReceipts',
-                    [livequery_dev.utils.udf_int_to_hex(block_number)]
-                )
-            ):data.result AS result,
+            {{ schema }}.udf_rpc(
+                'eth_getBlockReceipts', 
+                [utils.udf_int_to_hex(block_number)]) AS result,
             v.value as DATA
         from
             spine,
@@ -1365,13 +1323,9 @@ WITH heights AS (
     raw_block_txs as (
             SELECT
                 block_number,
-                livequery_dev.live.udf_api(
-                    'https://indulgent-frosty-sanctuary.quiknode.pro/22555ab2563d38edce551aa3ab524e595d9ccba8/',
-                    livequery_Dev.utils.udf_json_rpc_call(
-                        'eth_getBlockByNumber',
-                        [livequery_dev.utils.udf_int_to_hex(block_number), true]
-                    )
-                ):data.result AS DATA
+                {{ schema }}.udf_rpc(
+                    'eth_getBlockByNumber', 
+                    [utils.udf_int_to_hex(block_number), true]) AS DATA
             from
                 spine
         ),
@@ -1514,13 +1468,9 @@ WITH heights AS (
             SYSDATE() AS _inserted_timestamp
         FROM spine s,
         LATERAL FLATTEN(input => PARSE_JSON(
-            livequery_dev.live.udf_api(
-                'https://indulgent-frosty-sanctuary.quiknode.pro/22555ab2563d38edce551aa3ab524e595d9ccba8/',
-                livequery_Dev.utils.udf_json_rpc_call(
-                    'debug_traceBlockByNumber',
-                    [livequery_dev.utils.udf_int_to_hex(s.block_number), {'tracer': 'callTracer'}]
-                )
-            ):data.result
+            {{ schema }}.udf_rpc(
+                'debug_traceBlockByNumber', 
+                [utils.udf_int_to_hex(s.block_number), {'tracer': 'callTracer'}])
         )) v
     ),
     flatten_traces AS (
