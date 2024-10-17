@@ -475,7 +475,7 @@ raw_receipts AS (
     {{ evm_live_view_bronze_receipts(schema, 'spine') | indent(4) -}}
 ),
 raw_block_txs AS (
-{{ evm_live_view_bronze_blocks(schema, 'spine') | indent(4) -}}
+    {{ evm_live_view_bronze_blocks(schema, 'spine') | indent(4) -}}
 ),
 raw_transactions AS (
     {{ evm_live_view_bronze_transactions('raw_block_txs') | indent(4) -}}
@@ -488,7 +488,7 @@ receipts AS (
 ),
 transactions AS (
     {{ evm_live_view_silver_transactions('raw_transactions', 'blocks', 'receipts') | indent(4) -}}
-),
+)
 SELECT
     block_number,
     block_timestamp,
@@ -498,7 +498,7 @@ SELECT
     POSITION,
     origin_function_signature,
     from_address,
-    to_address,
+    to_address1 as to_address,
     VALUE,
     value_precise_raw,
     value_precise::STRING as value_precise,
