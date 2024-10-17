@@ -396,7 +396,7 @@
     - [block_height, INTEGER, The start block height to get the logs from]
     - [to_latest, BOOLEAN, Whether to continue fetching logs until the latest block or not]
   return_type:
-    - "TABLE(block_number INTEGER, block_timestamp TIMESTAMP_NTZ, tx_hash STRING, event_index INTEGER, contract_address STRING, contract_name STRING, event_name STRING, decoded_log OBJECT, full_decoded_log VARIANT, origin_function_signature STRING, origin_from_address STRING, origin_to_address STRING, topics VARIANT, data STRING, event_removed STRING, tx_status STRING, _log_id STRING, fact_event_logs_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
+    - "TABLE(block_number INTEGER, block_timestamp TIMESTAMP_NTZ, tx_hash STRING, event_index INTEGER, contract_address STRING, contract_name STRING, event_name STRING, decoded_log OBJECT, full_decoded_log VARIANT, fact_decoded_event_logs_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -408,7 +408,7 @@
   signature:
     - [block_height, INTEGER, The start block height to get the transfers from]
     - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
-  return_type: 
+  return_type:
     - "TABLE(tx_hash STRING, block_number NUMBER, block_timestamp TIMESTAMP_NTZ(9), from_address STRING, to_address STRING, value FLOAT, value_precise_raw STRING, value_precise STRING, gas NUMBER, gas_used NUMBER, input STRING, output STRING, TYPE STRING, identifier STRING, DATA OBJECT, tx_status STRING, sub_traces NUMBER, trace_status STRING, error_reason STRING, trace_index NUMBER, fact_traces_id STRING, inserted_timestamp TIMESTAMP_NTZ(9), modified_timestamp TIMESTAMP_NTZ(9))"
   options: |
     NOT NULL
@@ -422,7 +422,7 @@
   signature:
     - [block_height, INTEGER, The start block height to get the transfers from]
     - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
-  return_type: 
+  return_type:
     - "TABLE(block_number NUMBER, block_timestamp TIMESTAMP_NTZ, block_hash STRING, tx_hash STRING, nonce NUMBER, POSITION NUMBER, origin_function_signature STRING, from_address STRING, to_address STRING, VALUE FLOAT, value_precise_raw STRING, value_precise STRING, tx_fee FLOAT, tx_fee_precise STRING, gas_price FLOAT, gas_limit NUMBER, gas_used NUMBER, cumulative_gas_used NUMBER, input_data STRING, status STRING, effective_gas_price FLOAT, max_fee_per_gas FLOAT, max_priority_fee_per_gas FLOAT, r STRING, s STRING, v STRING, tx_type NUMBER, chain_id NUMBER, blob_versioned_hashes ARRAY, max_fee_per_blob_gas NUMBER, blob_gas_used NUMBER, blob_gas_price NUMBER, fact_transactions_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
   options: |
     NOT NULL
@@ -452,7 +452,7 @@
     - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
     - [ez_token_transfers_id, STRING, The topic of the token transfers to get]
   return_type:
-    - "TABLE(block_number INTEGER, block_timestamp TIMESTAMP_NTZ, tx_hash STRING, event_index INTEGER, origin_funcion_signature STRING, origin_from_address STRING, origin_to_address STRING, contract_address STRING, from_address STRING, to_address STRING, raw_amount_precise STRING, raw_amount FLOAT, amount_precise FLOAT, amount FLOAT, amount_usd FLOAT, decimals INTEGER, symbol STRING, token_price FLOAT, has_decimal STRING, has_price STRING, ez_token_transfers_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
+    - "TABLE(block_number INTEGER, block_timestamp TIMESTAMP_NTZ, tx_hash STRING, event_index INTEGER, origin_function_signature STRING, origin_from_address STRING, origin_to_address STRING, contract_address STRING, from_address STRING, to_address STRING, raw_amount_precise STRING, raw_amount FLOAT, amount_precise FLOAT, amount FLOAT, amount_usd FLOAT, decimals INTEGER, symbol STRING, token_price FLOAT, has_decimal STRING, has_price STRING, _log_id STRING, ez_token_transfers_id STRING, _inserted_timestamp TIMESTAMP_NTZ, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
