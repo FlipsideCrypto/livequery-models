@@ -461,7 +461,6 @@ SELECT
     B.decoded_flat AS decoded_log,
     B.decoded_data AS full_decoded_log,
     md5(_log_id) AS fact_decoded_event_logs_id,
-    SYSDATE() AS _inserted_timestamp,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp
 FROM _flatten_logs AS B
@@ -1254,6 +1253,7 @@ SELECT
             ) as TEXT
         )
     ) as ez_token_transfers_id,
+    SYSDATE() AS _inserted_timestamp,
     sysdate() as inserted_timestamp,
     sysdate() as modified_timestamp
 FROM
