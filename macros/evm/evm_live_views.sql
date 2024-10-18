@@ -589,7 +589,7 @@ WITH spine AS (
     from silver_blocks
 {% endmacro %}
 
-{% macro evm_live_view_fact_logs(schema, blockchain, network) %}
+{% macro evm_live_view_fact_event_logs(schema, blockchain, network) %}
 WITH spine AS (
     {{ evm_live_view_target_blocks(schema, blockchain, network) | indent(4) -}}
 ),
@@ -653,7 +653,7 @@ FROM logs
 
 {% macro evm_live_view_fact_decoded_event_logs(schema, blockchain, network) %}
 WITH _fact_event_logs AS (
-    {{ evm_live_view_fact_logs(schema, blockchain, network) | indent(4) -}}
+    {{ evm_live_view_fact_event_logs(schema, blockchain, network) | indent(4) -}}
 ),
 
 _silver_decoded_logs AS (
@@ -883,7 +883,7 @@ FROM traces_final
 -- Get EVM chain ez data
 {% macro evm_live_view_ez_token_transfers(schema, blockchain, network) %}
 WITH fact_logs AS (
-    {{ evm_live_view_fact_logs(schema, blockchain, network) | indent(4) -}}
+    {{ evm_live_view_fact_event_logs(schema, blockchain, network) | indent(4) -}}
 )
 
 SELECT
