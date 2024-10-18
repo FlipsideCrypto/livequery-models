@@ -404,6 +404,7 @@
     COMMENT = $$Returns the decoded event logs data for a given block height. If to_latest is true, it will continue fetching blocks until the latest block. Otherwise, it will fetch blocks until the block height is reached.$$
   sql: |
     {{ evm_live_view_fact_decoded_event_logs(schema, blockchain, network) | indent(4) -}}
+
 - name: {{ schema -}}.tf_fact_traces
   signature:
     - [block_height, INTEGER, The start block height to get the transfers from]
@@ -431,6 +432,21 @@
     COMMENT = $$Returns the transactions for a given block height. If to_latest is true, it will continue fetching transactions until the latest block. Otherwise, it will fetch transactions until the block height is reached.$$
   sql: |
     {{ evm_live_view_fact_transactions(schema,  blockchain, network) | indent(4) -}}
+
+- name: {{ schema -}}.tf_ez_decoded_event_logs
+  signature:
+    - [block_height, INTEGER, The start block height to get the logs from]
+    - [to_latest, BOOLEAN, Whether to continue fetching logs until the latest block or not]
+  return_type:
+    - "TABLE(block_number INTEGER, block_timestamp TIMESTAMP_NTZ, tx_hash STRING, event_index INTEGER, contract_address STRING, contract_name STRING, event_name STRING, decoded_log OBJECT, full_decoded_log VARIANT, origin_function_signature STRING, origin_from_address STRING, origin_to_address STRING, topics VARIANT, data STRING, event_removed BOOLEAN, tx_status STRING, ez_decoded_event_logs_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns the ez decoded event logs data for a given block height. If to_latest is true, it will continue fetching blocks until the latest block. Otherwise, it will fetch blocks until the block height is reached.$$
+  sql: |
+    {{ evm_live_view_ez_decoded_event_logs(schema, blockchain, network) | indent(4) -}}
+
 
 - name: {{ schema -}}.tf_ez_native_transfers
   signature:
