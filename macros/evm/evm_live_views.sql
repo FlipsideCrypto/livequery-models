@@ -91,6 +91,33 @@ LATERAL FLATTEN(input => PARSE_JSON(
 )) v
 {% endmacro %}
 
+{% macro evm_live_view_bronze_token_balances(schema, table_name) %}
+SELECT
+    block_number,
+    block_timestamp,
+    address,
+    contract_address,
+    {{ schema }}.udf_rpc(
+        'eth_call',
+        ARRAY_CONSTRUCT(
+            OBJECT_CONSTRUCT(
+                'to',
+                contract_address,
+                'data',
+                CONCAT(
+                    '0x70a08231000000000000000000000000',
+                    SUBSTR(
+                        address,
+                        3
+                    )
+                )
+            ),
+            utils.udf_int_to_hex(block_number)
+        )
+    ) AS DATA
+FROM {{ table_name }}
+{% endmacro %}
+
 -- Transformation macro for EVM chains
 {% macro evm_live_view_silver_blocks(table_name) %}
 SELECT
@@ -505,6 +532,96 @@ traces_final AS (
 )
 {% endmacro %}
 
+{% macro evm_live_view_silver_token_balances(schema, blockchain, network) %}
+WITH silver_logs AS (
+    SELECT
+        CONCAT('0x', SUBSTR(l.topics [1] :: STRING, 27, 42)) AS address1,
+        CONCAT('0x', SUBSTR(l.topics [2] :: STRING, 27, 42)) AS address2,
+        l.contract_address,
+        l.block_timestamp,
+        l.block_number
+    FROM
+    (
+        {{ evm_live_view_fact_event_logs(schema, blockchain, network) | indent(4) -}}
+    ) l
+    WHERE
+        (
+            l.topics [0] :: STRING = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
+            OR (
+                l.topics [0] :: STRING = '0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65'
+                AND l.contract_address = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+            )
+            OR (
+                l.topics [0] :: STRING = '0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c'
+                AND l.contract_address = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+            )
+        )
+),
+
+transfers AS (
+    SELECT
+        DISTINCT block_number,
+        block_timestamp,
+        contract_address,
+        address1 AS address
+    FROM
+        silver_logs
+    WHERE
+        address1 IS NOT NULL
+        AND address1 <> '0x0000000000000000000000000000000000000000'
+    UNION
+    SELECT
+        DISTINCT block_number,
+        block_timestamp,
+        contract_address,
+        address2 AS address
+    FROM
+        silver_logs
+    WHERE
+        address2 IS NOT NULL
+        AND address2 <> '0x0000000000000000000000000000000000000000'
+),
+
+balances AS (
+    {{ evm_live_view_bronze_token_balances(schema, 'transfers') | indent(4) -}}
+)
+
+SELECT
+    block_number,
+    block_timestamp,
+    address,
+    contract_address,
+    TRY_TO_NUMBER(
+        CASE
+            WHEN LENGTH(
+                DATA :result :: STRING
+            ) <= 4300
+            AND DATA :result IS NOT NULL THEN utils.udf_hex_to_int(LEFT(DATA :result :: STRING, 66))
+            ELSE NULL
+        END
+    ) AS balance,
+    SYSDATE() AS _inserted_timestamp,
+    cast(
+        coalesce(
+            cast(block_number as TEXT),
+            '_dbt_utils_surrogate_key_null_'
+        ) || '-' ||
+        coalesce(
+            cast(address as TEXT),
+            '_dbt_utils_surrogate_key_null_'
+        ) || '-' ||
+        coalesce(
+            cast(contract_address as TEXT),
+            '_dbt_utils_surrogate_key_null_'
+        ) as TEXT
+    ) AS id,
+    id AS token_balances_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp
+FROM
+    balances
+{% endmacro %}
+
 -- Get EVM chain fact data
 {% macro evm_live_view_fact_blocks(schema, blockchain, network) %}
 WITH spine AS (
@@ -808,6 +925,24 @@ SELECT
     ) AS inserted_timestamp,
     SYSDATE() AS modified_timestamp
 FROM traces_final
+{% endmacro %}
+
+{% macro evm_live_view_fact_token_balances(schema, blockchain, network) %}
+WITH silver_token_balances AS (
+    {{ evm_live_view_silver_token_balances(schema, blockchain, network) | indent(4) -}}
+)
+
+SELECT
+    block_number,
+    block_timestamp,
+    address AS user_address,
+    contract_address,
+    balance,
+    token_balances_id AS fact_token_balances_id,
+    inserted_timestamp,
+    modified_timestamp
+FROM
+    silver_token_balances
 {% endmacro %}
 
 -- Get EVM chain ez data
