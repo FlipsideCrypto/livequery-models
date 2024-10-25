@@ -591,12 +591,22 @@ SELECT
     block_timestamp,
     address,
     contract_address,
+    IFF(DATA :: STRING = '{}', NULL, DATA :: STRING) AS casted_data,
+    CASE
+        WHEN
+            LENGTH(
+                casted_data
+            ) <= 4300
+            AND casted_data IS NOT NULL THEN LEFT(casted_data, 66)
+        ELSE NULL
+        END
+    AS hex_balance,
     TRY_TO_NUMBER(
         CASE
             WHEN LENGTH(
-                DATA :result :: STRING
+                hex_balance
             ) <= 4300
-            AND DATA :result IS NOT NULL THEN utils.udf_hex_to_int(LEFT(DATA :result :: STRING, 66))
+            AND hex_balance IS NOT NULL THEN utils.udf_hex_to_int(hex_balance)
             ELSE NULL
         END
     ) AS balance,
@@ -618,8 +628,7 @@ SELECT
     id AS token_balances_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp
-FROM
-    balances
+FROM balances
 {% endmacro %}
 
 -- Get EVM chain fact data

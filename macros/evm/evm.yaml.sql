@@ -438,7 +438,7 @@
     - [block_height, INTEGER, The start block height to get the transfers from]
     - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
   return_type:
-    - "TABLE(block_number NUMBER, block_timestamp TIMESTAMP_NTZ, address STRING, contract_address STRING, balance INTEGER, fact_token_balances_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
+    - "TABLE(block_number NUMBER, block_timestamp TIMESTAMP_NTZ, address STRING, contract_address STRING, balance NUMBER(38,0), fact_token_balances_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
