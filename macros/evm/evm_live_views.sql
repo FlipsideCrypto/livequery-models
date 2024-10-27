@@ -118,6 +118,18 @@ SELECT
 FROM {{ table_name }}
 {% endmacro %}
 
+{% macro evm_live_view_bronze_eth_balances(schema, table_name) %}
+SELECT
+    block_number,
+    block_timestamp,
+    address,
+    {{ schema }}.udf_rpc(
+        'eth_getBalance',
+        ARRAY_CONSTRUCT(address, utils.udf_int_to_hex(block_number))
+    ) AS DATA
+FROM {{ table_name }}
+{% endmacro %}
+
 -- Transformation macro for EVM chains
 {% macro evm_live_view_silver_blocks(table_name) %}
 SELECT
@@ -631,6 +643,82 @@ SELECT
 FROM balances
 {% endmacro %}
 
+{% macro evm_live_view_silver_eth_balances(schema, blockchain, network) %}
+WITH silver_traces AS (
+    SELECT
+        block_timestamp,
+        block_number,
+        from_address,
+        to_address
+    FROM
+    (
+        {{ evm_live_view_fact_traces(schema, blockchain, network) | indent(4) -}}
+    ) l
+    WHERE
+        VALUE > 0 -- VALUE is the amount of ETH transferred
+        AND trace_status = 'SUCCESS'
+        AND tx_status = 'SUCCESS'
+),
+
+stacked AS (
+    SELECT
+        DISTINCT block_number,
+        block_timestamp,
+        from_address AS address
+    FROM
+        silver_traces
+    WHERE
+        from_address IS NOT NULL
+        AND from_address <> '0x0000000000000000000000000000000000000000'
+    UNION
+    SELECT
+        DISTINCT block_number,
+        block_timestamp,
+        to_address AS address
+    FROM
+        silver_traces
+    WHERE
+        to_address IS NOT NULL
+        AND to_address <> '0x0000000000000000000000000000000000000000'
+),
+
+eth_balances AS (
+    {{ evm_live_view_bronze_eth_balances(schema, 'stacked') | indent(4) -}}
+)
+
+SELECT
+    block_number,
+    block_timestamp,
+    address,
+    IFF(DATA :: STRING = '{}', NULL, DATA :: STRING) AS casted_data,
+    CASE
+        WHEN casted_data IS NOT NULL THEN casted_data
+        ELSE NULL
+        END
+    AS hex_balance,
+    TRY_TO_NUMBER(
+        CASE
+            WHEN hex_balance IS NOT NULL THEN utils.udf_hex_to_int(hex_balance)
+            ELSE NULL
+        END
+    ) AS balance,
+    SYSDATE() AS _inserted_timestamp,
+    cast(
+        coalesce(
+            cast(block_number as TEXT),
+            '_dbt_utils_surrogate_key_null_'
+        ) || '-' ||
+        coalesce(
+            cast(address as TEXT),
+            '_dbt_utils_surrogate_key_null_'
+        ) as TEXT
+    ) AS id,
+    id AS eth_balances_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp
+FROM eth_balances
+{% endmacro %}
+
 -- Get EVM chain fact data
 {% macro evm_live_view_fact_blocks(schema, blockchain, network) %}
 WITH spine AS (
@@ -952,6 +1040,22 @@ SELECT
     modified_timestamp
 FROM
     silver_token_balances
+{% endmacro %}
+
+{% macro evm_live_view_fact_eth_balances(schema, blockchain, network) %}
+WITH silver_eth_balances AS (
+    {{ evm_live_view_silver_eth_balances(schema, blockchain, network) | indent(4) -}}
+)
+
+SELECT
+    block_number,
+    block_timestamp,
+    address AS user_address,
+    balance,
+    eth_balances_id AS fact_eth_balances_id,
+    inserted_timestamp,
+    modified_timestamp
+FROM silver_eth_balances
 {% endmacro %}
 
 -- Get EVM chain ez data

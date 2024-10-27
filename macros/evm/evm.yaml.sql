@@ -447,6 +447,21 @@
   sql: |
     {{ evm_live_view_fact_token_balances(schema,  blockchain, network) | indent(4) -}}
 
+- name: {{ schema -}}.tf_fact_eth_balances
+  signature:
+    - [block_height, INTEGER, The start block height to get the transfers from]
+    - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
+  return_type:
+    - "TABLE(block_number NUMBER, block_timestamp TIMESTAMP_NTZ, address STRING, balance NUMBER(38,0), fact_eth_balances_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns the eth balances for a given block height. If to_latest is true, it will continue fetching transactions until the latest block. Otherwise, it will fetch transactions until the block height is reached.$$
+  sql: |
+    {{ evm_live_view_fact_eth_balances(schema,  blockchain, network) | indent(4) -}}
+
+
 - name: {{ schema -}}.tf_ez_decoded_event_logs
   signature:
     - [block_height, INTEGER, The start block height to get the logs from]
@@ -460,7 +475,6 @@
     COMMENT = $$Returns the ez decoded event logs data for a given block height. If to_latest is true, it will continue fetching blocks until the latest block. Otherwise, it will fetch blocks until the block height is reached.$$
   sql: |
     {{ evm_live_view_ez_decoded_event_logs(schema, blockchain, network) | indent(4) -}}
-
 
 - name: {{ schema -}}.tf_ez_native_transfers
   signature:
