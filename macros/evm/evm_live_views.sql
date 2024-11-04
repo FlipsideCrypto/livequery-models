@@ -1024,6 +1024,124 @@ SELECT
 FROM traces_final
 {% endmacro %}
 
+{% macro evm_live_view_fact_decoded_traces(schema, blockchain, network) %}
+WITH spine AS (
+    {{ evm_live_view_target_blocks(schema, blockchain, network) | indent(4) -}}
+),
+raw_receipts AS (
+    {{ evm_live_view_bronze_receipts(schema, 'spine') | indent(4) -}}
+),
+raw_block_txs AS (
+    {{ evm_live_view_bronze_blocks(schema, 'spine') | indent(4) -}}
+),
+raw_transactions AS (
+    {{ evm_live_view_bronze_transactions('raw_block_txs') | indent(4) -}}
+),
+blocks AS (
+    {{ evm_live_view_silver_blocks('raw_block_txs') | indent(4) -}}
+),
+receipts AS (
+    {{ evm_live_view_silver_receipts('raw_receipts') | indent(4) -}}
+),
+transactions AS (
+    {{ evm_live_view_silver_transactions('raw_transactions', 'blocks', 'receipts') | indent(4) -}}
+),
+raw_traces AS (
+    {{ evm_live_view_bronze_traces(schema, 'spine') | indent(4) -}}
+),
+
+{{ evm_live_view_silver_traces('raw_traces') | indent(4) -}}
+,
+
+decoded_traces AS (
+    SELECT
+        t.block_number,
+        t.tx_hash,
+        t.block_timestamp,
+        t.tx_status,
+        t.tx_position,
+        t.trace_index,
+        t.from_address,
+        t.to_address,
+        t.eth_value AS VALUE,
+        t.eth_value_precise_raw AS value_precise_raw,
+        t.eth_value_precise AS value_precise,
+        t.gas,
+        t.gas_used,
+        t.TYPE AS TYPE,
+        t.identifier,
+        t.sub_traces,
+        t.error_reason,
+        t.trace_status,
+        A.abi AS abi,
+        A.function_name AS function_name,
+        CASE
+            WHEN TYPE = 'DELEGATECALL' THEN from_address
+            ELSE to_address
+        END AS abi_address,
+        t.input AS input,
+        COALESCE(
+            t.output,
+            '0x'
+        ) AS output,
+        OBJECT_CONSTRUCT('input', input, 'output', output, 'function_name', function_name) AS function_data,
+        utils.udf_evm_decode_trace(abi, function_data)[0] AS decoded_data
+    FROM traces_final t
+    INNER JOIN {{ blockchain }}.SILVER.COMPLETE_FUNCTION_ABIS A
+        ON A.parent_contract_address = abi_address
+        AND LEFT(
+            t.input,
+            10
+        ) = LEFT(
+            A.function_signature,
+            10
+        )
+        AND t.block_number BETWEEN A.start_block
+        AND A.end_block
+    AND t.block_number IS NOT NULL
+
+)
+
+SELECT
+    block_number,
+    tx_hash,
+    block_timestamp,
+    tx_status,
+    tx_position,
+    trace_index,
+    from_address,
+    to_address,
+    VALUE,
+    value_precise_raw,
+    value_precise,
+    gas,
+    gas_used,
+    TYPE,
+    identifier,
+    sub_traces,
+    error_reason,
+    trace_status,
+    input,
+    output,
+    decoded_data :function_name :: STRING AS function_name,
+    decoded_data :decoded_input_data AS decoded_input_data,
+    decoded_data :decoded_output_data AS decoded_output_data,
+    md5(
+        cast(
+            coalesce(
+                cast(tx_hash as TEXT),
+                '_dbt_utils_surrogate_key_null_'
+            ) || '-' || coalesce(
+                cast(trace_index as TEXT),
+                '_dbt_utils_surrogate_key_null_'
+            ) as TEXT
+        )
+    ) AS fact_decoded_traces_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp
+FROM decoded_traces
+{% endmacro %}
+
 {% macro evm_live_view_fact_token_balances(schema, blockchain, network) %}
 WITH silver_token_balances AS (
     {{ evm_live_view_silver_token_balances(schema, blockchain, network) | indent(4) -}}

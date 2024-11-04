@@ -238,6 +238,18 @@
     RETURNS NULL ON NULL INPUT
   sql: evm/decode/log
 
+- name: {{ schema }}.udf_evm_decode_trace
+  signature:
+    - [abi, OBJECT]
+    - [data, OBJECT]
+  return_type: ARRAY
+  func_type: EXTERNAL
+  api_integration: '{{ var("API_INTEGRATION") }}'
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+  sql: evm/decode/trace
+
 - name: {{ schema }}.udf_base58_to_hex
   signature:
     - [base58, STRING]
