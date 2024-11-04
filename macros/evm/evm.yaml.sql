@@ -405,6 +405,23 @@
   sql: |
     {{ evm_live_view_fact_decoded_event_logs(schema, blockchain, network) | indent(4) -}}
 
+- name: {{ schema -}}.tf_fact_decoded_traces
+  signature:
+    - [block_height, INTEGER, The start block height to get the logs from]
+    - [to_latest, BOOLEAN, Whether to continue fetching logs until the latest block or not]
+  return_type:
+    - "TABLE(block_number INTEGER, tx_hash STRING, block_timestamp TIMESTAMP_NTZ, tx_status STRING, tx_position INTEGER, trace_index INTEGER, from_address STRING, to_address STRING, VALUE FLOAT, value_precise_raw STRING, value_precise STRING, gas INTEGER, gas_used INTEGER, TYPE STRING, identifier STRING, sub_traces INTEGER, error_reason STRING, trace_status STRING, input STRING, output STRING, function_name STRING, decoded_input_data VARIANT, decoded_output_data VARIANT, fact_decoded_traces_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns the decoded traces data for a given block height. If to_latest is true,
+     it will continue fetching blocks until the latest block. Otherwise,
+     it will fetch blocks until the block height is reached.$$
+  sql: |
+    {{ evm_live_view_fact_decoded_traces(schema,
+     blockchain, network) | indent(4) -}}
+
 - name: {{ schema -}}.tf_fact_traces
   signature:
     - [block_height, INTEGER, The start block height to get the transfers from]
