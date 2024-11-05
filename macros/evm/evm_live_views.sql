@@ -1,7 +1,7 @@
 {% macro evm_live_view_latest_block_height(schema, blockchain, network) %}
     SELECT
         {{ schema }}.udf_rpc('eth_blockNumber', []) as result,
-        utils.udf_hex_to_int(result:result)::integer AS latest_block_height,
+        utils.udf_hex_to_int(result)::integer AS latest_block_height,
         COALESCE(
             block_height,
             latest_block_height
