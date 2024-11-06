@@ -56,17 +56,26 @@ WITH blocks_agg AS (
         ) AS params
     FROM
         {{ table_name }}
-    GROUP BY 1
-),
-
-get_batch_result AS (
-    {{ sql_live_rpc_batch_call('blocks_agg', 'params', blockchain, network) | indent(4) }}
+    GROUP BY batch_id
+), result as (
+    SELECT
+        live.udf_api(
+            '{endpoint}'
+            ,params
+            ,concat_ws('/', 'integration', _utils.udf_provider(), '{{ blockchain }}', '{{ network }}')
+        )::VARIANT:data::ARRAY AS data
+    FROM blocks_agg
+)
+, flattened as (
+    SELECT
+        COALESCE(value:result, {'error':value:error}) AS result
+    FROM result, LATERAL FLATTEN(input => result.data) v
 )
 
 SELECT
-    utils.udf_hex_to_int(data:number::STRING)::INT AS block_number,
-    data
-FROM get_batch_result
+    utils.udf_hex_to_int(result:number::STRING)::INT AS block_number,
+    result as data
+FROM flattened
 {% endmacro %}
 
 {% macro evm_live_view_bronze_receipts(schema, table_name) %}
