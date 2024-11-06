@@ -44,7 +44,7 @@
 {% endmacro %}
 
 -- Get Raw EVM chain data
-{% macro evm_live_view_bronze_blocks(schema, table_name) %}
+{% macro evm_live_view_bronze_blocks(schema, blockchain, network, table_name) %}
 WITH blocks_agg AS (
     SELECT
         batch_id,
@@ -60,13 +60,7 @@ WITH blocks_agg AS (
 ),
 
 get_batch_result AS (
-    SELECT
-        live.udf_api(
-            '{endpoint}',
-            params
-        ):data AS result,
-        COALESCE(value:result, {'error':value:error}) AS data
-    FROM blocks_agg, LATERAL FLATTEN(input => result) v
+    {{ sql_live_rpc_batch_call('blocks_agg', 'params', blockchain, network) | indent(4) }}
 )
 
 SELECT
@@ -776,7 +770,7 @@ WITH spine AS (
         {{ evm_live_view_target_blocks(schema, blockchain, network) | indent(4) -}}
     ),
     raw_block_txs AS (
-        {{ evm_live_view_bronze_blocks( schema, 'spine') | indent(4) -}}
+        {{ evm_live_view_bronze_blocks(schema, blockchain, network, 'spine') | indent(4) -}}
     ),
     silver_blocks AS (
         {{ evm_live_view_silver_blocks('raw_block_txs') | indent(4) -}}
@@ -859,7 +853,7 @@ WITH spine AS (
     {{ evm_live_view_target_blocks(schema, blockchain, network) | indent(4) -}}
 ),
 raw_block_txs AS (
-    {{ evm_live_view_bronze_blocks(schema, 'spine') | indent(4) -}}
+    {{ evm_live_view_bronze_blocks(schema, blockchain, network, 'spine') | indent(4) -}}
 ),
 raw_receipts AS (
     {{ evm_live_view_bronze_receipts(schema, 'spine') | indent(4) -}}
@@ -945,7 +939,7 @@ raw_receipts AS (
     {{ evm_live_view_bronze_receipts(schema, 'spine') | indent(4) -}}
 ),
 raw_block_txs AS (
-    {{ evm_live_view_bronze_blocks(schema, 'spine') | indent(4) -}}
+    {{ evm_live_view_bronze_blocks(schema, blockchain, network, 'spine') | indent(4) -}}
 ),
 raw_transactions AS (
     {{ evm_live_view_bronze_transactions('raw_block_txs') | indent(4) -}}
@@ -1015,7 +1009,7 @@ raw_receipts AS (
     {{ evm_live_view_bronze_receipts(schema, 'spine') | indent(4) -}}
 ),
 raw_block_txs AS (
-    {{ evm_live_view_bronze_blocks(schema, 'spine') | indent(4) -}}
+    {{ evm_live_view_bronze_blocks(schema, blockchain, network, 'spine') | indent(4) -}}
 ),
 raw_transactions AS (
     {{ evm_live_view_bronze_transactions('raw_block_txs') | indent(4) -}}
@@ -1083,7 +1077,7 @@ raw_receipts AS (
     {{ evm_live_view_bronze_receipts(schema, 'spine') | indent(4) -}}
 ),
 raw_block_txs AS (
-    {{ evm_live_view_bronze_blocks(schema, 'spine') | indent(4) -}}
+    {{ evm_live_view_bronze_blocks(schema, blockchain, network, 'spine') | indent(4) -}}
 ),
 raw_transactions AS (
     {{ evm_live_view_bronze_transactions('raw_block_txs') | indent(4) -}}
@@ -1405,7 +1399,7 @@ raw_receipts AS (
     {{ evm_live_view_bronze_receipts(schema, 'spine') | indent(4) -}}
 ),
 raw_block_txs AS (
-    {{ evm_live_view_bronze_blocks(schema, 'spine') | indent(4) -}}
+    {{ evm_live_view_bronze_blocks(schema, blockchain, network, 'spine') | indent(4) -}}
 ),
 raw_transactions AS (
     {{ evm_live_view_bronze_transactions('raw_block_txs') | indent(4) -}}
