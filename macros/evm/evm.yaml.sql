@@ -365,8 +365,8 @@
 
 - name: {{ schema -}}.tf_fact_blocks
   signature:
-    - [block_height, INTEGER, The start block height to get the transfers from]
-    - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
+    - [block_height, INTEGER, The start block height to get the blocks from]
+    - [to_latest, BOOLEAN, Whether to continue fetching blocks until the latest block or not]
   return_type:
     - "TABLE(block_number INTEGER, block_timestamp TIMESTAMP_NTZ, network STRING, blockchain STRING, tx_count INTEGER, difficulty INTEGER, total_difficulty INTEGER, extra_data STRING, gas_limit INTEGER, gas_used INTEGER, hash STRING, parent_hash STRING, miner STRING, nonce INTEGER, receipts_root STRING, sha3_uncles STRING, size INTEGER, uncle_blocks VARIANT, block_header_json OBJECT, excess_blob_gas INTEGER, blob_gas_used INTEGER, fact_blocks_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ, withdrawals VARIANT, withdrawals_root STRING)"
   options: |
@@ -420,7 +420,7 @@
      it will fetch blocks until the block height is reached.$$
   sql: |
     {{ evm_live_view_fact_decoded_traces(schema,
-     blockchain, network) | indent(4) -}}
+    blockchain, network) | indent(4) -}}
 
 - name: {{ schema -}}.tf_fact_traces
   signature:

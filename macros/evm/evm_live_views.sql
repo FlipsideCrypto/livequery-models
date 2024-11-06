@@ -16,47 +16,99 @@
 {% macro evm_live_view_target_blocks(schema, blockchain, network) %}
     WITH heights AS (
         {{ evm_live_view_latest_block_height(schema, blockchain, network) | indent(4) -}}
+    ),
+
+    block_spine AS (
+        SELECT
+            ROW_NUMBER() OVER (
+                ORDER BY
+                    NULL
+            ) - 1 + COALESCE(block_height, latest_block_height)::integer AS block_number,
+            min_height,
+            IFF(
+                COALESCE(to_latest, false),
+                block_height,
+                min_height
+            ) AS max_height,
+            latest_block_height
+        FROM
+            TABLE(generator(ROWCOUNT => 1000)),
+            heights qualify block_number BETWEEN min_height
+            AND max_height
     )
+
     SELECT
-        ROW_NUMBER() OVER (
-            ORDER BY
-                NULL
-        ) - 1 + COALESCE(block_height, latest_block_height)::integer AS block_number,
-        min_height,
-        IFF(
-            COALESCE(to_latest, false),
-            block_height,
-            min_height
-        ) AS max_height,
+        CEIL(ROW_NUMBER() OVER (ORDER BY block_number) / {{ var('BATCH_SIZE') }}) AS batch_id,
+        block_number,
         latest_block_height
-    FROM
-        TABLE(generator(ROWCOUNT => 1000)),
-        heights qualify block_number BETWEEN min_height
-        AND max_height
+    FROM block_spine
 {% endmacro %}
 
 -- Get Raw EVM chain data
 {% macro evm_live_view_bronze_blocks(schema, table_name) %}
+WITH blocks_agg AS (
+    SELECT
+        batch_id,
+        ARRAY_AGG(
+            utils.udf_json_rpc_call(
+                'eth_getBlockByNumber',
+                [utils.udf_int_to_hex(block_number), true]
+            )
+        ) AS params
+    FROM
+        {{ table_name }}
+    GROUP BY 1
+),
+
+get_batch_result AS (
+    SELECT
+        live.udf_api(
+            '{endpoint}',
+            params
+        ):data AS result,
+        COALESCE(value:result, {'error':value:error}) AS data
+    FROM blocks_agg, LATERAL FLATTEN(input => result) v
+)
+
 SELECT
-    block_number,
-    {{ schema }}.udf_rpc(
-        'eth_getBlockByNumber',
-        [utils.udf_int_to_hex(block_number), true]) AS DATA
-FROM
-    {{ table_name }}
+    utils.udf_hex_to_int(data:number::STRING)::INT AS block_number,
+    data
+FROM get_batch_result
 {% endmacro %}
 
 {% macro evm_live_view_bronze_receipts(schema, table_name) %}
+WITH blocks_agg AS (
+    SELECT
+        batch_id,
+        latest_block_height,
+        ARRAY_AGG(
+            utils.udf_json_rpc_call(
+                'eth_getBlockReceipts',
+                [utils.udf_int_to_hex(block_number)]
+            )
+        ) AS params
+    FROM
+        {{ table_name }}
+    GROUP BY 1,2
+),
+
+get_batch_result AS (
+    SELECT
+        latest_block_height,
+        live.udf_api(
+            '{endpoint}',
+            params
+        ):data AS result,
+        COALESCE(value:result, {'error':value:error}) AS data
+    FROM blocks_agg, LATERAL FLATTEN(input => result) v
+)
+
 SELECT
     latest_block_height,
-    block_number,
-    {{ schema }}.udf_rpc(
-        'eth_getBlockReceipts',
-        [utils.udf_int_to_hex(block_number)]) AS result,
+    utils.udf_hex_to_int(v.value:blockNumber::STRING)::INT AS block_number,
     v.value AS DATA
-FROM
-    {{ table_name }},
-    LATERAL FLATTEN(result) v
+FROM get_batch_result,
+    LATERAL FLATTEN(data) v
 {% endmacro %}
 
 {% macro evm_live_view_bronze_logs(table_name) %}
