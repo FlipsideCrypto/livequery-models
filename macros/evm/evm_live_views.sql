@@ -13,11 +13,10 @@
         ) AS max_height
 {% endmacro %}
 
-{% macro evm_live_view_target_blocks(schema, blockchain, network) %}
+{% macro evm_live_view_target_blocks(schema, blockchain, network, batch_size=10) %}
     WITH heights AS (
         {{ evm_live_view_latest_block_height(schema, blockchain, network) | indent(4) -}}
     ),
-
     block_spine AS (
         SELECT
             ROW_NUMBER() OVER (
@@ -38,7 +37,7 @@
     )
 
     SELECT
-        CEIL(ROW_NUMBER() OVER (ORDER BY block_number) / {{ var('BATCH_SIZE') }}) AS batch_id,
+        CEIL(ROW_NUMBER() OVER (ORDER BY block_number) / {{ batch_size }}) AS batch_id,
         block_number,
         latest_block_height
     FROM block_spine
