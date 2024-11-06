@@ -469,7 +469,7 @@ When False, none of the on-run-start macros are executed on model run
 Default values are False
 
 * Usage:
-`dbt run --vars` '{"UPDATE_UDFS_AND_SPS":True}' -m ...`
+`dbt run --vars '{"UPDATE_UDFS_AND_SPS":True}' -m ...`
 
 Dropping and creating udfs can also be done without running a model:
 
