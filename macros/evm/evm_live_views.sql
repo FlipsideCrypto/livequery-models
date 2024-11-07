@@ -43,6 +43,14 @@
     FROM block_spine
 {% endmacro %}
 
+{% macro evm_batch_udf_api(blockchain, network) %}
+    live.udf_api(
+        '{endpoint}'
+        ,params
+        ,concat_ws('/', 'integration', _utils.udf_provider(), '{{ blockchain }}', '{{ network }}')
+    )::VARIANT:data::ARRAY AS data
+{% endmacro %}
+
 -- Get Raw EVM chain data
 {% macro evm_live_view_bronze_blocks(schema, blockchain, network, table_name) %}
 WITH blocks_agg AS (
@@ -59,11 +67,7 @@ WITH blocks_agg AS (
     GROUP BY batch_id
 ), result as (
     SELECT
-        live.udf_api(
-            '{endpoint}'
-            ,params
-            ,concat_ws('/', 'integration', _utils.udf_provider(), '{{ blockchain }}', '{{ network }}')
-        )::VARIANT:data::ARRAY AS data
+        {{ evm_batch_udf_api(blockchain, network) }}
     FROM blocks_agg
 )
 , flattened as (
@@ -78,7 +82,7 @@ SELECT
 FROM flattened
 {% endmacro %}
 
-{% macro evm_live_view_bronze_receipts(schema, table_name) %}
+{% macro evm_live_view_bronze_receipts(schema, blockchain, network, table_name) %}
 WITH blocks_agg AS (
     SELECT
         batch_id,
@@ -97,20 +101,20 @@ WITH blocks_agg AS (
 get_batch_result AS (
     SELECT
         latest_block_height,
-        live.udf_api(
-            '{endpoint}',
-            params
-        ):data AS result,
-        COALESCE(value:result, {'error':value:error}) AS data
-    FROM blocks_agg, LATERAL FLATTEN(input => result) v
+        {{ evm_batch_udf_api(blockchain, network) }}
+    FROM blocks_agg, LATERAL FLATTEN(input => data) v
 )
 
 SELECT
     latest_block_height,
-    utils.udf_hex_to_int(v.value:blockNumber::STRING)::INT AS block_number,
-    v.value AS DATA
-FROM get_batch_result,
-    LATERAL FLATTEN(data) v
+    utils.udf_hex_to_int(w.value:blockNumber::STRING)::INT AS block_number,
+    w.value AS DATA
+FROM
+    (SELECT
+        latest_block_height,
+        v.value:result AS DATA
+    FROM get_batch_result,
+        LATERAL FLATTEN(data) v), LATERAL FLATTEN(data) w
 {% endmacro %}
 
 {% macro evm_live_view_bronze_logs(table_name) %}
@@ -131,7 +135,7 @@ FROM
     lateral flatten(r.data:transactions) v
 {% endmacro %}
 
-{% macro evm_live_view_bronze_traces(schema, table_name)%}
+{% macro evm_live_view_bronze_traces(schema, blockchain, network, table_name)%}
 WITH blocks_agg AS (
     SELECT
         batch_id,
@@ -147,11 +151,7 @@ WITH blocks_agg AS (
     GROUP BY batch_id
 ), result as (
     SELECT
-        live.udf_api(
-            '{endpoint}'
-            ,params
-            ,concat_ws('/', 'integration', _utils.udf_provider(), '{{ blockchain }}', '{{ network }}')
-        )::VARIANT:data::ARRAY AS data
+        {{ evm_batch_udf_api(blockchain, network) }}
     FROM blocks_agg
 ), flattened as (
     SELECT
@@ -169,43 +169,100 @@ FROM flattened s,
 LATERAL FLATTEN(input => result) v
 {% endmacro %}
 
-{% macro evm_live_view_bronze_token_balances(schema, table_name) %}
-SELECT
-    block_number,
-    block_timestamp,
-    address,
-    contract_address,
-    {{ schema }}.udf_rpc(
-        'eth_call',
-        ARRAY_CONSTRUCT(
-            OBJECT_CONSTRUCT(
-                'to',
-                contract_address,
-                'data',
+{% macro evm_live_view_bronze_token_balances(schema, blockchain, network, table_name) %}
+WITH block_spine AS (
+    SELECT
+        CEIL(ROW_NUMBER() OVER (ORDER BY block_number, address, contract_address) / 10) AS batch_id,
+        block_number,
+        address,
+        contract_address
+    FROM
+        {{ table_name }}
+),
+blocks_agg AS (
+    SELECT
+        batch_id,
+        ARRAY_AGG(
+            utils.udf_json_rpc_call(
+                'eth_call',
+                ARRAY_CONSTRUCT(
+                    OBJECT_CONSTRUCT(
+                        'to',
+                        contract_address,
+                        'data',
+                        CONCAT(
+                            '0x70a08231000000000000000000000000',
+                            SUBSTR(
+                                address,
+                                3
+                            )
+                        )
+                    ),
+                    utils.udf_int_to_hex(block_number)
+                ),
                 CONCAT(
-                    '0x70a08231000000000000000000000000',
-                    SUBSTR(
-                        address,
-                        3
-                    )
+                    block_number,
+                    '-',
+                    address,
+                    '-',
+                    contract_address
                 )
-            ),
-            utils.udf_int_to_hex(block_number)
-        )
-    ) AS DATA
-FROM {{ table_name }}
+            )
+        ) AS params
+    FROM
+        block_spine
+    GROUP BY batch_id
+), result as (
+    SELECT
+        {{ evm_batch_udf_api(blockchain, network) }}
+    FROM blocks_agg
+)
+
+SELECT
+    SPLIT(value:id::STRING, '-')[0]::INT AS block_number,
+    SPLIT(value:id::STRING, '-')[1]::STRING AS address,
+    SPLIT(value:id::STRING, '-')[2]::STRING AS contract_address,
+    COALESCE(value:result, {'error':value:error}) AS DATA
+FROM result, LATERAL FLATTEN(input => result.data) v
 {% endmacro %}
 
-{% macro evm_live_view_bronze_eth_balances(schema, table_name) %}
+{% macro evm_live_view_bronze_eth_balances(schema, blockchain, network, table_name) %}
+WITH block_spine AS (
+    SELECT
+        CEIL(ROW_NUMBER() OVER (ORDER BY block_number, address) / 10) AS batch_id,
+        block_number,
+        address
+    FROM
+        {{ table_name }}
+),
+blocks_agg AS (
+    SELECT
+        batch_id,
+        ARRAY_AGG(
+            utils.udf_json_rpc_call(
+                'eth_getBalance',
+                ARRAY_CONSTRUCT(address, utils.udf_int_to_hex(block_number)),
+                CONCAT(
+                    block_number,
+                    '-',
+                    address
+                )
+            )
+        ) AS params
+    FROM
+        block_spine
+    GROUP BY batch_id
+), result as (
+    SELECT
+        {{ evm_batch_udf_api(blockchain, network) }}
+    FROM blocks_agg
+)
+
 SELECT
-    block_number,
-    block_timestamp,
-    address,
-    {{ schema }}.udf_rpc(
-        'eth_getBalance',
-        ARRAY_CONSTRUCT(address, utils.udf_int_to_hex(block_number))
-    ) AS DATA
-FROM {{ table_name }}
+    SPLIT(value:id::STRING, '-')[0]::INT AS block_number,
+    SPLIT(value:id::STRING, '-')[1]::STRING AS address,
+    COALESCE(value:result, {'error':value:error}) AS DATA
+FROM result, LATERAL FLATTEN(input => result.data) v
 {% endmacro %}
 
 -- Transformation macro for EVM chains
@@ -673,11 +730,11 @@ transfers AS (
 ),
 
 balances AS (
-    {{ evm_live_view_bronze_token_balances(schema, 'transfers') | indent(4) -}}
+    {{ evm_live_view_bronze_token_balances(schema, blockchain, network, 'transfers') | indent(4) -}}
 )
 
 SELECT
-    block_number,
+    b.block_number,
     block_timestamp,
     address,
     contract_address,
@@ -718,7 +775,10 @@ SELECT
     id AS token_balances_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp
-FROM balances
+FROM balances b
+LEFT JOIN (
+    SELECT DISTINCT block_number, block_timestamp FROM transfers
+) USING (block_number)
 {% endmacro %}
 
 {% macro evm_live_view_silver_eth_balances(schema, blockchain, network) %}
@@ -761,7 +821,7 @@ stacked AS (
 ),
 
 eth_balances AS (
-    {{ evm_live_view_bronze_eth_balances(schema, 'stacked') | indent(4) -}}
+    {{ evm_live_view_bronze_eth_balances(schema, blockchain, network, 'stacked') | indent(4) -}}
 )
 
 SELECT
@@ -795,6 +855,9 @@ SELECT
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp
 FROM eth_balances
+LEFT JOIN (
+    SELECT DISTINCT block_number, block_timestamp FROM stacked
+) USING (block_number)
 {% endmacro %}
 
 -- Get EVM chain fact data
@@ -889,7 +952,7 @@ raw_block_txs AS (
     {{ evm_live_view_bronze_blocks(schema, blockchain, network, 'spine') | indent(4) -}}
 ),
 raw_receipts AS (
-    {{ evm_live_view_bronze_receipts(schema, 'spine') | indent(4) -}}
+    {{ evm_live_view_bronze_receipts(schema, blockchain, network, 'spine') | indent(4) -}}
 ),
 raw_logs AS (
     {{ evm_live_view_bronze_logs('raw_receipts') | indent(4) -}}
@@ -969,7 +1032,7 @@ WITH spine AS (
     {{ evm_live_view_target_blocks(schema, blockchain, network) | indent(4) -}}
 ),
 raw_receipts AS (
-    {{ evm_live_view_bronze_receipts(schema, 'spine') | indent(4) -}}
+    {{ evm_live_view_bronze_receipts(schema, blockchain, network, 'spine') | indent(4) -}}
 ),
 raw_block_txs AS (
     {{ evm_live_view_bronze_blocks(schema, blockchain, network, 'spine') | indent(4) -}}
@@ -1039,7 +1102,7 @@ WITH spine AS (
     {{ evm_live_view_target_blocks(schema, blockchain, network) | indent(4) -}}
 ),
 raw_receipts AS (
-    {{ evm_live_view_bronze_receipts(schema, 'spine') | indent(4) -}}
+    {{ evm_live_view_bronze_receipts(schema, blockchain, network, 'spine') | indent(4) -}}
 ),
 raw_block_txs AS (
     {{ evm_live_view_bronze_blocks(schema, blockchain, network, 'spine') | indent(4) -}}
@@ -1057,7 +1120,7 @@ transactions AS (
     {{ evm_live_view_silver_transactions('raw_transactions', 'blocks', 'receipts') | indent(4) -}}
 ),
 raw_traces AS (
-    {{ evm_live_view_bronze_traces(schema, 'spine') | indent(4) -}}
+    {{ evm_live_view_bronze_traces(schema, blockchain, network, 'spine') | indent(4) -}}
 ),
 
 {{ evm_live_view_silver_traces('raw_traces') | indent(4) -}}
@@ -1104,10 +1167,10 @@ FROM traces_final
 
 {% macro evm_live_view_fact_decoded_traces(schema, blockchain, network) %}
 WITH spine AS (
-    {{ evm_live_view_target_blocks(schema, blockchain, network) | indent(4) -}}
+    {{ evm_live_view_target_blocks(schema, blockchain, network, 5) | indent(4) -}}
 ),
 raw_receipts AS (
-    {{ evm_live_view_bronze_receipts(schema, 'spine') | indent(4) -}}
+    {{ evm_live_view_bronze_receipts(schema, blockchain, network, 'spine') | indent(4) -}}
 ),
 raw_block_txs AS (
     {{ evm_live_view_bronze_blocks(schema, blockchain, network, 'spine') | indent(4) -}}
@@ -1125,7 +1188,7 @@ transactions AS (
     {{ evm_live_view_silver_transactions('raw_transactions', 'blocks', 'receipts') | indent(4) -}}
 ),
 raw_traces AS (
-    {{ evm_live_view_bronze_traces(schema, 'spine') | indent(4) -}}
+    {{ evm_live_view_bronze_traces(schema, blockchain, network, 'spine') | indent(4) -}}
 ),
 
 {{ evm_live_view_silver_traces('raw_traces') | indent(4) -}}
@@ -1429,7 +1492,7 @@ WITH spine AS (
     {{ evm_live_view_target_blocks(schema, blockchain, network) | indent(4) -}}
 ),
 raw_receipts AS (
-    {{ evm_live_view_bronze_receipts(schema, 'spine') | indent(4) -}}
+    {{ evm_live_view_bronze_receipts(schema, blockchain, network, 'spine') | indent(4) -}}
 ),
 raw_block_txs AS (
     {{ evm_live_view_bronze_blocks(schema, blockchain, network, 'spine') | indent(4) -}}
@@ -1447,7 +1510,7 @@ transactions AS (
     {{ evm_live_view_silver_transactions('raw_transactions', 'blocks', 'receipts') | indent(4) -}}
 ),
 raw_traces AS (
-    {{ evm_live_view_bronze_traces(schema, 'spine') | indent(4) -}}
+    {{ evm_live_view_bronze_traces(schema, blockchain, network, 'spine') | indent(4) -}}
 ),
 {{ evm_live_view_silver_traces('raw_traces') | indent(4) -}}
 ,
