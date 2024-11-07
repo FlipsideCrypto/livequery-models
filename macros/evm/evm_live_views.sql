@@ -132,17 +132,41 @@ FROM
 {% endmacro %}
 
 {% macro evm_live_view_bronze_traces(schema, table_name)%}
+WITH blocks_agg AS (
+    SELECT
+        batch_id,
+        ARRAY_AGG(
+            utils.udf_json_rpc_call(
+                'debug_traceBlockByNumber',
+                [utils.udf_int_to_hex(s.block_number), {'tracer': 'callTracer'}],
+                s.block_number -- to put block_number in the id to retrieve the block numberlater
+            )
+        ) AS params
+    FROM
+        {{ table_name }}
+    GROUP BY batch_id
+), result as (
+    SELECT
+        live.udf_api(
+            '{endpoint}'
+            ,params
+            ,concat_ws('/', 'integration', _utils.udf_provider(), '{{ blockchain }}', '{{ network }}')
+        )::VARIANT:data::ARRAY AS data
+    FROM blocks_agg
+), flattened as (
+    SELECT
+        value:id::INT AS block_number,
+        COALESCE(value:result, {'error':value:error}) AS result
+    FROM result, LATERAL FLATTEN(input => result.data) v
+)
+
 SELECT
     s.block_number,
     v.index::INT AS tx_position, -- mimic's streamline's logic to add tx_position
     v.value:result AS full_traces,
     SYSDATE() AS _inserted_timestamp
-FROM {{ table_name }} s,
-LATERAL FLATTEN(input => PARSE_JSON(
-    {{ schema }}.udf_rpc(
-        'debug_traceBlockByNumber',
-        [utils.udf_int_to_hex(s.block_number), {'tracer': 'callTracer'}])
-)) v
+FROM flattened s,
+LATERAL FLATTEN(input => result) v
 {% endmacro %}
 
 {% macro evm_live_view_bronze_token_balances(schema, table_name) %}
