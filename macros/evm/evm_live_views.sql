@@ -143,7 +143,7 @@ WITH blocks_agg AS (
             )
         ) AS params
     FROM
-        {{ table_name }}
+        {{ table_name }} s
     GROUP BY batch_id
 ), result as (
     SELECT
