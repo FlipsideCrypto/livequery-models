@@ -6,10 +6,10 @@
 {% set schema = blockchain ~ "_" ~ network %}
 - name: {{ schema -}}.tf_fact_blocks
   signature:
-    - [block_height, INTEGER, The start block height to get the transfers from]
-    - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
+    - [block_height, INTEGER, The start block height to get the blocks from]
+    - [to_latest, BOOLEAN, Whether to continue fetching blocks until the latest block or not]
   return_type:
-    - "TABLE(block_id NUMBER, block_timestamp TIMESTAMP_NTZ, block_hash STRING, tx_count STRING, block_author STRING, header OBJECT, block_challenges_result ARRAY, block_challenges_root STRING, chunk_headers_root STRING, chunk_tx_root STRING, chunk_mask ARRAY, chunk_receipts_root STRING, chunks ARRAY, chunks_included NUMBER, epoch_id STRING, epoch_sync_data_hash STRING, events ARRAY, gas_price NUMBER, last_ds_final_block STRING, last_final_block STRING, latest_protocol_version NUMBER, next_bp_hash STRING, next_epoch_id STRING, outcome_root STRING, prev_hash STRING, prev_height NUMBER, prev_state_root STRING, random_value STRING, rent_paid FLOAT, signature STRING, total_supply NUMBER, validator_proposals ARRAY, validator_reward NUMBER, fact_blocks_id STRING, inserted_timestamp TIMESTAMP_LTZ, modified_timestamp TIMESTAMP_LTZ)"
+    - "TABLE(block_id NUMBER, block_timestamp TIMESTAMP_NTZ, block_hash STRING, tx_count STRING, block_author STRING, header OBJECT, block_challenges_result ARRAY, block_challenges_root STRING, chunk_headers_root STRING, chunk_tx_root STRING, chunk_mask ARRAY, chunk_receipts_root STRING, chunks ARRAY, chunks_included NUMBER, epoch_id STRING, epoch_sync_data_hash STRING, events ARRAY, gas_price NUMBER, last_ds_final_block STRING, last_final_block STRING, latest_protocol_version NUMBER, next_bp_hash STRING, next_epoch_id STRING, outcome_root STRING, prev_hash STRING, prev_height NUMBER, prev_state_root STRING, random_value STRING, rent_paid FLOAT, signature STRING, total_supply NUMBER, validator_proposals ARRAY, validator_reward NUMBER, fact_blocks_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
