@@ -3,9 +3,9 @@
 {% macro near_live_view_fact_blocks(schema, blockchain, network) %}
     WITH heights AS (
         SELECT
-            livequery.live.udf_api(
+            live.udf_api(
                 'https://rpc.mainnet.near.org',
-                livequery.utils.udf_json_rpc_call(
+                utils.udf_json_rpc_call(
                     'block',
                     {'finality': 'final'}
                 )
@@ -28,17 +28,17 @@
             max_height,
             latest_block_height
         FROM
-            table(generator(ROWCOUNT => 1000)),
+            table(generator(ROWCOUNT => (max_height - min_height + 1))),
             heights 
-        QUALIFY block_height BETWEEN min_height AND max_height
+            QUALIFY block_height BETWEEN min_height AND max_height
     ),
     raw_blocks AS (
         
         SELECT
             block_height,
-            livequery.live.udf_api(
+            live.udf_api(
                 'https://rpc.mainnet.near.org',
-                livequery.utils.udf_json_rpc_call(
+                utils.udf_json_rpc_call(
                     'block',
                     {'block_id': block_height}
                 )
