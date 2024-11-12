@@ -1413,11 +1413,7 @@ SELECT
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp
 FROM _flatten_logs AS B
-LEFT JOIN (
-    SELECT
-        DISTINCT block_number, _log_id
-    FROM _silver_decoded_logs
-    ) AS C USING (block_number, _log_id)
+LEFT JOIN _silver_decoded_logs AS C USING (block_number, _log_id)
 LEFT JOIN {{ blockchain }}.core.dim_contracts AS D
     ON B.contract_address = D.address
 {% endmacro %}
