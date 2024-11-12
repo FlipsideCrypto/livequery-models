@@ -102,7 +102,7 @@ get_batch_result AS (
     SELECT
         latest_block_height,
         {{ evm_batch_udf_api(blockchain, network) }}
-    FROM blocks_agg, LATERAL FLATTEN(input => data) v
+    FROM blocks_agg
 )
 
 SELECT
@@ -946,7 +946,7 @@ WITH spine AS (
 
 {% macro evm_live_view_fact_event_logs(schema, blockchain, network) %}
 WITH spine AS (
-    {{ evm_live_view_target_blocks(schema, blockchain, network) | indent(4) -}}
+    {{ evm_live_view_target_blocks(schema, blockchain, network, 5) | indent(4) -}}
 ),
 raw_block_txs AS (
     {{ evm_live_view_bronze_blocks(schema, blockchain, network, 'spine') | indent(4) -}}
@@ -1029,7 +1029,7 @@ FROM _ez_decoded_event_logs
 {% macro evm_live_view_fact_transactions(schema, blockchain, network) %}
 
 WITH spine AS (
-    {{ evm_live_view_target_blocks(schema, blockchain, network) | indent(4) -}}
+    {{ evm_live_view_target_blocks(schema, blockchain, network, 5) | indent(4) -}}
 ),
 raw_receipts AS (
     {{ evm_live_view_bronze_receipts(schema, blockchain, network, 'spine') | indent(4) -}}
@@ -1413,7 +1413,11 @@ SELECT
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp
 FROM _flatten_logs AS B
-LEFT JOIN _silver_decoded_logs AS C USING (block_number, _log_id)
+LEFT JOIN (
+    SELECT
+        DISTINCT block_number, _log_id
+    FROM _silver_decoded_logs
+    ) AS C USING (block_number, _log_id)
 LEFT JOIN {{ blockchain }}.core.dim_contracts AS D
     ON B.contract_address = D.address
 {% endmacro %}
