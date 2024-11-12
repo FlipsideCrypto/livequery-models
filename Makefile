@@ -21,3 +21,11 @@ compile_near_mainnet: rm_logs
 	--profiles-dir ~/.dbt \
 	--profile livequery \
 	--target dev
+
+deploy_fact_blocks_poc: rm_logs
+	dbt run \
+	-s livequery_models.deploy.near.near__fact_blocks_poc \
+	--vars '{UPDATE_UDFS_AND_SPS: true}' \
+	--profiles-dir ~/.dbt \
+	--profile livequery \
+	--target dev
