@@ -4,6 +4,7 @@
     blockchain.
  #}
 {% set schema = blockchain ~ "_" ~ network %}
+
 - name: {{ schema -}}.tf_get_block_data
   signature:
     - [file_urls, ARRAY, List of stage file URLs created using BUILD_SCOPED_FILE_URL() snowflake internal function]

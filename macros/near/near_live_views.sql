@@ -35,60 +35,91 @@ SELECT
     import json
     from typing import Iterator, Tuple
     from snowflake.snowpark.files import SnowflakeFile
+    import multiprocessing as mp
+    from queue import Queue
+    from threading import Thread
 
     class GetBlockData:
         """
-        A class to retrieve NEAR block data in bulk from files stored in the Near Lake Snowflake External Stage.
-
-        The `process()` method is the handler for a Snowflake User-Defined Table Function (UDTF)
-        that reads JSON Near block data and yields the block data. 
-
-        Example:
-            To use this function in Snowflake, query the UDTF as follows:
-            ```sql
-            SELECT * 
-            FROM TABLE(get_block_data(ARRAY_CONSTRUCT(
-                BUILD_SCOPED_FILE_URL(@stage_name, '000132121137/block.json'),
-                BUILD_SCOPED_FILE_URL(@stage_name, '000132121138/block.json')
-            )));
-            ```
+        A class to retrieve and process multiple NEAR blockchain block data files from Snowflake External Stage.
+        Uses threading from standard library for concurrent processing.
+        
+        The implementation uses a thread pool pattern with a work queue for better resource management
+        and controlled concurrency.
         """
+        
+        def __init__(self):
+            self.num_workers = min(10, mp.cpu_count() * 2)  # Number of worker threads
+            self.chunk_size = 50  # Process files in chunks
+            
+        def _process_file(self, file_url: str) -> Tuple[dict]:
+            """Process a single file from the stage."""
+            try:
+                with SnowflakeFile.open(file_url) as file:
+                    block_data = json.load(file)
+                    return (block_data,)
+            except json.JSONDecodeError as e:
+                return ({
+                    'error': 'JSONDecodeError',
+                    'details': f'Invalid JSON data: {str(e)}',
+                    'url': file_url
+                },)
+            except Exception as e:
+                return ({
+                    'error': e.__class__.__name__,
+                    'details': str(e),
+                    'url': file_url
+                },)
+
+        def _worker(self, queue: Queue, results: list):
+            """Worker thread to process files from the queue."""
+            while True:
+                file_url = queue.get()
+                if file_url is None:  # Poison pill
+                    break
+                result = self._process_file(file_url)
+                results.append(result)
+                queue.task_done()
 
         def process(self, file_urls: list) -> Iterator[Tuple[dict]]:
             """
-            Process multiple block data files from specified stage file URLs.
-
+            Process multiple block data files using a thread pool.
+            
             Args:
-                file_urls (list): A list of stage file URLs created using BUILD_SCOPED_FILE_URL
-                https://docs.snowflake.com/en/sql-reference/functions/build_scoped_file_url
-
+                file_urls (list): List of stage file URLs to process
+                
             Yields:
-                Iterator[Tuple[dict]]: A series of single-element tuples, each containing
-                                    the complete block data structure or an error object
-
-            Note:
-                - Files must contain valid JSON
-                - If a file fails to process, an error object is returned instead of the file contents
+                Iterator[Tuple[dict]]: Processed block data or error information
             """
-            for file_url in file_urls:
-                try:
-                    with SnowflakeFile.open(file_url) as file:
-                        block_data = json.load(file)
-                        yield (block_data,)
-                except json.JSONDecodeError as e:
-                    error_info = {
-                        '_error': 'JSONDecodeError',
-                        'details': f'Invalid JSON data: {str(e)}',
-                        'url': file_url
-                    }
-                    yield (error_info,)
-                except Exception as e:
-                    error_info = {
-                        '_error': e.__class__.__name__,
-                        'details': str(e),
-                        'url': file_url
-                    }
-                    yield (error_info,)
+            # Process files in chunks to manage memory
+            for i in range(0, len(file_urls), self.chunk_size):
+                chunk = file_urls[i:i + self.chunk_size]
+                
+                # Set up the thread pool
+                queue = Queue()
+                results = []
+                threads = []
+                
+                # Start worker threads
+                for _ in range(self.num_workers):
+                    t = Thread(target=self._worker, args=(queue, results))
+                    t.start()
+                    threads.append(t)
+                
+                # Add work to the queue
+                for url in chunk:
+                    queue.put(url)
+                
+                # Add poison pills to stop workers
+                for _ in range(self.num_workers):
+                    queue.put(None)
+                
+                # Wait for all work to complete
+                for t in threads:
+                    t.join()
+                
+                # Yield results
+                yield from results
 {% endmacro %}
 
 {% macro near_live_view_get_spine(table_name) %}
