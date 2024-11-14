@@ -6,7 +6,7 @@
 {% set schema = blockchain ~ "_" ~ network %}
 - name: {{ schema -}}.tf_get_block_data
   signature:
-    - [url_block_pairs, ARRAY, The stage file to that contains the block data to retrieve]
+    - [file_urls, ARRAY, List of stage file URLs created using BUILD_SCOPED_FILE_URL() snowflake internal function]
   return_type:
     - "TABLE(block_data VARIANT)"
   options: |
@@ -14,9 +14,7 @@
     RUNTIME_VERSION = '3.11'
     PACKAGES = ('snowflake-snowpark-python')
     HANDLER = 'GetBlockData'
-    COMMENT = $$A UDTF to retrieve NEAR block data from the Near Lake Snowflake External Stage. url_block_pairs (list): A list of objects, each containing:
-                - url (str): The stage file URL created using BUILD_SCOPED_FILE_URL
-                - block_height (int): The corresponding block height for the file$$
+    COMMENT = $$A UDTF to retrieve NEAR block data stored in files from the Near Lake Snowflake External Stage.$$
   sql: |
     {{ near_live_view_get_block_data() | indent(4) -}}
 

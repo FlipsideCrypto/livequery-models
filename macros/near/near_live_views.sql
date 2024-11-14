@@ -1,5 +1,16 @@
 -- Get Near Chain Head
-{% macro near_live_view_latest_block_height(schema, blockchain, network) %}
+{% macro near_live_view_latest_block_height() %}
+{#
+     This macro retrieves the latest block height from the NEAR blockchain.
+    
+    Args:
+        schema (str): The schema name.
+        blockchain (str): The blockchain name.
+        network (str): The network name.
+
+    Returns:
+        SQL query: A query that selects the latest block
+#}
 SELECT
     live.udf_api(
         'https://rpc.mainnet.near.org',
@@ -27,20 +38,16 @@ SELECT
 
     class GetBlockData:
         """
-        A class to retrieve and process multiple NEAR blockchain block data files in bulk from Snowflake External Stage.
+        A class to retrieve NEAR block data in bulk from files stored in the Near Lake Snowflake External Stage.
 
-        This class serves as a handler for a Snowflake User-Defined Table Function (UDTF)
-        that reads JSON block data from multiple stage files and yields the block data as a 
-        VARIANT column. The block height and other data can be extracted from the block_data directly.
-
-        Attributes:
-            None
+        The `process()` method is the handler for a Snowflake User-Defined Table Function (UDTF)
+        that reads JSON Near block data and yields the block data. 
 
         Example:
-            To use this function in Snowflake:
+            To use this function in Snowflake, query the UDTF as follows:
             ```sql
             SELECT * 
-            FROM TABLE(get_block_data_bulk(ARRAY_CONSTRUCT(
+            FROM TABLE(get_block_data(ARRAY_CONSTRUCT(
                 BUILD_SCOPED_FILE_URL(@stage_name, '000132121137/block.json'),
                 BUILD_SCOPED_FILE_URL(@stage_name, '000132121138/block.json')
             )));
@@ -53,15 +60,15 @@ SELECT
 
             Args:
                 file_urls (list): A list of stage file URLs created using BUILD_SCOPED_FILE_URL
+                https://docs.snowflake.com/en/sql-reference/functions/build_scoped_file_url
 
             Yields:
                 Iterator[Tuple[dict]]: A series of single-element tuples, each containing
                                     the complete block data structure or an error object
 
             Note:
-                - Files must contain valid NEAR blockchain block data in JSON format
-                - If a file fails to process, an error object is returned instead of skipping
-                - The resulting block_data column can be queried using standard SQL JSON path notation
+                - Files must contain valid JSON
+                - If a file fails to process, an error object is returned instead of the file contents
             """
             for file_url in file_urls:
                 try:
@@ -70,21 +77,33 @@ SELECT
                         yield (block_data,)
                 except json.JSONDecodeError as e:
                     error_info = {
-                        'error': 'JSONDecodeError',
+                        '_error': 'JSONDecodeError',
                         'details': f'Invalid JSON data: {str(e)}',
                         'url': file_url
                     }
                     yield (error_info,)
                 except Exception as e:
                     error_info = {
-                        'error': e.__class__.__name__,
+                        '_error': e.__class__.__name__,
                         'details': str(e),
                         'url': file_url
                     }
                     yield (error_info,)
 {% endmacro %}
 
-{% macro near_live_view_get_spine(schema, blockchain, network) %}
+{% macro near_live_view_get_spine(table_name) %}
+{#
+    This macro generates a spine table for block height ranges, it creates a sequence of block heights between `min_height` and `max_height`using
+    Snowflake's generator function.
+
+    Args:
+        table_name (str): Reference to a CTE or table that contains:
+            - block_id: Starting block height
+            - min_height: Minimum block height to generate
+            - max_height: Maximum block height to generate
+            - latest_block_height: Current chain head block height
+
+#}
 SELECT
     row_number() over (order by null) - 1 + COALESCE(block_id, 0)::integer as block_height,
     min_height,
@@ -92,51 +111,76 @@ SELECT
     latest_block_height
 FROM
     table(generator(ROWCOUNT => 1000)),
-    heights 
+    {{ table_name }} 
     QUALIFY block_height BETWEEN min_height AND max_height
 {% endmacro %}
 
 
--- Get near blocks
-{% macro near_live_view_get_raw_blocks(schema, blockchain, network, table_name) %}
-SELECT
-    block_height,
-    live.udf_api(
-        'https://rpc.mainnet.near.org',
-        utils.udf_json_rpc_call(
-            'block',
-            {'block_id': block_height}
-        )
-    ):data.result AS block_data
-from
-    {{ table_name }}
+{% macro near_live_view_get_raw_block_data(spine_table, schema) %}
+ {#
+    This macro generates SQL that retrieves raw block data from the Near Lake data stored in Snowflake external stage.
+    
+    It constructs URLs for block data files and uses a table function to fetch and parse the JSON data.
+
+    The macro performs two main operations:
+    
+    1. Generates scoped file URLs for each block height using the Near Lake file naming convention
+    2. Calls the tf_get_block_data function to fetch and parse the block JSON data
+
+    Args:
+        spine_table (str): Reference to a CTE or table containing:
+            - block_height (INTEGER): The block heights to fetch data for
+
+    Returns:
+        str: A SQL query that returns a table with columns:
+            - block_height (INTEGER): The height of the block
+            - block_data (VARIANT): The parsed JSON data for the block
+
+    Note:
+        - Requires access to '@streamline.bronze.near_lake_data_mainnet' stage
+        - Block files must follow the format: XXXXXXXXXXXX/block.json where X is the zero-padded block height
+        - Uses the tf_get_block_data table function to parse JSON data
+#}
+ 
+WITH block_urls AS (
+    SELECT 
+        s.block_height,
+        ARRAY_AGG(
+            BUILD_SCOPED_FILE_URL(
+                '@streamline.bronze.near_lake_data_mainnet', 
+                CONCAT(LPAD(TO_VARCHAR(s.block_height), 12, '0'), '/block.json')
+            )
+        ) OVER () as urls
+    FROM {{ spine_table }} s
+)
+SELECT 
+    u.block_height,
+    b.block_data
+FROM block_urls u,
+    TABLE({{ schema }}.tf_get_block_data(u.urls)) b
 {% endmacro %}
 
 -- Get Near fact data
 {% macro near_live_view_fact_blocks(schema, blockchain, network) %}
+{#
+    This macro generates a SQL query to fetch and transform NEAR blockchain block data.
+
+    The macro creates a series of CTEs to:
+    1. Get the latest block height using near_live_view_latest_block_height
+    2. Generate a spine table for block range using near_live_view_get_spine
+    3. Fetch block data from Near Lake using tf_get_block_data
+    4. Transform the raw block data into a structured format reflecting the near.core.fact_blocks table
+
+#}
+
 WITH heights AS (
-    {{ near_live_view_latest_block_height(schema, blockchain, network) }}
+    {{ near_live_view_latest_block_height() | indent(4) }}
 ),
 spine AS (
-    {{ near_live_view_get_spine(schema, blockchain, network) }}
+    {{ near_live_view_get_spine('heights') | indent(4) }}
 ),
 raw_blocks AS (
-    WITH block_urls AS (
-        SELECT 
-            s.block_height,
-            ARRAY_AGG(
-                BUILD_SCOPED_FILE_URL(
-                    '@streamline.bronze.near_lake_data_mainnet', 
-                    CONCAT(LPAD(TO_VARCHAR(s.block_height), 12, '0'), '/block.json')
-                )
-            ) OVER () as urls
-        FROM spine s
-    )
-    SELECT 
-        u.block_height,
-        b.block_data
-    FROM block_urls u,
-        TABLE({{ schema -}}.tf_get_block_data(u.urls)) b
+    {{ near_live_view_get_raw_block_data('spine', schema) | indent(4) }}
 )
 SELECT
     block_data:header:height::NUMBER(38,0) as block_id,
@@ -145,11 +189,11 @@ SELECT
     ARRAY_SIZE(block_data:chunks)::STRING as tx_count,
     block_data:author::STRING as block_author,
     block_data:header as header,
-    block_data:header:challenges_result as block_challenges_result,  -- Removed ::ARRAY cast
+    block_data:header:challenges_result as block_challenges_result,  
     block_data:header:challenges_root::STRING as block_challenges_root,
     block_data:header:chunk_headers_root::STRING as chunk_headers_root,
     block_data:header:chunk_tx_root::STRING as chunk_tx_root,
-    block_data:header:chunk_mask as chunk_mask,  -- Removed ::ARRAY cast
+    block_data:header:chunk_mask as chunk_mask, 
     block_data:header:chunk_receipts_root::STRING as chunk_receipts_root,
     block_data:chunks as chunks,
     block_data:header:chunks_included::NUMBER(38,0) as chunks_included,
