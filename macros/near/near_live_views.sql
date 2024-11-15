@@ -41,7 +41,7 @@ SELECT
 
     class GetBlockData:
         """
-        A class to retrieve and process multiple NEAR blockchain block data files from Snowflake External Stage.
+        A class to retrieve and process multiple NEAR block data files from a Snowflake External Stage.
         Uses threading from standard library for concurrent processing.
         
         The implementation uses a thread pool pattern with a work queue for better resource management
@@ -181,8 +181,9 @@ WITH block_urls AS (
                 '@streamline.bronze.near_lake_data_mainnet', 
                 CONCAT(LPAD(TO_VARCHAR(s.block_height), 12, '0'), '/block.json')
             )
-        ) OVER () as urls
+        ) as urls
     FROM {{ spine_table }} s
+    GROUP BY s.block_height
 )
 SELECT 
     u.block_height,
