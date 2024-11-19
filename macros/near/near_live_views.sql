@@ -122,6 +122,41 @@ SELECT
                 yield from results
 {% endmacro %}
 
+{% macro near_live_view_udf_get_block_data() %}
+    import json
+    from snowflake.snowpark.files import SnowflakeFile
+
+    def process_file(file_url: str) -> dict:
+        """
+        Process a single block data file from specified stage file URL.
+
+        Args:
+            file_url (str): The stage file URL created using BUILD_SCOPED_FILE_URL
+
+        Returns:
+            dict: The block data or error information
+
+        Note:
+            - File must contain valid NEAR blockchain block data in JSON format
+            - If file fails to process, an error object is returned
+        """
+        try:
+            with SnowflakeFile.open(file_url) as file:
+                return json.load(file)
+        except json.JSONDecodeError as e:
+            return {
+                'error': 'JSONDecodeError',
+                'details': f'Invalid JSON data: {str(e)}',
+                'url': file_url
+            }
+        except Exception as e:
+            return {
+                'error': e.__class__.__name__,
+                'details': str(e),
+                'url': file_url
+            }
+{% endmacro %}
+
 {% macro near_live_view_get_spine(table_name) %}
 {#
     This macro generates a spine table for block height ranges, it creates a sequence of block heights between `min_height` and `max_height`using
