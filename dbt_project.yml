@@ -36,6 +36,10 @@ models:
         +tags: evm
       marketplace:
         +tags: marketplace
+  near_models:
+      gold:
+        core:
+          +materialized: ephemeral
 
 tests:
   +store_failures: true # all tests
