@@ -31,7 +31,7 @@
 {% endmacro %}
 
 {% macro set_query_tag() %}
-    {% set tag = get_query_tag() %}
+    {% set tag = fsc_utils.get_query_tag() %}
     {% do run_query("alter session set query_tag = " ~ tag) %}
     {{ return("") }}
 {% endmacro %}
