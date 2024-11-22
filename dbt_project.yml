@@ -36,10 +36,22 @@ models:
         +tags: evm
       marketplace:
         +tags: marketplace
+      near:
+        silver:
+          streamline:
+            +schema: near_mainnet
+            +enabled: true
   near_models:
-      gold:
-        core:
-          +materialized: ephemeral
+    +schema: streamline
+    +database: near_dev
+    gold:
+      core:
+        +schema: core
+        +materialized: ephemeral
+    silver:
+      streamline:
+        silver__streamline_blocks:
+          +enabled: true # set to false if you need to override the models
 
 tests:
   +store_failures: true # all tests
@@ -64,8 +76,12 @@ on-run-end:
 # using the `{{ config(...) }}` macro.
 
 vars:
+  
+  near_models:
+    UPDATE_UDFS_AND_SPS: false
+
   "dbt_date:time_zone": GMT
-  UPDATE_UDFS_AND_SPS: false
+  LQ_UPDATE_UDFS_AND_SPS: false
   DROP_UDFS_AND_SPS: false
   UPDATE_SNOWFLAKE_TAGS: true
   STREAMLINE_INVOKE_STREAMS: False

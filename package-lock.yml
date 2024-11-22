@@ -1,0 +1,12 @@
+packages:
+- package: calogica/dbt_expectations
+  version: 0.8.2
+- package: dbt-labs/dbt_utils
+  version: 1.0.0
+- git: https://github.com/FlipsideCrypto/near-models-nlq.git
+  revision: f1edb8a0a851ca6e1b6297405122cc486f5c928b
+- package: calogica/dbt_date
+  version: 0.7.2
+- package: get-select/dbt_snowflake_query_tags
+  version: 2.5.0
+sha1_hash: 146672df7bff15c1dc58878075c1b99e298ff914

@@ -122,6 +122,14 @@ SELECT
                 yield from results
 {% endmacro %}
 
+{% macro generate_spine_cte() %}
+WITH spine AS (
+    SELECT 
+        block_height 
+    FROM TABLE(FLATTEN(input => PARSE_JSON({% raw %}'{{ block_heights }}'{% endraw %})))
+)
+{% endmacro %}
+
 {% macro near_live_view_udf_get_block_data() %}
     import json
     from snowflake.snowpark.files import SnowflakeFile
@@ -221,13 +229,89 @@ WITH block_urls AS (
     GROUP BY s.block_height
 )
 SELECT 
-    u.block_height,
-    b.block_data
+    b.block_data:header:height::NUMBER(38,0) as block_id,
+    md5(cast(coalesce(cast(b.block_data:header:height::NUMBER(38,0) as TEXT), '_dbt_utils_surrogate_key_null_') as TEXT)) as streamline_blocks_id,
+    TO_TIMESTAMP_NTZ(b.block_data:header:timestamp::STRING) as block_timestamp,
+    b.block_data:header:hash::STRING as block_hash,
+    ARRAY_SIZE(b.block_data:chunks)::STRING as tx_count,
+    b.block_data:author::STRING as block_author,
+    b.block_data:header:chunks as chunks,
+    b.block_data:header:epoch_id::STRING as epoch_id,
+    b.block_data:header:events as events,
+    b.block_data:header:gas_price::NUMBER(38,0) as gas_price,
+    b.block_data:header:latest_protocol_version::NUMBER(38,0) as latest_protocol_version,
+    b.block_data:header:next_epoch_id::STRING as next_epoch_id,
+    b.block_data:header:prev_hash::STRING as prev_hash,
+    b.block_data:header:total_supply::NUMBER(38,0) as total_supply,
+    b.block_data:header:validator_proposals as validator_proposals,
+    b.block_data:header:validator_reward::NUMBER(38,0) as validator_reward,
+    SYSDATE()::TIMESTAMP_NTZ(9) as inserted_timestamp,
+    SYSDATE()::TIMESTAMP_NTZ(9) as _inserted_timestamp,
+    SYSDATE()::TIMESTAMP_NTZ(9) as modified_timestamp,
+    b.block_data as header
 FROM block_urls u,
     TABLE({{ schema }}.tf_get_block_data(u.urls)) b
 {% endmacro %}
 
 -- Get Near fact data
+{% macro get_fact_blocks_transformations(schema) %}
+    {% set get_view_sql %}
+        SELECT GET_DDL('VIEW', '{{ schema }}.fact_blocks_poc')
+    {% endset %}
+    
+    {% set results = run_query(get_view_sql) %}
+    {% set view_ddl = results.rows[0][0] %}
+    
+    -- Find the inner SELECT with all the transformations
+    {% set select_pos = view_ddl.find('SELECT\n    block_id') %}
+    {% set from_pos = view_ddl.find('\nFROM\n    blocks') %}
+    
+    -- Extract just the transformations part
+    {% set transformations = view_ddl[select_pos + 6:from_pos].strip() %}
+    
+    {% do log("Extracted transformations: " ~ transformations, info=True) %}
+    
+    {{ return(transformations) }}
+{% endmacro %}
+{# {% macro get_fact_blocks_transformations(schema) %}
+    {% set get_view_sql %}
+        SELECT GET_DDL('VIEW', '{{ schema }}.fact_blocks_poc')
+    {% endset %}
+    
+    {% set results = run_query(get_view_sql) %}
+        
+    {% set view_ddl = results.rows[0][0] %}
+    
+    -- Find the main SELECT statement (after the CTE)
+    {% set select_pos = view_ddl.upper().rfind('SELECT') %}
+    {% set from_pos = view_ddl.upper().rfind('FROM') %}
+    
+    -- Extract everything between SELECT and FROM
+    {% set transformations = view_ddl[select_pos + 6:from_pos].strip() %}
+    
+    -- Debug the extracted transformations
+    {% do log("Extracted transformations: " ~ transformations, info=True) %}
+    
+    {{ return(transformations) }}
+{% endmacro %} #}
+
+{% macro near_live_view_fact_blocks_poc(schema, blockchain, network) %}
+WITH heights AS (
+    {{ near_live_view_latest_block_height() | indent(4) }}
+),
+spine AS (
+    {{ near_live_view_get_spine('heights') | indent(4) }}
+),
+raw_blocks AS (
+    {{ near_live_view_get_raw_block_data('spine', schema) | indent(4) }}
+)
+SELECT 
+    {{ get_fact_blocks_transformations(schema) }}
+FROM raw_blocks
+
+{% endmacro %}
+
+
 {% macro near_live_view_fact_blocks(schema, blockchain, network) %}
 {#
     This macro generates a SQL query to fetch and transform NEAR blockchain block data.
@@ -250,43 +334,43 @@ raw_blocks AS (
     {{ near_live_view_get_raw_block_data('spine', schema) | indent(4) }}
 )
 SELECT
-    block_data:header:height::NUMBER(38,0) as block_id,
-    TO_TIMESTAMP_NTZ(block_data:header:timestamp::STRING) as block_timestamp,
-    block_data:header:hash::STRING as block_hash,
-    ARRAY_SIZE(block_data:chunks)::STRING as tx_count,
-    block_data:author::STRING as block_author,
-    block_data:header as header,
-    block_data:header:challenges_result as block_challenges_result,  
-    block_data:header:challenges_root::STRING as block_challenges_root,
-    block_data:header:chunk_headers_root::STRING as chunk_headers_root,
-    block_data:header:chunk_tx_root::STRING as chunk_tx_root,
-    block_data:header:chunk_mask as chunk_mask, 
-    block_data:header:chunk_receipts_root::STRING as chunk_receipts_root,
-    block_data:chunks as chunks,
-    block_data:header:chunks_included::NUMBER(38,0) as chunks_included,
-    block_data:header:epoch_id::STRING as epoch_id,
-    block_data:header:epoch_sync_data_hash::STRING as epoch_sync_data_hash,
-    block_data:events as events,
-    block_data:header:gas_price::NUMBER(38,0) as gas_price,
-    block_data:header:last_ds_final_block::STRING as last_ds_final_block,
-    block_data:header:last_final_block::STRING as last_final_block,
-    block_data:header:latest_protocol_version::NUMBER(38,0) as latest_protocol_version,
-    block_data:header:next_bp_hash::STRING as next_bp_hash,
-    block_data:header:next_epoch_id::STRING as next_epoch_id,
-    block_data:header:outcome_root::STRING as outcome_root,
-    block_data:header:prev_hash::STRING as prev_hash,
-    block_data:header:prev_height::NUMBER(38,0) as prev_height,
-    block_data:header:prev_state_root::STRING as prev_state_root,
-    block_data:header:random_value::STRING as random_value,
-    block_data:header:rent_paid::FLOAT as rent_paid,
-    block_data:header:signature::STRING as signature,
-    block_data:header:total_supply::NUMBER(38,0) as total_supply,
-    block_data:header:validator_proposals as validator_proposals,
-    block_data:header:validator_reward::NUMBER(38,0) as validator_reward,
-    MD5(block_data:header:height::STRING)::VARCHAR(32) as fact_blocks_id,
+    header:header:height::NUMBER(38,0) as block_id,
+    TO_TIMESTAMP_NTZ(header:header:timestamp::STRING) as block_timestamp,
+    header:header:hash::STRING as block_hash,
+    ARRAY_SIZE(header:chunks)::STRING as tx_count,
+    header:author::STRING as block_author,
+    header:header as header,
+    header:header:challenges_result::ARRAY as block_challenges_result,  
+    header:header:challenges_root::STRING as block_challenges_root,
+    header:header:chunk_headers_root::STRING as chunk_headers_root,
+    header:header:chunk_tx_root::STRING as chunk_tx_root,
+    header:header:chunk_mask as chunk_mask, 
+    header:header:chunk_receipts_root::STRING as chunk_receipts_root,
+    header:chunks as chunks,
+    header:header:chunks_included::NUMBER(38,0) as chunks_included,
+    header:header:epoch_id::STRING as epoch_id,
+    header:header:epoch_sync_data_hash::STRING as epoch_sync_data_hash,
+    header:events as events,
+    header:header:gas_price::NUMBER(38,0) as gas_price,
+    header:header:last_ds_final_block::STRING as last_ds_final_block,
+    header:header:last_final_block::STRING as last_final_block,
+    header:header:latest_protocol_version::NUMBER(38,0) as latest_protocol_version,
+    header:header:next_bp_hash::STRING as next_bp_hash,
+    header:header:next_epoch_id::STRING as next_epoch_id,
+    header:header:outcome_root::STRING as outcome_root,
+    header:header:prev_hash::STRING as prev_hash,
+    header:header:prev_height::NUMBER(38,0) as prev_height,
+    header:header:prev_state_root::STRING as prev_state_root,
+    header:header:random_value::STRING as random_value,
+    header:header:rent_paid::FLOAT as rent_paid,
+    header:header:signature::STRING as signature,
+    header:header:total_supply::NUMBER(38,0) as total_supply,
+    header:header:validator_proposals as validator_proposals,
+    header:header:validator_reward::NUMBER(38,0) as validator_reward,
+    MD5(header:header:height::STRING)::VARCHAR(32) as fact_blocks_id,
     SYSDATE()::TIMESTAMP_NTZ(9) as inserted_timestamp,
     SYSDATE()::TIMESTAMP_NTZ(9) as modified_timestamp
 FROM raw_blocks
-WHERE block_data IS NOT NULL
+WHERE header IS NOT NULL
 
 {% endmacro %}
