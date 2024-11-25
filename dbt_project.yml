@@ -81,7 +81,7 @@ vars:
     UPDATE_UDFS_AND_SPS: false
 
   "dbt_date:time_zone": GMT
-  LQ_UPDATE_UDFS_AND_SPS: false
+  UPDATE_UDFS_AND_SPS: false
   DROP_UDFS_AND_SPS: false
   UPDATE_SNOWFLAKE_TAGS: true
   STREAMLINE_INVOKE_STREAMS: False

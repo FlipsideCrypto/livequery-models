@@ -189,7 +189,7 @@
       "path": "macros/create_sps.sql",
       "original_file_path": "macros/create_sps.sql",
       "name": "create_sps",
-      "macro_sql": "{% macro create_sps() %}\n    {% if var(\"LQ_UPDATE_UDFS_AND_SPS\") %}\n        {% if target.database == 'LIVEQUERY' %}\n            CREATE schema IF NOT EXISTS _internal;\n    {{ sp_create_prod_clone('_internal') }};\n        {% endif %}\n    {% endif %}\n{% endmacro %}",
+      "macro_sql": "{% macro create_sps() %}\n    {% if var(\"UPDATE_UDFS_AND_SPS\") %}\n        {% if target.database == 'LIVEQUERY' %}\n            CREATE schema IF NOT EXISTS _internal;\n    {{ sp_create_prod_clone('_internal') }};\n        {% endif %}\n    {% endif %}\n{% endmacro %}",
       "resource_type": "macro",
       "tags": [],
       "depends_on": {
@@ -267,7 +267,7 @@
       "path": "macros/create_udfs.sql",
       "original_file_path": "macros/create_udfs.sql",
       "name": "create_udfs",
-      "macro_sql": "{% macro create_udfs() %}\n--     {% if var(\"LQ_UPDATE_UDFS_AND_SPS\") %}\n--         {% set sql %}\n--         CREATE schema if NOT EXISTS silver;\n--         {% endset %}\n--         {% do run_query(sql) %}\n--     {% endif %}\n-- {% endmacro %}",
+      "macro_sql": "{% macro create_udfs() %}\n--     {% if var(\"UPDATE_UDFS_AND_SPS\") %}\n--         {% set sql %}\n--         CREATE schema if NOT EXISTS silver;\n--         {% endset %}\n--         {% do run_query(sql) %}\n--     {% endif %}\n-- {% endmacro %}",
       "resource_type": "macro",
       "tags": [],
       "depends_on": { "macros": ["macro.dbt.run_query"] },

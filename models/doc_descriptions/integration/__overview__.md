@@ -46,9 +46,9 @@ Within the same directory (`models/deploy/marketplace/`), create a new folder fo
 
 Deploy your model following the standard deployment procedures.
 
-- `dbt run -s models/deploy/marketplace/your_model/your_model__.sql -t dev --vars '{"LQ_UPDATE_UDFS_AND_SPS":True}'`
+- `dbt run -s models/deploy/marketplace/your_model/your_model__.sql -t dev --vars '{"UPDATE_UDFS_AND_SPS":True}'`
 
-- `dbt test -s models/deploy/marketplace/your_model/your_model__.sql -t dev --vars '{"LQ_UPDATE_UDFS_AND_SPS":True}'`
+- `dbt test -s models/deploy/marketplace/your_model/your_model__.sql -t dev --vars '{"UPDATE_UDFS_AND_SPS":True}'`
 
 #### Additional Tips:
 
