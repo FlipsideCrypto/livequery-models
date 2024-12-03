@@ -4,4 +4,4 @@ packages:
   - package: dbt-labs/dbt_utils
     version: [">=1.0.0", "<1.1.0"]
   - git: https://github.com/FlipsideCrypto/livequery-base.git
-    revision: "STREAM-1111/fsc_utils_components_abstraction"
+    revision: "27b35561f666c4bc393199be7fcebf7419a0e57e"
