@@ -46,6 +46,9 @@ tests:
           # TODO: enable tests for blockpour once we get an API key
           +enabled: false
 
+seeds:
+  +enabled: "{{ target.name not in ['livequery', 'livequery_dev'] }}"
+
 on-run-start:
   - "{{ create_sps() }}"
 
