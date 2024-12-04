@@ -1,7 +1,7 @@
 # Name your project! Project names should contain only lowercase characters
 # and underscores. A good package name should reflect your organization's
 # name or the intended use of these models
-name: "livequery_models"
+name: "livequery_base"
 version: "1.0.0"
 config-version: 2
 
@@ -45,6 +45,9 @@ tests:
         blockpour:
           # TODO: enable tests for blockpour once we get an API key
           +enabled: false
+
+seeds:
+  +enabled: "{{ target.name not in ['livequery', 'livequery_dev'] }}"
 
 on-run-start:
   - "{{ create_sps() }}"
