@@ -15,16 +15,10 @@ deploy_near_mainnet_lv: rm_logs
 	--profile livequery \
 	--target dev
 
-compile_near_mainnet: rm_logs
-	dbt compile \
-	-s livequery_models.deploy.near.near__mainnet \
-	--profiles-dir ~/.dbt \
-	--profile livequery \
-	--target dev
 
-deploy_fact_blocks: rm_logs
+deploy_overrides: rm_logs
 	dbt run \
-	-s livequery_models.deploy.near.silver.streamline.near_mainnet__fact_blocks \
+	-s tag:override \
 	--vars '{LQ_UPDATE_UDFS_AND_SPS: true}' \
 	--profiles-dir ~/.dbt \
 	--profile livequery \

@@ -1,4 +1,3 @@
--- models/tests/test_fact_blocks_transformations.sql
 {{ config(
     materialized = 'view',
     tags = ['near_models','core','override']

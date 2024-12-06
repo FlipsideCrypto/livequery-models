@@ -85,7 +85,7 @@ SELECT
 FROM 
     (
         SELECT 
-            row_number() over (order by seq4()) - 1 + COALESCE(block_height, 0)::integer as block_height,
+            row_number() over (order by seq4()) - 1 + COALESCE(block_id, 0)::integer as block_height,
             min_height,
             max_height
         FROM
@@ -134,45 +134,28 @@ WITH block_urls AS (
 SELECT 
     partition_num,
     url,
-    PARSE_JSON({{ schema -}}.udf_get_block_data_(url::STRING)) as block_data
+    PARSE_JSON({{ schema -}}.udf_get_block_data(url::STRING)) as block_data
 FROM block_urls
 
 {% endmacro %}
 
--- Get Near fact data
-{% macro get_fact_blocks_transformations(schema) %}
-    {% set get_view_sql %}
-        SELECT GET_DDL('VIEW', '{{ schema }}.fact_blocks')
-    {% endset %}
-    
-    {% set results = run_query(get_view_sql) %}
-    {% set view_ddl = results.rows[0][0] %}
-    
-    -- Find the inner SELECT with all the transformations
-    {% set select_pos = view_ddl.find('SELECT\n    block_id') %}
-    {% set from_pos = view_ddl.find('\nFROM\n    blocks') %}
-    
-    -- Extract just the transformations part
-    {% set transformations = view_ddl[select_pos + 6:from_pos].strip() %}
-    
-    {% do log("Extracted transformations: " ~ transformations, info=True) %}
-    
-    {{ return(transformations) }}
-{% endmacro %}
-
-
 {% macro near_live_view_fact_blocks(schema, blockchain, network) %}
-WITH heights AS (
-    {{ near_live_view_latest_block_height() | indent(4) }}
-),
-spine AS (
-    {{ near_live_view_get_spine('heights') | indent(4) }}
-),
-raw_blocks AS (
-    {{ near_live_view_get_raw_block_data('spine', schema) | indent(4) }}
-)
-SELECT 
-    {{ get_fact_blocks_transformations(schema) }}
-FROM raw_blocks
+{#
+    This macro returns fact_blocks table data from the specified schema.
+    
+    Args:
+        schema (str): The schema name containing the fact_blocks table
+        blockchain (str): The blockchain name (e.g. 'near')
+        network (str): The network name (e.g. 'mainnet')
+        
+    Returns:
+        SQL query: A query that selects all columns from the fact_blocks table
+        
+    Note:
+        - Requires fact_blocks table to exist in the specified schema
+        - Used as a base table for other Near blockchain views
+#}
+
+SELECT * FROM {{ schema -}}.fact_blocks
 
 {% endmacro %}

@@ -48,10 +48,14 @@ models:
       core:
         +schema: core
         +materialized: ephemeral
+        fact_blocks:
+          +enabled: false
     silver:
       streamline:
+        +materialized: ephemeral
         silver__streamline_blocks:
-          +enabled: true # set to false if you need to override the models
+          +enabled: false 
+
 
 tests:
   +store_failures: true # all tests
@@ -61,6 +65,7 @@ tests:
         blockpour:
           # TODO: enable tests for blockpour once we get an API key
           +enabled: false
+
 
 on-run-start:
   - "{{ create_sps() }}"
