@@ -1,4 +1,4 @@
-{% set schema = "strangelove" %}
+{# {% set schema = "strangelove" %}
 {% set config = fromyaml(config_strangelove_udfs(schema_name = schema, utils_schema_name = "quicknode_utils"))  %}
 {% set raw_test_queries %}
 strangelove.get:
@@ -42,4 +42,4 @@ _____
 {% if item["return_type"][0] != "VARIANT"%}
   {{ item["return_type"][0] }}
 {% endif %}
-{% endfor %} #}
+{% endfor %} #} #}
