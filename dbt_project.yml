@@ -25,7 +25,7 @@ clean-targets: # directories to be removed by `dbt clean`
   - "dbt_packages"
 
 models:
-  livequery_models:
+  livequery_base:
     deploy:
       +materialized: ephemeral
       core:
@@ -34,6 +34,7 @@ models:
           +enabled: '{{ true if env_var("ENABLE_SNOWFLAKE_SECRETS", "") else false }}'
       evm:
         +tags: evm
+
 
 tests:
   +store_failures: true # all tests
