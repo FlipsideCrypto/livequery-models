@@ -25,7 +25,7 @@ clean-targets: # directories to be removed by `dbt clean`
   - "dbt_packages"
 
 models:
-  livequery_models:
+  livequery_base:
     deploy:
       +materialized: ephemeral
       core:
@@ -34,20 +34,13 @@ models:
           +enabled: '{{ true if env_var("ENABLE_SNOWFLAKE_SECRETS", "") else false }}'
       evm:
         +tags: evm
-      marketplace:
-        +tags: marketplace
+
 
 tests:
   +store_failures: true # all tests
-  livequery_models:
-    deploy:
-      marketplace:
-        blockpour:
-          # TODO: enable tests for blockpour once we get an API key
-          +enabled: false
-
+  
 seeds:
-  +enabled: "{{ target.name not in ['livequery', 'livequery_dev'] }}"
+  +enabled: "{{ target.database not in ['livequery', 'livequery_dev'] }}"
 
 on-run-start:
   - "{{ create_sps() }}"
@@ -67,8 +60,8 @@ vars:
   UPDATE_UDFS_AND_SPS: false
   DROP_UDFS_AND_SPS: false
   UPDATE_SNOWFLAKE_TAGS: true
-  STREAMLINE_INVOKE_STREAMS: False
-  STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES: False
+  STREAMLINE_INVOKE_STREAMS: false
+  STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES: false
   STUDIO_TEST_USER_ID: '{{ env_var("STUDIO_TEST_USER_ID", "98d15c30-9fa5-43cd-9c69-3d4c0bb269f5") }}'
 
   API_INTEGRATION: '{{ var("config")[target.name]["API_INTEGRATION"] }}'
