@@ -16,6 +16,6 @@ sources:
       - name: ez_decoded_event_logs
   - name: near_models
     database: "{{ 'near' if target.database == 'LIVEQUERY' else 'near_dev' }}"
-    schema: core  
+    schema: core
     tables:
       - name: fact_blocks

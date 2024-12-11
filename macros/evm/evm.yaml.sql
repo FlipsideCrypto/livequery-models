@@ -24,7 +24,7 @@
     COMMENT = $$Returns the native asset balance at the latest block for a given address.$$
   sql: |
     {{ evm_latest_native_balance_string(schema,  blockchain, network) | indent(4) -}}
-  
+
 - name: {{ schema -}}.tf_latest_native_balance
   signature:
     - [wallets, ARRAY, An array of addresses string to get the balance of at the latest block]
@@ -41,7 +41,7 @@
 - name: {{ schema -}}.tf_latest_token_balance
   signature:
     - [wallet, STRING, The address to get the balance of at the latest block]
-    - [token, STRING, The address of the token to get the balance of] 
+    - [token, STRING, The address of the token to get the balance of]
   return_type:
     - "TABLE(status STRING, blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, raw_balance STRING, balance FLOAT)"
   options: |
@@ -55,7 +55,7 @@
 - name: {{ schema -}}.tf_latest_token_balance
   signature:
     - [wallet, STRING, The address to get the balance of at the latest block]
-    - [tokens, ARRAY, An array of address strings of the tokens to get the balance of] 
+    - [tokens, ARRAY, An array of address strings of the tokens to get the balance of]
   return_type:
     - "TABLE(status STRING, blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, raw_balance STRING, balance FLOAT)"
   options: |
@@ -83,7 +83,7 @@
 - name: {{ schema -}}.tf_latest_token_balance
   signature:
     - [wallets, ARRAY, An array of addresses string to get the balance of at the latest block]
-    - [tokens, ARRAY, An array of address strings of the tokens to get the balance of] 
+    - [tokens, ARRAY, An array of address strings of the tokens to get the balance of]
   return_type:
     - "TABLE(status STRING, blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, raw_balance STRING, balance FLOAT)"
   options: |
@@ -281,7 +281,7 @@
     COMMENT = $$Returns the latest events emitted by a contract within the last `lookback` blocks. *Please note there are RPC limitations on this method.*$$
   sql: |
     {{ evm_latest_contract_events_si(schema,  blockchain, network) | indent(4) -}}
-  
+
 - name: {{ schema -}}.tf_latest_contract_events
   signature:
     - [addresses, ARRAY, The addresses of the contracts to get the events of]
@@ -362,6 +362,21 @@
     COMMENT = $$Returns the latest decoded events emitted by multiple contracts within the last `lookback` blocks. Submit missing ABIs [here](https://science.flipsidecrypto.xyz/abi-requestor/). *Please note there are RPC limitations on this method.* $$
   sql: |
     {{ evm_latest_contract_events_decoded_ai(schema,  blockchain, network) | indent(4) -}}
+
+- name: {{ schema -}}.tf_fact_blocks
+  signature:
+    - [block_height, INTEGER, The start block height to get the blocks from]
+    - [to_latest, BOOLEAN, Whether to continue fetching blocks until the latest block or not]
+  return_type:
+    - "TABLE(block_number INTEGER, block_timestamp TIMESTAMP_NTZ, network STRING, blockchain STRING, tx_count INTEGER, difficulty INTEGER, total_difficulty INTEGER, extra_data STRING, gas_limit INTEGER, gas_used INTEGER, hash STRING, parent_hash STRING, miner STRING, nonce INTEGER, receipts_root STRING, sha3_uncles STRING, size INTEGER, uncle_blocks VARIANT, block_header_json OBJECT, excess_blob_gas INTEGER, blob_gas_used INTEGER, fact_blocks_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ, withdrawals VARIANT, withdrawals_root STRING)"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns the block data for a given block height. If to_latest is true, it will continue fetching blocks until the latest block. Otherwise, it will fetch blocks until the block height is reached.$$
+  sql: |
+    {{ evm_live_view_fact_blocks(schema, blockchain, network) | indent(4) -}}
+
 {%- endmacro -%}
 
 {% macro config_eth_high_level_abstractions(blockchain, network) -%}
@@ -393,7 +408,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns the decoded events emitted by a contract from a specific block to the latest block. Submit missing ABIs [here](https://science.flipsidecrypto.xyz/abi-requestor/).$$  
+    COMMENT = $$Returns the decoded events emitted by a contract from a specific block to the latest block. Submit missing ABIs [here](https://science.flipsidecrypto.xyz/abi-requestor/).$$
   sql: |
     {{ evm_contract_events_decoded(schema,  blockchain, network) | indent(4) -}}
 {%- endmacro -%}

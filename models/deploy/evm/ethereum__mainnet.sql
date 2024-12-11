@@ -5,6 +5,7 @@
 -- depends_on: {{ ref('_eth__decoded_logs') }}
 -- depends_on: {{ ref('live') }}
 -- depends_on: {{ ref('utils') }}
+-- depends_on: {{ ref('evm__fact_blocks') }}
 {%- set configs = [
     config_evm_rpc_primitives,
     config_evm_high_level_abstractions,
