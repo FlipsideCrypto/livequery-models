@@ -45,69 +45,37 @@ models:
           streamline:
             +schema: near_mainnet
             +enabled: true
+    overrides:
+      +materialized: ephemeral
   near_models:
+    +enabled: false # disable package by default
     +schema: streamline
     +database: near_dev
     gold:
       core:
         +schema: core
         +materialized: ephemeral
-        +enabled: false
         core__fact_blocks:
           +enabled: true
-      stats:
-        +enabled: false
+        core__fact_transactions:
+            +enabled: true
     silver:
       streamline:
         +materialized: ephemeral
         silver__streamline_blocks:
           +enabled: false
-      stats:
-        +enabled: false
   fsc_evm:
-    +enabled: false # disable fsc_evm package by default
-    +copy_grants: true
-    +persist_docs:
-      relation: true
-      columns: true
-    +on_schema_change: "append_new_columns"
+    +enabled: false # disable package by default
     main_package:
-      +enabled: false # disable main_package by default, enabled other packages as needed
       core:
-        +enabled: false # enable subpackages, as needed
         gold:
-          +enabled: false
           +materialized: ephemeral
           core__fact_blocks:
             +enabled: true
+          core__fact_transactions:
+            +enabled: true
         silver:
           +materialized: ephemeral
-          silver__blocks:
-            +enabled: false
-          tests:
-            +enabled: false
-          streamline:
-            +enabled: false
-      github_actions:
-        +enabled: true
-      labels:
-        +enabled: true
-      prices:
-        +enabled: true
-      utils:
-        +enabled: true
-    decoder_package:
-      +enabled: false
-      abis:
-        +enabled: false
-      decoded_logs:
-        +enabled: false
-    curated_package:
-      +enabled: false
-      protocols:
-        +enabled: false
-        vertex:
-          +enabled: false
 
 tests:
   +store_failures: true # all tests

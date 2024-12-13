@@ -368,14 +368,60 @@
     - [block_height, INTEGER, The start block height to get the blocks from]
     - [to_latest, BOOLEAN, Whether to continue fetching blocks until the latest block or not]
   return_type:
-    - "TABLE(block_number INTEGER, block_timestamp TIMESTAMP_NTZ, network STRING, blockchain STRING, tx_count INTEGER, difficulty INTEGER, total_difficulty INTEGER, extra_data STRING, gas_limit INTEGER, gas_used INTEGER, hash STRING, parent_hash STRING, miner STRING, nonce INTEGER, receipts_root STRING, sha3_uncles STRING, size INTEGER, uncle_blocks VARIANT, block_header_json OBJECT, excess_blob_gas INTEGER, blob_gas_used INTEGER, fact_blocks_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ, withdrawals VARIANT, withdrawals_root STRING)"
+    - "TABLE(block_number INTEGER, block_hash STRING, block_timestamp TIMESTAMP_NTZ, network STRING, tx_count INTEGER, size INTEGER, miner STRING, extra_data STRING, parent_hash STRING, gas_used INTEGER, gas_limit INTEGER, base_fee_per_gas INTEGER, difficulty INTEGER, total_difficulty INTEGER, sha3_uncles STRING, uncle_blocks VARIANT, nonce INTEGER, receipts_root STRING, state_root STRING, transactions_root STRING, logs_bloom STRING, fact_blocks_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
     COMMENT = $$Returns the block data for a given block height. If to_latest is true, it will continue fetching blocks until the latest block. Otherwise, it will fetch blocks until the block height is reached.$$
   sql: |
-    {{ evm_live_view_fact_blocks(schema, blockchain, network) | indent(4) -}}
+    {{ evm_fact_blocks(schema, blockchain, network) | indent(4) -}}
+
+- name: {{ schema -}}.tf_fact_transactions
+  signature:
+    - [block_height, INTEGER, The start block height to get the transfers from]
+    - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
+  return_type:
+    - "TABLE(
+          block_number NUMBER,
+          block_hash STRING,
+          block_timestamp TIMESTAMP_NTZ,
+          tx_hash STRING,
+          from_address STRING,
+          to_address STRING,
+          origin_function_signature STRING,
+          chain_id NUMBER,
+          VALUE FLOAT,
+          value_precise_raw STRING,
+          value_precise STRING,
+          max_fee_per_gas FLOAT,
+          max_priority_fee_per_gas FLOAT,
+          tx_fee FLOAT,
+          tx_fee_precise STRING,
+          tx_succeeded BOOLEAN,
+          tx_type NUMBER,
+          nonce NUMBER,
+          tx_position NUMBER,
+          input_data STRING,
+          gas_price FLOAT,
+          gas_used NUMBER,
+          gas_limit NUMBER,
+          cumulative_gas_used NUMBER,
+          effective_gas_price NUMBER,
+          r STRING,
+          s STRING,
+          v NUMBER,
+          fact_transactions_id STRING,
+          inserted_timestamp TIMESTAMP_NTZ,
+          modified_timestamp TIMESTAMP_NTZ
+        )"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns the transactions for a given block height. If to_latest is true, it will continue fetching transactions until the latest block. Otherwise, it will fetch transactions until the block height is reached.$$
+  sql: |
+    {{ evm_fact_transactions(schema,  blockchain, network) | indent(4) -}}
 
 {%- endmacro -%}
 

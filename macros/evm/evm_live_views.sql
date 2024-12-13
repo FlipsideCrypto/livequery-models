@@ -1,3 +1,33 @@
+{% macro get_package_model(package_name, model_name) %}
+    {%- for node in graph.nodes.values() -%}
+        {%- if node.package_name == package_name and node.name == model_name -%}
+            {{ return(node) }}
+        {%- endif -%}
+    {%- endfor -%}
+
+    {# Return None if model not found #}
+    {{ return(none) }}
+{% endmacro %}
+
+{% macro render_model_sql(package_name, model_name) %}
+    {# Get the model #}
+    {%- set model = get_package_model(package_name, model_name) -%}
+    {%- if not model -%}
+        {{ return(none) }}
+    {%- endif -%}
+
+    {# Compile/render the SQL #}
+    {%- set compiled_sql = render(model.raw_code) -%}
+
+    {# Trim and check if starts with WITH #}
+    {%- set trimmed_sql = compiled_sql.strip() -%}
+    {%- if trimmed_sql.upper().startswith('WITH ') -%}
+        {%- set compiled_sql = ', ' ~ trimmed_sql[5:] -%}
+    {%- endif -%}
+
+    {{ return(compiled_sql) }}
+{% endmacro %}
+
 {% macro evm_live_view_latest_block_height(schema, blockchain, network) %}
     SELECT
         {{ schema }}.udf_rpc('eth_blockNumber', []) as result,
@@ -108,6 +138,7 @@ get_batch_result AS (
 SELECT
     latest_block_height,
     utils.udf_hex_to_int(w.value:blockNumber::STRING)::INT AS block_number,
+    w.index AS array_index,
     w.value AS DATA
 FROM
     (SELECT
@@ -129,6 +160,7 @@ FROM
 {% macro evm_live_view_bronze_transactions(table_name) %}
 SELECT
     block_number,
+    v.index::INT AS tx_position, -- mimic's streamline's logic to add tx_position
     v.value as DATA
 FROM
     {{ table_name }} AS r,
@@ -266,76 +298,40 @@ FROM result, LATERAL FLATTEN(input => result.data) v
 {% endmacro %}
 
 -- Transformation macro for EVM chains
-{% macro evm_live_view_silver_blocks(table_name) %}
+{% macro evm_silver_blocks(table_name) %}
 SELECT
     block_number,
-    utils.udf_hex_to_int(DATA:timestamp::STRING)::TIMESTAMP AS block_timestamp,
-    utils.udf_hex_to_int(DATA:baseFeePerGas::STRING)::INT AS base_fee_per_gas,
-    utils.udf_hex_to_int(DATA:difficulty::STRING)::INT AS difficulty,
-    DATA:extraData::STRING AS extra_data,
-    utils.udf_hex_to_int(DATA:gasLimit::STRING)::INT AS gas_limit,
-    utils.udf_hex_to_int(DATA:gasUsed::STRING)::INT AS gas_used,
-    DATA:hash::STRING AS HASH,
-    DATA:logsBloom::STRING AS logs_bloom,
-    DATA:miner::STRING AS miner,
-    utils.udf_hex_to_int(DATA:nonce::STRING)::INT AS nonce,
-    utils.udf_hex_to_int(DATA:number::STRING)::INT AS NUMBER,
-    DATA:parentHash::STRING AS parent_hash,
-    DATA:receiptsRoot::STRING AS receipts_root,
-    DATA:sha3Uncles::STRING AS sha3_uncles,
-    utils.udf_hex_to_int(DATA:size::STRING)::INT AS SIZE,
-    DATA:stateRoot::STRING AS state_root,
-    utils.udf_hex_to_int(DATA:totalDifficulty::STRING)::INT AS total_difficulty,
-    ARRAY_SIZE(DATA:transactions) AS tx_count,
-    DATA:transactionsRoot::STRING AS transactions_root,
-    DATA:uncles AS uncles,
-    DATA:withdrawals AS withdrawals,
-    DATA:withdrawalsRoot::STRING AS withdrawals_root,
-    md5(
-        CAST(
-            COALESCE(
-                CAST(block_number AS TEXT),
-                '_dbt_utils_surrogate_key_null_'
-            ) AS TEXT
-        )
-    ) AS blocks_id,
-    utils.udf_hex_to_int(DATA:blobGasUsed::STRING)::INT AS blob_gas_used,
-    utils.udf_hex_to_int(DATA:excessBlobGas::STRING)::INT AS excess_blob_gas
+    0 AS partition_key, -- No partition key for realtime data
+    data AS block_json,
+    {{ dbt_utils.generate_surrogate_key(['block_number']) | indent(4) }} AS blocks_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    'override' AS _invocation_id
 FROM
     {{ table_name }}
 {% endmacro %}
 
-{% macro evm_live_view_silver_receipts(table_name) %}
+{% macro evm_silver_receipts(table_name) %}
+{% set uses_receipts_by_hash = var('GLOBAL_USES_RECEIPTS_BY_HASH', false) %}
+
 SELECT
-    latest_block_height,
     block_number,
-    DATA :blockHash::STRING AS block_hash,
-    utils.udf_hex_to_int(DATA :blockNumber::STRING)::INT AS blockNumber,
-    utils.udf_hex_to_int(DATA :cumulativeGasUsed::STRING)::INT AS cumulative_gas_used,
-    utils.udf_hex_to_int(DATA :effectiveGasPrice::STRING)::INT / pow(10, 9) AS effective_gas_price,
-    DATA :from::STRING AS from_address,
-    utils.udf_hex_to_int(DATA :gasUsed::STRING)::INT AS gas_used,
-    DATA :logs AS logs,
-    DATA :logsBloom::STRING AS logs_bloom,
-    utils.udf_hex_to_int(DATA :status::STRING)::INT AS status,
-    CASE
-        WHEN status = 1 THEN TRUE
-        ELSE FALSE
-    END AS tx_success,
-    CASE
-        WHEN status = 1 THEN 'SUCCESS'
-        ELSE 'FAIL'
-    END AS tx_status,
-    DATA :to::STRING AS to_address1,
-    CASE
-        WHEN to_address1 = '' THEN NULL
-        ELSE to_address1
-    END AS to_address,
-    DATA :transactionHash::STRING AS tx_hash,
-    utils.udf_hex_to_int(DATA :transactionIndex::STRING)::INT AS POSITION,
-    utils.udf_hex_to_int(DATA :type::STRING)::INT AS TYPE,
-    utils.udf_hex_to_int(DATA :effectiveGasPrice::STRING)::INT AS blob_gas_price,
-    utils.udf_hex_to_int(DATA :gasUsed::STRING)::INT AS blob_gas_used
+    0 AS partition_key,  -- No partition key for realtime data
+    {% if uses_receipts_by_hash %}
+        tx_hash,
+    {% else %}
+        array_index,
+    {% endif %}
+    DATA      AS receipts_json,
+    SYSDATE() AS _inserted_timestamp,
+    {% if uses_receipts_by_hash %}
+        {{ dbt_utils.generate_surrogate_key(['block_number','tx_hash']) }} AS receipts_id,
+    {% else %}
+        {{ dbt_utils.generate_surrogate_key(['block_number','array_index']) }} AS receipts_id,
+    {% endif %}
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    'override' AS _invocation_id
 FROM
     {{ table_name }}
 {% endmacro %}
@@ -366,56 +362,19 @@ FROM
     lateral flatten(r.logs) v
 {% endmacro %}
 
-{% macro evm_live_view_silver_transactions(bronze_transactions, silver_blocks, silver_receipts) %}
+{% macro evm_live_view_silver_transactions(table_name) %}
 SELECT
-    A.block_number AS block_number,
-    A.data :blockHash::STRING AS block_hash,
-    utils.udf_hex_to_int(A.data :blockNumber::STRING)::INT AS blockNumber,
-    utils.udf_hex_to_int(A.data :chainId::STRING)::INT AS chain_id,
-    A.data :from::STRING AS from_address,
-    utils.udf_hex_to_int(A.data :gas::STRING)::INT AS gas,
-    utils.udf_hex_to_int(A.data :gasPrice::STRING)::INT / pow(10, 9) AS gas_price,
-    A.data :hash::STRING AS tx_hash,
-    A.data :input::STRING AS input_data,
-    SUBSTR(input_data, 1, 10) AS origin_function_signature,
-    utils.udf_hex_to_int(A.data :maxFeePerGas::STRING)::INT / pow(10, 9) AS max_fee_per_gas,
-    utils.udf_hex_to_int(
-        A.data :maxPriorityFeePerGas::STRING
-    )::INT / pow(10, 9) AS max_priority_fee_per_gas,
-    utils.udf_hex_to_int(A.data :nonce::STRING)::INT AS nonce,
-    A.data :r::STRING AS r,
-    A.data :s::STRING AS s,
-    A.data :to::STRING AS to_address1,
-    utils.udf_hex_to_int(A.data :transactionIndex::STRING)::INT AS POSITION,
-    A.data :type::STRING AS TYPE,
-    A.data :v::STRING AS v,
-    utils.udf_hex_to_int(A.data :value::STRING) AS value_precise_raw,
-    value_precise_raw * power(10, -18) AS value_precise,
-    value_precise::FLOAT AS VALUE,
-    A.data :accessList AS access_list,
-    A.data,
-    A.data: blobVersionedHashes::ARRAY AS blob_versioned_hashes,
-    utils.udf_hex_to_int(A.data: maxFeePerGas::STRING)::INT AS max_fee_per_blob_gas,
-    block_timestamp,
-    CASE
-        WHEN block_timestamp IS NULL
-        OR tx_status IS NULL THEN TRUE
-        ELSE FALSE
-    END AS is_pending,
-    r.gas_used,
-    tx_success,
-    tx_status,
-    cumulative_gas_used,
-    effective_gas_price,
-    utils.udf_hex_to_int(A.data :gasPrice) * power(10, -18) * r.gas_used AS tx_fee_precise,
-    COALESCE(tx_fee_precise::FLOAT, 0) AS tx_fee,
-    r.type as tx_type,
-    r.blob_gas_used,
-    r.blob_gas_price,
+    block_number,
+    0 AS partition_key,  -- No partition key for realtime data
+    tx_position,
+    DATA AS transaction_json,
+    SYSDATE() AS _inserted_timestamp,
+    {{ dbt_utils.generate_surrogate_key(['block_number','tx_position']) }} AS transactions_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    'override' AS _invocation_id
 FROM
-    {{ bronze_transactions }} AS A
-    LEFT JOIN {{ silver_blocks }} AS b on b.block_number = A.block_number
-    LEFT JOIN {{ silver_receipts }} AS r on r.tx_hash = A.data :hash::STRING
+    {{ table_name }}
 {% endmacro %}
 
 {% macro evm_live_view_silver_traces(raw_traces) %}
@@ -861,10 +820,67 @@ LEFT JOIN (
 {% endmacro %}
 
 -- Get EVM chain fact data
-{% macro evm_live_view_fact_blocks(schema, blockchain, network) %}
+{% macro evm_fact_blocks(schema, blockchain, network) %}
+    {%- if execute -%}
+    WITH __dbt__cte__silver__blocks AS (
+        WITH spine AS (
+            {{ evm_live_view_target_blocks(schema, blockchain, network) | indent(4) -}}
+        ),
 
-SELECT * FROM {{ schema -}}.fact_blocks
+        raw_block_txs AS (
+            {{ evm_live_view_bronze_blocks(schema, blockchain, network, 'spine') | indent(4) -}}
+        )
 
+        {{ evm_silver_blocks('raw_block_txs') | indent(4) -}}
+    )
+    {%- set rendered_sql = render_model_sql('fsc_evm', 'core__fact_blocks') -%}
+    {{- rendered_sql -}}
+
+    {%- endif -%}
+{% endmacro %}
+
+{% macro evm_fact_transactions(schema, blockchain, network) %}
+{%- if execute -%}
+WITH spine AS (
+    {{ evm_live_view_target_blocks(schema, blockchain, network) | indent(4) -}}
+),
+raw_receipts AS (
+    {{ evm_live_view_bronze_receipts(schema, blockchain, network, 'spine') | indent(4) -}}
+),
+raw_block_txs AS (
+    {{ evm_live_view_bronze_blocks(schema, blockchain, network, 'spine') | indent(4) -}}
+),
+raw_transactions AS (
+    {{ evm_live_view_bronze_transactions('raw_block_txs') | indent(4) -}}
+),
+__dbt__cte__silver__blocks AS (
+    {{ evm_silver_blocks('raw_block_txs') | indent(4) -}}
+),
+__dbt__cte__silver__transactions AS (
+    SELECT
+        block_number,
+        0 AS partition_key, -- No partition key for realtime data
+        tx_position,
+        data AS transaction_json,
+        SYSDATE() AS _inserted_timestamp,
+        {{ dbt_utils.generate_surrogate_key(['block_number','tx_position']) }} AS transactions_id,
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        'override' AS _invocation_id
+    FROM
+        raw_transactions
+),
+__dbt__cte__silver__receipts AS (
+    {{ evm_silver_receipts('raw_receipts') | indent(4) -}}
+),
+__dbt__cte__core__fact_blocks AS (
+    {%- set rendered_sql = render_model_sql('fsc_evm', 'core__fact_blocks') -%}
+    {{- rendered_sql -}}
+)
+
+    {%- set rendered_sql = render_model_sql('fsc_evm', 'core__fact_transactions') -%}
+    {{- rendered_sql -}}
+{%- endif -%}
 {% endmacro %}
 
 {% macro evm_live_view_fact_event_logs(schema, blockchain, network) %}
@@ -949,7 +965,7 @@ SELECT
 FROM _ez_decoded_event_logs
 {% endmacro %}
 
-{% macro evm_live_view_fact_transactions(schema, blockchain, network) %}
+{% macro evm_live_view_fact_transactions_bak(schema, blockchain, network) %}
 
 WITH spine AS (
     {{ evm_live_view_target_blocks(schema, blockchain, network, 5) | indent(4) -}}
