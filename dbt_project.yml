@@ -34,10 +34,6 @@ models:
           +enabled: '{{ true if env_var("ENABLE_SNOWFLAKE_SECRETS", "") else false }}'
       evm:
         +tags: evm
-        silver:
-          streamline:
-            +materialized: ephemeral
-            +enabled: true
       marketplace:
         +tags: marketplace
       near:
@@ -66,17 +62,17 @@ models:
           +enabled: false
   fsc_evm:
     +enabled: false # disable package by default
+    +materialized: ephemeral
     main_package:
       core:
         gold:
-          +materialized: ephemeral
           core__fact_blocks:
             +enabled: true
           core__fact_transactions:
             +enabled: true
         silver:
-          +materialized: ephemeral
-
+          silver__blocks:
+            +enabled: true
 tests:
   +store_failures: true # all tests
   livequery_models:
