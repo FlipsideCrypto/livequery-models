@@ -73,6 +73,10 @@ models:
         silver:
           silver__blocks:
             +enabled: true
+          silver__transactions:
+            +enabled: true
+          silver__receipts:
+            +enabled: true
 tests:
   +store_failures: true # all tests
   livequery_models:
