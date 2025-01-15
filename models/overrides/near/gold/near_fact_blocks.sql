@@ -1,0 +1,1 @@
+SELECT * FROM {{ ref('near_models','core__fact_blocks')}}

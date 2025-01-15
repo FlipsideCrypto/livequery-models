@@ -139,7 +139,7 @@ FROM block_urls
 
 {% endmacro %}
 
-{% macro near_live_view_fact_blocks(schema, blockchain, network) %}
+{# {% macro near_live_view_fact_blocks(schema, blockchain, network) %}
 {#
     This macro returns fact_blocks table data from the specified schema.
     
@@ -158,4 +158,9 @@ FROM block_urls
 
 SELECT * FROM {{ schema -}}.fact_blocks
 
+{% endmacro %} #}
+
+{% macro near_live_view_fact_blocks(schema, blockchain, network) %}
+    {%- set near_live_view_fact_blocks = get_rendered_model('livequery_models', 'near_fact_blocks', schema, blockchain, network) -%}
+    {{ near_live_view_fact_blocks }}
 {% endmacro %}
