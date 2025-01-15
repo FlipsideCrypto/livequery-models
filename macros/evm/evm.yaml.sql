@@ -377,7 +377,6 @@
   sql: |
     {{ evm_fact_blocks(schema, blockchain, network) | indent(4) -}}
 
-
 - name: {{ schema -}}.tf_fact_transactions
   signature:
     - [block_height, INTEGER, The start block height to get the transfers from]
@@ -423,6 +422,87 @@
     COMMENT = $$Returns the transactions for a given block height. If to_latest is true, it will continue fetching transactions until the latest block. Otherwise, it will fetch transactions until the block height is reached.$$
   sql: |
     {{ evm_fact_transactions(schema,  blockchain, network) | indent(4) -}}
+
+- name: {{ schema -}}.tf_fact_event_logs
+  signature:
+    - [block_height, INTEGER, The start block height to get the events from]
+    - [to_latest, BOOLEAN, Whether to continue fetching events until the latest block or not]
+  return_type:
+    - "TABLE(
+          block_number INTEGER,
+          block_timestamp TIMESTAMP_NTZ,
+          tx_hash STRING,
+          tx_position INTEGER,
+          event_index INTEGER,
+          contract_address STRING,
+          topics VARIANT,
+          topic_0 STRING,
+          topic_1 STRING,
+          topic_2 STRING,
+          topic_3 STRING,
+          DATA STRING,
+          event_removed BOOLEAN,
+          origin_from_address STRING,
+          origin_to_address STRING,
+          origin_function_signature STRING,
+          tx_succeeded BOOLEAN,
+          fact_event_logs_id STRING,
+          inserted_timestamp TIMESTAMP_NTZ,
+          modified_timestamp TIMESTAMP_NTZ
+        )"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns the event logs for a given block height. If to_latest is true, it will continue fetching events until the latest block. Otherwise, it will fetch events until the block height is reached.$$
+  sql: |
+    {{ evm_fact_event_logs(schema,  blockchain, network) | indent(4) -}}
+
+- name: {{ schema -}}.tf_fact_traces
+  signature:
+    - [block_height, INTEGER, The start block height to get the traces from]
+    - [to_latest, BOOLEAN, Whether to continue fetching traces until the latest block or not]
+  return_type:
+    - "TABLE(block_number INTEGER,
+        block_timestamp TIMESTAMP_NTZ,
+        tx_hash STRING,
+        tx_position INTEGER,
+        trace_index INTEGER,
+        from_address STRING,
+        to_address STRING,
+        input STRING,
+        output STRING,
+        TYPE STRING,
+        trace_address VARIANT,
+        sub_traces INTEGER,
+        VALUE FLOAT,
+        value_precise_raw STRING,
+        value_precise STRING,
+        value_hex STRING,
+        gas FLOAT,
+        gas_used FLOAT,
+        origin_from_address STRING,
+        origin_to_address STRING,
+        origin_function_signature STRING,
+        {% if TRACES_ARB_MODE %},
+        before_evm_transfers,
+        after_evm_transfers
+        {% endif %}
+        trace_succeeded BOOLEAN,
+        error_reason STRING,
+        revert_reason STRING,
+        tx_succeeded BOOLEAN,
+        fact_traces_id STRING,
+        inserted_timestamp TIMESTAMP_NTZ,
+        modified_timestamp TIMESTAMP_NTZ
+    )"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns the traces for a given block height. If to_latest is true, it will continue fetching traces until the latest block. Otherwise, it will fetch traces until the block height is reached.$$
+  sql: |
+    {{ evm_fact_traces(schema,  blockchain, network) | indent(4) -}}
 
 {%- endmacro -%}
 

@@ -55,11 +55,25 @@ models:
           +enabled: true
         core__fact_transactions:
             +enabled: true
+      price:
+        price__ez_prices_hourly:
+          +enabled: true
     silver:
       streamline:
         +materialized: ephemeral
         silver__streamline_blocks:
           +enabled: false
+      prices:
+        silver__complete_token_prices:
+          +enabled: true
+        silver__complete_native_prices:
+          +enabled: true
+      labels:
+        silver__ft_contract_metadata:
+          +enabled: true
+      livequery:
+        livequery__request_nearblocks_ft_metadata:
+          +enabled: true
   fsc_evm:
     +enabled: false # disable package by default
     +materialized: ephemeral
@@ -70,6 +84,12 @@ models:
             +enabled: true
           core__fact_transactions:
             +enabled: true
+          core__fact_event_logs:
+            +enabled: true
+          core__fact_traces:
+            +enabled: true
+          core__ez_native_transfers:
+            +enabled: true
         silver:
           silver__blocks:
             +enabled: true
@@ -77,6 +97,18 @@ models:
             +enabled: true
           silver__receipts:
             +enabled: true
+          silver__traces:
+            +enabled: true
+      prices:
+        gold:
+          price__ez_prices_hourly:
+            +enabled: true
+        silver:
+          silver__complete_native_prices:
+            +enabled: true
+          silver__complete_token_prices:
+            +enabled: true
+
 tests:
   +store_failures: true # all tests
   livequery_models:
