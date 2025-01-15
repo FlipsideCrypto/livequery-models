@@ -1,6 +1,6 @@
 -- models/silver/silver__streamline_blocks.sql
 {{ config(
-    materialized = 'view',
+    materialized = 'ephemeral',
     tags = ['near_models','core','override']
 ) }}
 
@@ -8,10 +8,10 @@ WITH context AS (
     SELECT
         CURRENT_SESSION() as session_id,
         CURRENT_STATEMENT() as stmt,
-        -- Extract block_id 
+        -- Extract block_id
         TRY_CAST(REGEXP_SUBSTR(stmt, '\\w+\\((\\d+),', 1, 1, 'e', 1) AS NUMBER) as stmt_block_id,
         -- Extract to_latest with improved regex
-        CASE 
+        CASE
             WHEN REGEXP_SUBSTR(stmt, '\\w+\\((\\d+),\\s*(TRUE|FALSE)\\)', 1, 1, 'i', 2) = 'TRUE' THEN TRUE
             WHEN REGEXP_SUBSTR(stmt, '\\w+\\((\\d+),\\s*(TRUE|FALSE)\\)', 1, 1, 'i', 2) = 'FALSE' THEN FALSE
             ELSE FALSE
@@ -39,9 +39,9 @@ spine AS (
     SELECT
         block_height,
         ROW_NUMBER() OVER (ORDER BY block_height) - 1 as partition_num
-    FROM 
+    FROM
         (
-            SELECT 
+            SELECT
                 row_number() over (order by seq4()) - 1 + h.min_height as block_height,
                 h.min_height,
                 h.max_height
@@ -53,15 +53,15 @@ spine AS (
 ),
 raw_blocks AS (
     WITH block_urls AS (
-        SELECT 
+        SELECT
             partition_num,
             BUILD_SCOPED_FILE_URL(
-                '@streamline.bronze.near_lake_data_mainnet', 
+                '@streamline.bronze.near_lake_data_mainnet',
                 CONCAT(LPAD(TO_VARCHAR(block_height), 12, '0'), '/block.json')
             ) as url
         FROM spine
     )
-    SELECT 
+    SELECT
         partition_num,
         url,
         PARSE_JSON(near_mainnet.udf_get_block_data(url::STRING)) as block_data
