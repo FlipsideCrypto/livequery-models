@@ -41,21 +41,73 @@ models:
           streamline:
             +schema: near_mainnet
             +enabled: true
+    overrides:
+      +materialized: ephemeral
   near_models:
+    +enabled: false # disable package by default
     +schema: streamline
     +database: near_dev
     gold:
       core:
         +schema: core
         +materialized: ephemeral
-        fact_blocks:
-          +enabled: false
+        core__fact_blocks:
+          +enabled: true
+        core__fact_transactions:
+            +enabled: true
+      price:
+        price__ez_prices_hourly:
+          +enabled: true
     silver:
       streamline:
         +materialized: ephemeral
         silver__streamline_blocks:
-          +enabled: false 
-
+          +enabled: false
+      prices:
+        silver__complete_token_prices:
+          +enabled: true
+        silver__complete_native_prices:
+          +enabled: true
+      labels:
+        silver__ft_contract_metadata:
+          +enabled: true
+      livequery:
+        livequery__request_nearblocks_ft_metadata:
+          +enabled: true
+  fsc_evm:
+    +enabled: false # disable package by default
+    +materialized: ephemeral
+    main_package:
+      core:
+        gold:
+          core__fact_blocks:
+            +enabled: true
+          core__fact_transactions:
+            +enabled: true
+          core__fact_event_logs:
+            +enabled: true
+          core__fact_traces:
+            +enabled: true
+          core__ez_native_transfers:
+            +enabled: true
+        silver:
+          silver__blocks:
+            +enabled: true
+          silver__transactions:
+            +enabled: true
+          silver__receipts:
+            +enabled: true
+          silver__traces:
+            +enabled: true
+      prices:
+        gold:
+          price__ez_prices_hourly:
+            +enabled: true
+        silver:
+          silver__complete_native_prices:
+            +enabled: true
+          silver__complete_token_prices:
+            +enabled: true
 
 tests:
   +store_failures: true # all tests
@@ -65,7 +117,9 @@ tests:
         blockpour:
           # TODO: enable tests for blockpour once we get an API key
           +enabled: false
-
+  near_models:
+    silver:
+      +enabled: false
 
 on-run-start:
   - "{{ create_sps() }}"
@@ -81,7 +135,6 @@ on-run-end:
 # using the `{{ config(...) }}` macro.
 
 vars:
-  
   near_models:
     UPDATE_UDFS_AND_SPS: false
 
