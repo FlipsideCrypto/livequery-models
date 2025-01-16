@@ -4,7 +4,28 @@
     tags = ['near_models','core','override']
 ) }}
 
-WITH context AS (
+{%- set blockchain = this.schema -%}
+{%- set network = this.identifier -%}
+{%- set schema = blockchain ~ "_" ~ network -%}
+
+
+WITH heights AS (
+    {{ near_live_view_latest_block_height() | indent(4) -}}
+),
+
+spine AS (
+    {{ near_live_view_get_spine('heights') | indent(4) -}}
+),
+
+raw_blocks AS (
+    {{ near_live_view_get_raw_block_data('spine', schema ) | indent(4) -}}
+)
+
+SELECT * FROM raw_blocks
+
+
+
+{# WITH context AS (
     SELECT
         CURRENT_SESSION() as session_id,
         CURRENT_STATEMENT() as stmt,
@@ -91,4 +112,4 @@ SELECT
     SYSDATE() as inserted_timestamp,
     SYSDATE() as modified_timestamp,
     'override' as _invocation_id
-FROM raw_blocks r
+FROM raw_blocks r #}
