@@ -139,27 +139,6 @@ FROM block_urls
 
 {% endmacro %}
 
-{# {% macro near_live_view_fact_blocks(schema, blockchain, network) %}
-{#
-    This macro returns fact_blocks table data from the specified schema.
-    
-    Args:
-        schema (str): The schema name containing the fact_blocks table
-        blockchain (str): The blockchain name (e.g. 'near')
-        network (str): The network name (e.g. 'mainnet')
-        
-    Returns:
-        SQL query: A query that selects all columns from the fact_blocks table
-        
-    Note:
-        - Requires fact_blocks table to exist in the specified schema
-        - Used as a base table for other Near blockchain views
-#}
-
-SELECT * FROM {{ schema -}}.fact_blocks
-
-{% endmacro %} #}
-
 {% macro near_live_view_fact_blocks(schema, blockchain, network) %}
     {%- set near_live_view_fact_blocks = get_rendered_model('livequery_models', 'near_fact_blocks', schema, blockchain, network) -%}
     {{ near_live_view_fact_blocks }}
