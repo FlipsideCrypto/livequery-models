@@ -143,3 +143,8 @@ FROM block_urls
     {%- set near_live_view_fact_blocks = get_rendered_model('livequery_models', 'near_fact_blocks', schema, blockchain, network) -%}
     {{ near_live_view_fact_blocks }}
 {% endmacro %}
+
+{% macro near_live_view_fact_transactions(schema, blockchain, network) %}
+    {%- set near_live_view_fact_transactions = get_rendered_model('livequery_models', 'near_fact_transactions', schema, blockchain, network) -%}
+    {{ near_live_view_fact_transactions }}
+{% endmacro %}
