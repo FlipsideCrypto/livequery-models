@@ -41,20 +41,23 @@ models:
           streamline:
             +schema: near_mainnet
             +enabled: true
+    overrides:
+      +materialized: ephemeral
   near_models:
+    +enabled: false # disable package by default
     +schema: streamline
     +database: near_dev
     gold:
       core:
         +schema: core
         +materialized: ephemeral
-        fact_blocks:
-          +enabled: false
+        core__fact_blocks:
+          +enabled: true
     silver:
       streamline:
         +materialized: ephemeral
         silver__streamline_blocks:
-          +enabled: false 
+          +enabled: false
 
 
 tests:
@@ -81,7 +84,7 @@ on-run-end:
 # using the `{{ config(...) }}` macro.
 
 vars:
-  
+
   near_models:
     UPDATE_UDFS_AND_SPS: false
 
