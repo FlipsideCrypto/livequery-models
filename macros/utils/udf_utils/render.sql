@@ -31,7 +31,7 @@
 
     {%- set target_node = nodes[0] -%}
     {{ log("Processing node: " ~ target_node.unique_id, info=True) }}
-    {{ log("Dependencies: " ~ target_node.depends_on.nodes | join(", "), info=True) }}
+    {{ log("Dependencies: " ~ target_node.depends_on.nodes | join(",\n "), info=True) }}
 
     {# First render all dependency CTEs #}
     {%- set ctes = [] -%}
@@ -58,7 +58,7 @@ WITH {{ ctes | join(',\n\n') }}
 {{ render(target_node.raw_code) }}
     {%- endset -%}
 
-    {{ log("=== End get_rendered_model ===", info=True) }}
+    {{ log("=== End get_rendered_model ===\n\n" , info=True) }}
 
     {{ return(final_sql) }}
     {% endif %}
