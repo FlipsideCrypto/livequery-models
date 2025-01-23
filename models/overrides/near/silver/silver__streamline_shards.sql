@@ -8,7 +8,6 @@
 {%- set network = this.identifier -%}
 {%- set schema = blockchain ~ "_" ~ network -%}
 
-
 WITH heights AS (
     {{ near_live_view_latest_block_height() | indent(4) -}}
 ),

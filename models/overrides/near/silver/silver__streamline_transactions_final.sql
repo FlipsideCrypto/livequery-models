@@ -1,10 +1,11 @@
 {{ config(
-  materialized = 'incremental',
-  incremental_strategy = 'delete+insert',
-  unique_key = 'tx_hash',
-  cluster_by = ['block_timestamp::DATE','_modified_timestamp::DATE', '_partition_by_block_number'],
-  tags = ['receipt_map','scheduled_core']
+    materialized = 'ephemeral',
+    tags = ['near_models','core','override']
 ) }}
+
+{%- set blockchain = this.schema -%}
+{%- set network = this.identifier -%}
+{%- set schema = blockchain ~ "_" ~ network -%}
 
 WITH int_txs AS (
 
@@ -28,21 +29,6 @@ WITH int_txs AS (
     modified_timestamp AS _modified_timestamp
   FROM
     {{ ref('silver__streamline_transactions') }}
-
-    {% if var('MANUAL_FIX') %}
-
-        WHERE
-            {{ partition_load_manual('no_buffer') }}
-            
-    {% else %}
-      WHERE
-        {{ partition_incremental_load(
-          6000,
-          6000,
-          0
-        ) }}
-
-    {% endif %}
 ),
 int_receipts AS (
   SELECT
@@ -58,22 +44,6 @@ int_receipts AS (
     modified_timestamp AS _modified_timestamp
   FROM
     {{ ref('silver__streamline_receipts_final') }}
-
-    {% if var('MANUAL_FIX') %}
-
-        WHERE
-            {{ partition_load_manual('end') }}
-            
-    {% else %}
-
-      WHERE
-        {{ partition_incremental_load(
-          6000,
-          6000,
-          0
-        ) }}
-
-    {% endif %}
 
 ),
 int_blocks AS (

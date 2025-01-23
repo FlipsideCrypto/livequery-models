@@ -1,24 +1,13 @@
 {{ config(
-    materialized = 'incremental',
-    incremental_predicates = ["COALESCE(DBT_INTERNAL_DEST.block_timestamp::DATE,'2099-12-31') >= (select min(block_timestamp::DATE) from " ~ generate_tmp_view_name(this) ~ ")"],
-    incremental_strategy = 'merge',
-    merge_exclude_columns = ['inserted_timestamp'],
-    unique_key = 'receipt_object_id',
-    cluster_by = ['block_timestamp::DATE','_modified_timestamp::DATE', '_partition_by_block_number', ],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON EQUALITY(tx_hash,receipt_object_id,receiver_id,signer_id);",
-    tags = ['receipt_map','scheduled_core'],
-    full_refresh = False
+    materialized = 'ephemeral',
+    tags = ['near_models','core','override']
 ) }}
 
-WITH retry_range AS (
+{%- set blockchain = this.schema -%}
+{%- set network = this.identifier -%}
+{%- set schema = blockchain ~ "_" ~ network -%}
 
-    SELECT
-        *
-    FROM
-        {{ ref('_retry_range')}}
-
-),
-base_receipts AS (
+WITH base_receipts AS (
     SELECT
         receipt_id,
         block_id,
@@ -42,42 +31,6 @@ base_receipts AS (
     FROM
         {{ ref('silver__streamline_receipts') }} r
 
-    {% if var('MANUAL_FIX') %}
-
-        WHERE
-            {{ partition_load_manual('no_buffer') }}
-            
-    {% else %}
-
-        WHERE
-            _partition_by_block_number >= (
-                SELECT
-                    MIN(_partition_by_block_number) - (3000 * {{ var('RECEIPT_MAP_LOOKBACK_HOURS') }})
-                FROM
-                    (
-                        SELECT MIN(_partition_by_block_number) AS _partition_by_block_number FROM retry_range
-                        UNION ALL
-                        SELECT MAX(_partition_by_block_number) AS _partition_by_block_number FROM {{ this }}
-                    )
-            )
-            AND (
-                {% if is_incremental() %}
-                    _modified_timestamp >= (
-                        SELECT
-                            MAX(_modified_timestamp)
-                        FROM
-                            {{ this }}
-                    )
-                OR 
-                {% endif %}
-                receipt_id IN (
-                    SELECT
-                        DISTINCT receipt_object_id
-                    FROM
-                        retry_range
-                )
-            )
-    {% endif %}
 ),
 blocks AS (
     SELECT
@@ -85,28 +38,8 @@ blocks AS (
         block_timestamp,
         _partition_by_block_number,
         _inserted_timestamp
-        {% if not var('IS_MIGRATION') %}
-        , modified_timestamp AS _modified_timestamp
-        {% endif %}
     FROM
         {{ ref('silver__streamline_blocks') }}
-
-    {% if var('MANUAL_FIX') %}
-        WHERE
-            {{ partition_load_manual('no_buffer') }}
-    {% else %}
-        WHERE
-            _partition_by_block_number >= (
-                SELECT
-                    MIN(_partition_by_block_number) - (3000 * {{ var('RECEIPT_MAP_LOOKBACK_HOURS') }})
-                FROM
-                    (
-                        SELECT MIN(_partition_by_block_number) AS _partition_by_block_number FROM retry_range
-                        UNION ALL
-                        SELECT MAX(_partition_by_block_number) AS _partition_by_block_number FROM {{ this }}
-                    )
-            )
-    {% endif %}
 ),
 append_tx_hash AS (
     SELECT
