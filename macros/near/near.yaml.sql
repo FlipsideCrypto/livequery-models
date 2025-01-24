@@ -33,19 +33,19 @@
   sql: |
     {{ near_live_view_fact_blocks(schema, blockchain, network) | indent(4) -}}
 
- - name: {{ schema -}}.tf_fact_transactions
+ - name: {{ schema -}}.tf_fact_receipts
   signature:
     - [block_id, INTEGER, The start block height to get the blocks from]
     - [to_latest, BOOLEAN, Whether to continue fetching blocks until the latest block or not]
   return_type:
-    - "TABLE(tx_hash VARCHAR, block_id NUMBER, block_hash VARCHAR, block_timestamp TIMESTAMP_NTZ, nonce NUMBER, signature VARCHAR, tx_receiver VARCHAR, tx_signer VARCHAR, tx OBJECT, gas_used NUMBER, transaction_fee NUMBER, attached_gas FLOAT, tx_succeeded BOOLEAN, fact_transactions_id VARCHAR, inserted_timestamp TIMESTAMP_LTZ, modified_timestamp TIMESTAMP_LTZ)"
+    - "TABLE(block_timestamp TIMESTAMP_NTZ, block_id NUMBER, tx_hash VARCHAR, receipt_object_id VARCHAR, receipt_outcome_id ARRAY, receiver_id VARCHAR, actions OBJECT, outcome OBJECT, gas_burnt NUMBER, status_value VARIANT, logs ARRAY, proof ARRAY, metadata VARIANT, fact_receipts_id VARCHAR, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
     COMMENT = $$Returns the block data for a given block height. If to_latest is true, it will continue fetching blocks until the latest block. Otherwise, it will fetch blocks until the block_id height is reached.$$
   sql: |
-    {{ near_live_view_fact_transactions(schema, blockchain, network) | indent(4) -}} 
+    {{ near_live_view_fact_receipts(schema, blockchain, network) | indent(4) -}} 
 
 {%- endmacro -%}
 

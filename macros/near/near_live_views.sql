@@ -148,3 +148,8 @@ FROM block_urls
     {%- set near_live_view_fact_transactions = get_rendered_model('livequery_models', 'near_fact_transactions', schema, blockchain, network) -%}
     {{ near_live_view_fact_transactions }}
 {% endmacro %}
+
+{% macro near_live_view_fact_receipts(schema, blockchain, network) %}
+    {%- set near_live_view_fact_receipts = get_rendered_model('livequery_models', 'near_fact_receipts', schema, blockchain, network) -%}
+    {{ near_live_view_fact_receipts }}
+{% endmacro %}

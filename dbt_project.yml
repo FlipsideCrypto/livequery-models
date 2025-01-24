@@ -55,6 +55,8 @@ models:
           +enabled: true
         core__fact_transactions:
           +enabled: true
+        core__fact_receipts:
+          +enabled: true
     silver:
       streamline:
         +materialized: ephemeral

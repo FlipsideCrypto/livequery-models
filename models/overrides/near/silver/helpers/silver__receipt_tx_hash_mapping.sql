@@ -8,10 +8,8 @@
 {%- set network = this.identifier -%}
 {%- set schema = blockchain ~ "_" ~ network -%}
 
-
 WITH 
 recursive ancestrytree AS (
-
     SELECT
         item,
         PARENT
@@ -29,14 +27,14 @@ recursive ancestrytree AS (
         items
         ON t.item = items.parent
 ),
-txs AS (
-    SELECT
-        tx_hash,
-        outcome_receipts,
+base_transactions AS (
+    SELECT 
+        VALUE:transaction:hash::STRING AS tx_hash,
+        VALUE:outcome:execution_outcome:outcome:receipt_ids::ARRAY AS outcome_receipts,
         _partition_by_block_number
-    FROM
-        {{ ref('silver__streamline_transactions') }}
-
+    FROM {{ ref('silver__streamline_shards') }},
+    LATERAL FLATTEN(input => chunk:transactions::ARRAY)
+    WHERE chunk IS NOT NULL
 ),
 FINAL AS (
     SELECT
@@ -45,7 +43,7 @@ FINAL AS (
         FALSE is_primary_receipt
     FROM
         ancestrytree A
-        JOIN txs b
+        JOIN base_transactions b
         ON A.parent = b.outcome_receipts [0] :: STRING
     WHERE
         item IS NOT NULL
@@ -55,7 +53,7 @@ FINAL AS (
         outcome_receipts [0] :: STRING AS receipt_id,
         TRUE is_primary_receipt
     FROM
-        txs A
+        base_transactions A
 )
 SELECT
     tx_hash,
