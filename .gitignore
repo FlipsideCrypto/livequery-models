@@ -19,3 +19,7 @@ dbt-env/
 .*
 # KEEP
 !.github/
+
+# Ignore Python bytecode files
+*.pyc
+__pycache__/
