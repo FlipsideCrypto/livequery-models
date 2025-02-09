@@ -24,7 +24,7 @@
     COMMENT = $$Returns the native asset balance at the latest block for a given address.$$
   sql: |
     {{ evm_latest_native_balance_string(schema,  blockchain, network) | indent(4) -}}
-  
+
 - name: {{ schema -}}.tf_latest_native_balance
   signature:
     - [wallets, ARRAY, An array of addresses string to get the balance of at the latest block]
@@ -41,7 +41,7 @@
 - name: {{ schema -}}.tf_latest_token_balance
   signature:
     - [wallet, STRING, The address to get the balance of at the latest block]
-    - [token, STRING, The address of the token to get the balance of] 
+    - [token, STRING, The address of the token to get the balance of]
   return_type:
     - "TABLE(status STRING, blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, raw_balance STRING, balance FLOAT)"
   options: |
@@ -55,7 +55,7 @@
 - name: {{ schema -}}.tf_latest_token_balance
   signature:
     - [wallet, STRING, The address to get the balance of at the latest block]
-    - [tokens, ARRAY, An array of address strings of the tokens to get the balance of] 
+    - [tokens, ARRAY, An array of address strings of the tokens to get the balance of]
   return_type:
     - "TABLE(status STRING, blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, raw_balance STRING, balance FLOAT)"
   options: |
@@ -83,7 +83,7 @@
 - name: {{ schema -}}.tf_latest_token_balance
   signature:
     - [wallets, ARRAY, An array of addresses string to get the balance of at the latest block]
-    - [tokens, ARRAY, An array of address strings of the tokens to get the balance of] 
+    - [tokens, ARRAY, An array of address strings of the tokens to get the balance of]
   return_type:
     - "TABLE(status STRING, blockchain STRING, network STRING, wallet_address STRING, token_address STRING, symbol STRING, raw_balance STRING, balance FLOAT)"
   options: |
@@ -281,7 +281,7 @@
     COMMENT = $$Returns the latest events emitted by a contract within the last `lookback` blocks. *Please note there are RPC limitations on this method.*$$
   sql: |
     {{ evm_latest_contract_events_si(schema,  blockchain, network) | indent(4) -}}
-  
+
 - name: {{ schema -}}.tf_latest_contract_events
   signature:
     - [addresses, ARRAY, The addresses of the contracts to get the events of]
@@ -362,6 +362,84 @@
     COMMENT = $$Returns the latest decoded events emitted by multiple contracts within the last `lookback` blocks. Submit missing ABIs [here](https://science.flipsidecrypto.xyz/abi-requestor/). *Please note there are RPC limitations on this method.* $$
   sql: |
     {{ evm_latest_contract_events_decoded_ai(schema,  blockchain, network) | indent(4) -}}
+
+- name: {{ schema -}}.tf_fact_blocks
+  signature:
+    - [block_height, INTEGER, The start block height to get the blocks from]
+    - [to_latest, BOOLEAN, Whether to continue fetching blocks until the latest block or not]
+  return_type:
+    - "{{ generate_udtf_return_type(blockchain, get_fact_blocks_columns()) }}"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns the block data for a given block height. If to_latest is true, it will continue fetching blocks until the latest block. Otherwise, it will fetch blocks until the block height is reached.$$
+  sql: |
+    {{ evm_fact_blocks(schema, blockchain, network) | indent(4) -}}
+
+- name: {{ schema -}}.tf_fact_transactions
+  signature:
+    - [block_height, INTEGER, The start block height to get the transfers from]
+    - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
+  return_type:
+    - "{{ generate_udtf_return_type(blockchain, get_fact_transactions_columns()) }}"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns the transactions for a given block height. If to_latest is true, it will continue fetching transactions until the latest block. Otherwise, it will fetch transactions until the block height is reached.$$
+  sql: |
+    {{ evm_fact_transactions(schema,  blockchain, network) | indent(4) -}}
+
+- name: {{ schema -}}.tf_fact_event_logs
+  signature:
+    - [block_height, INTEGER, The start block height to get the events from]
+    - [to_latest, BOOLEAN, Whether to continue fetching events until the latest block or not]
+  return_type:
+    - "TABLE(
+          block_number INTEGER,
+          block_timestamp TIMESTAMP_NTZ,
+          tx_hash STRING,
+          tx_position INTEGER,
+          event_index INTEGER,
+          contract_address STRING,
+          topics VARIANT,
+          topic_0 STRING,
+          topic_1 STRING,
+          topic_2 STRING,
+          topic_3 STRING,
+          DATA STRING,
+          event_removed BOOLEAN,
+          origin_from_address STRING,
+          origin_to_address STRING,
+          origin_function_signature STRING,
+          tx_succeeded BOOLEAN,
+          fact_event_logs_id STRING,
+          inserted_timestamp TIMESTAMP_NTZ,
+          modified_timestamp TIMESTAMP_NTZ
+        )"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns the event logs for a given block height. If to_latest is true, it will continue fetching events until the latest block. Otherwise, it will fetch events until the block height is reached.$$
+  sql: |
+    {{ evm_fact_event_logs(schema,  blockchain, network) | indent(4) -}}
+
+- name: {{ schema -}}.tf_fact_traces
+  signature:
+    - [block_height, INTEGER, The start block height to get the traces from]
+    - [to_latest, BOOLEAN, Whether to continue fetching traces until the latest block or not]
+  return_type:
+    - "{{ generate_udtf_return_type(blockchain, get_fact_traces_columns()) }}"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns the traces for a given block height. If to_latest is true, it will continue fetching traces until the latest block. Otherwise, it will fetch traces until the block height is reached.$$
+  sql: |
+    {{ evm_fact_traces(schema,  blockchain, network) | indent(4) -}}
+
 {%- endmacro -%}
 
 {% macro config_eth_high_level_abstractions(blockchain, network) -%}
@@ -393,7 +471,7 @@
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns the decoded events emitted by a contract from a specific block to the latest block. Submit missing ABIs [here](https://science.flipsidecrypto.xyz/abi-requestor/).$$  
+    COMMENT = $$Returns the decoded events emitted by a contract from a specific block to the latest block. Submit missing ABIs [here](https://science.flipsidecrypto.xyz/abi-requestor/).$$
   sql: |
     {{ evm_contract_events_decoded(schema,  blockchain, network) | indent(4) -}}
 {%- endmacro -%}
