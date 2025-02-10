@@ -3,7 +3,7 @@
 {%- set schema = blockchain ~ "_" ~ network -%}
 
 WITH spine AS (
-    {{ evm_live_view_target_blocks(schema, blockchain, network, 10) | indent(4) -}}
+    {{ evm_live_view_target_blocks(schema, blockchain, network, 100, 10) | indent(4) -}}
 ),
 
 raw_receipts AS (
