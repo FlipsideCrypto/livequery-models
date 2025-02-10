@@ -5,6 +5,7 @@
 -- depends_on: {{ ref('_eth__decoded_logs') }}
 -- depends_on: {{ ref('live') }}
 -- depends_on: {{ ref('utils') }}
+-- depends_on: {{ ref('price__ez_prices_hourly') }}
 -- depends_on: {{ ref('bronze__blocks') }}
 -- depends_on: {{ ref('bronze__blocks_fr') }}
 -- depends_on: {{ ref('bronze__transactions') }}
@@ -23,6 +24,7 @@
 -- depends_on: {{ ref('fsc_evm', 'core__fact_transactions') }}
 -- depends_on: {{ ref('fsc_evm', 'core__fact_event_logs') }}
 -- depends_on: {{ ref('fsc_evm', 'core__fact_traces') }}
+-- depends_on: {{ ref('fsc_evm', 'core__ez_native_transfers') }}
 {%- set configs = [
     config_evm_rpc_primitives,
     config_evm_high_level_abstractions,

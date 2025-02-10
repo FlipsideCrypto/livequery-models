@@ -444,6 +444,40 @@
   sql: |
     {{ evm_fact_traces(schema,  blockchain, network) | indent(4) -}}
 
+- name: {{ schema -}}.tf_ez_native_transfers
+  signature:
+    - [block_height, INTEGER, The start block height to get the transfers from]
+    - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
+    - [row_count, INTEGER, The number of blocks to fetch]
+  return_type:
+    - "TABLE(
+          tx_hash STRING,
+          block_number NUMBER,
+          block_timestamp TIMESTAMP_NTZ,
+          tx_position NUMBER,
+          trace_index NUMBER,
+          origin_from_address STRING,
+          origin_to_address STRING,
+          origin_function_signature STRING,
+          from_address STRING,
+          to_address STRING,
+          amount FLOAT,
+          amount_precise_raw STRING,
+          amount_precise STRING,
+          amount_usd FLOAT,
+          ez_native_transfers_id STRING,
+          inserted_timestamp TIMESTAMP_NTZ,
+          modified_timestamp TIMESTAMP_NTZ,
+          identifier STRING
+          )"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns the native transfers for a given block height. If to_latest is true, it will continue fetching traces until the latest block. Otherwise, it will fetch traces until the block height is reached.$$
+  sql: |
+    {{ evm_ez_native_transfers(schema,  blockchain, network) | indent(4) -}}
+
 {%- endmacro -%}
 
 {% macro config_eth_high_level_abstractions(blockchain, network) -%}

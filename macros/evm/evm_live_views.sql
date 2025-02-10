@@ -31,7 +31,7 @@
             ) AS max_height,
             latest_block_height
         FROM
-            TABLE(generator(ROWCOUNT => COALESCE(row_count, 100))),
+            TABLE(generator(ROWCOUNT => COALESCE(row_count, 1))),
             heights qualify block_number BETWEEN min_height
             AND max_height
     )
@@ -193,6 +193,11 @@ LATERAL FLATTEN(input => result) v
 {% macro evm_fact_traces(schema, blockchain, network) %}
     {%- set evm__fact_traces = get_rendered_model('livequery_models', 'evm__fact_traces', schema, blockchain, network) -%}
     {{ evm__fact_traces }}
+{% endmacro %}
+
+{% macro evm_ez_native_transfers(schema, blockchain, network) %}
+    {%- set evm__ez_native_transfers = get_rendered_model('livequery_models', 'evm__ez_native_transfers', schema, blockchain, network) -%}
+    {{ evm__ez_native_transfers }}
 {% endmacro %}
 
 -- UDTF Return Columns
