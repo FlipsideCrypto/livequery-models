@@ -13,7 +13,7 @@
         ) AS max_height
 {% endmacro %}
 
-{% macro evm_live_view_target_blocks(schema, blockchain, network, row_count=1000, batch_size=10) %}
+{% macro evm_live_view_target_blocks(schema, blockchain, network, batch_size=10) %}
     WITH heights AS (
         {{ evm_live_view_latest_block_height(schema, blockchain, network) | indent(4) -}}
     ),
@@ -31,7 +31,7 @@
             ) AS max_height,
             latest_block_height
         FROM
-            TABLE(generator(ROWCOUNT => {{ row_count }})),
+            TABLE(generator(ROWCOUNT => COALESCE(row_count, 100))),
             heights qualify block_number BETWEEN min_height
             AND max_height
     )

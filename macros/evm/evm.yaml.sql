@@ -367,6 +367,7 @@
   signature:
     - [block_height, INTEGER, The start block height to get the blocks from]
     - [to_latest, BOOLEAN, Whether to continue fetching blocks until the latest block or not]
+    - [row_count, INTEGER, The number of blocks to fetch]
   return_type:
     - "{{ generate_udtf_return_type(blockchain, get_fact_blocks_columns()) }}"
   options: |
@@ -381,6 +382,7 @@
   signature:
     - [block_height, INTEGER, The start block height to get the transfers from]
     - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
+    - [row_count, INTEGER, The number of blocks to fetch]
   return_type:
     - "{{ generate_udtf_return_type(blockchain, get_fact_transactions_columns()) }}"
   options: |
@@ -395,6 +397,7 @@
   signature:
     - [block_height, INTEGER, The start block height to get the events from]
     - [to_latest, BOOLEAN, Whether to continue fetching events until the latest block or not]
+    - [row_count, INTEGER, The number of blocks to fetch]
   return_type:
     - "TABLE(
           block_number INTEGER,
@@ -430,6 +433,7 @@
   signature:
     - [block_height, INTEGER, The start block height to get the traces from]
     - [to_latest, BOOLEAN, Whether to continue fetching traces until the latest block or not]
+    - [row_count, INTEGER, The number of blocks to fetch]
   return_type:
     - "{{ generate_udtf_return_type(blockchain, get_fact_traces_columns()) }}"
   options: |
