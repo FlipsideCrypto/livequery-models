@@ -367,7 +367,7 @@
   signature:
     - [block_height, INTEGER, The start block height to get the blocks from]
     - [to_latest, BOOLEAN, Whether to continue fetching blocks until the latest block or not]
-    - [row_count, INTEGER, The number of blocks to fetch]
+    - [block_size, INTEGER, The number of blocks to fetch]
   return_type:
     - "{{ generate_udtf_return_type(blockchain, get_fact_blocks_columns()) }}"
   options: |
@@ -382,7 +382,7 @@
   signature:
     - [block_height, INTEGER, The start block height to get the transfers from]
     - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
-    - [row_count, INTEGER, The number of blocks to fetch]
+    - [block_size, INTEGER, The number of blocks to fetch]
   return_type:
     - "{{ generate_udtf_return_type(blockchain, get_fact_transactions_columns()) }}"
   options: |
@@ -397,7 +397,7 @@
   signature:
     - [block_height, INTEGER, The start block height to get the events from]
     - [to_latest, BOOLEAN, Whether to continue fetching events until the latest block or not]
-    - [row_count, INTEGER, The number of blocks to fetch]
+    - [block_size, INTEGER, The number of blocks to fetch]
   return_type:
     - "TABLE(
           block_number INTEGER,
@@ -429,11 +429,52 @@
   sql: |
     {{ evm_fact_event_logs(schema,  blockchain, network) | indent(4) -}}
 
+- name: {{ schema -}}.tf_ez_decoded_event_logs
+  signature:
+    - [block_height, INTEGER, The start block height to get the logs from]
+    - [to_latest, BOOLEAN, Whether to continue fetching logs until the latest block or not]
+    - [block_size, INTEGER, The number of blocks to fetch]
+  return_type:
+    - "TABLE(
+        block_number INTEGER,
+        block_timestamp TIMESTAMP_NTZ,
+        tx_hash STRING,
+        tx_position INTEGER,
+        event_index INTEGER,
+        contract_address STRING,
+        topics VARIANT,
+        topic_0 STRING,
+        topic_1 STRING,
+        topic_2 STRING,
+        topic_3 STRING,
+        DATA STRING,
+        event_removed BOOLEAN,
+        origin_from_address STRING,
+        origin_to_address STRING,
+        origin_function_signature STRING,
+        tx_succeeded BOOLEAN,
+        event_name STRING,
+        full_decoded_log VARIANT,
+        decoded_log OBJECT,
+        contract_name STRING,
+        ez_decoded_event_logs_id STRING,
+        inserted_timestamp TIMESTAMP_NTZ,
+        modified_timestamp TIMESTAMP_NTZ)"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns the ez decoded event logs data for a given block height. If to_latest is true, it will continue fetching blocks until the latest block. Otherwise, it will fetch blocks until the block height is reached.$$
+  sql: |
+    {{ evm_ez_decoded_event_logs(schema, blockchain, network) | indent(4) -}}
+
+
+{#
 - name: {{ schema -}}.tf_fact_traces
   signature:
     - [block_height, INTEGER, The start block height to get the traces from]
     - [to_latest, BOOLEAN, Whether to continue fetching traces until the latest block or not]
-    - [row_count, INTEGER, The number of blocks to fetch]
+    - [block_size, INTEGER, The number of blocks to fetch]
   return_type:
     - "{{ generate_udtf_return_type(blockchain, get_fact_traces_columns()) }}"
   options: |
@@ -442,13 +483,15 @@
     VOLATILE
     COMMENT = $$Returns the traces for a given block height. If to_latest is true, it will continue fetching traces until the latest block. Otherwise, it will fetch traces until the block height is reached.$$
   sql: |
-    {{ evm_fact_traces(schema,  blockchain, network) | indent(4) -}}
+    {{ evm_fact_traces(schema,  blockchain, network) | indent(4) -}} #}
 
+
+{#
 - name: {{ schema -}}.tf_ez_native_transfers
   signature:
     - [block_height, INTEGER, The start block height to get the transfers from]
     - [to_latest, BOOLEAN, Whether to continue fetching transfers until the latest block or not]
-    - [row_count, INTEGER, The number of blocks to fetch]
+    - [block_size, INTEGER, The number of blocks to fetch]
   return_type:
     - "TABLE(
           tx_hash STRING,
@@ -476,7 +519,7 @@
     VOLATILE
     COMMENT = $$Returns the native transfers for a given block height. If to_latest is true, it will continue fetching traces until the latest block. Otherwise, it will fetch traces until the block height is reached.$$
   sql: |
-    {{ evm_ez_native_transfers(schema,  blockchain, network) | indent(4) -}}
+    {{ evm_ez_native_transfers(schema,  blockchain, network) | indent(4) -}} #}
 
 {%- endmacro -%}
 

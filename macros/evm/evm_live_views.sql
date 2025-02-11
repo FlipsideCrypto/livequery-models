@@ -1,4 +1,4 @@
-{% macro evm_live_view_latest_block_height(schema, blockchain, network) %}
+{% macro evm_latest_block_height(schema, blockchain, network) %}
     SELECT
         {{ schema }}.udf_rpc('eth_blockNumber', []) as result,
         utils.udf_hex_to_int(result)::integer AS latest_block_height,
@@ -13,9 +13,9 @@
         ) AS max_height
 {% endmacro %}
 
-{% macro evm_live_view_target_blocks(schema, blockchain, network, batch_size=10) %}
+{% macro evm_target_blocks(schema, blockchain, network, batch_size=10) %}
     WITH heights AS (
-        {{ evm_live_view_latest_block_height(schema, blockchain, network) | indent(4) -}}
+        {{ evm_latest_block_height(schema, blockchain, network) | indent(4) -}}
     ),
     block_spine AS (
         SELECT
@@ -31,7 +31,7 @@
             ) AS max_height,
             latest_block_height
         FROM
-            TABLE(generator(ROWCOUNT => COALESCE(row_count, 1))),
+            TABLE(generator(ROWCOUNT => COALESCE(block_size, 1))),
             heights qualify block_number BETWEEN min_height
             AND max_height
     )
@@ -52,7 +52,7 @@
 {% endmacro %}
 
 -- Get Raw EVM chain data
-{% macro evm_live_view_bronze_blocks(schema, blockchain, network, table_name) %}
+{% macro evm_bronze_blocks(schema, blockchain, network, table_name) %}
 WITH blocks_agg AS (
     SELECT
         batch_id,
@@ -84,7 +84,7 @@ SELECT
 FROM flattened
 {% endmacro %}
 
-{% macro evm_live_view_bronze_receipts(schema, blockchain, network, table_name) %}
+{% macro evm_bronze_receipts(schema, blockchain, network, table_name) %}
 WITH blocks_agg AS (
     SELECT
         batch_id,
@@ -122,7 +122,7 @@ FROM
         LATERAL FLATTEN(data) v), LATERAL FLATTEN(data) w
 {% endmacro %}
 
-{% macro evm_live_view_bronze_transactions(table_name) %}
+{% macro evm_bronze_transactions(table_name) %}
     SELECT
         0 AS partition_key,
         block_number,
@@ -137,7 +137,7 @@ FROM
         lateral flatten(r.data:transactions) v
 {% endmacro %}
 
-{% macro evm_live_view_bronze_traces(schema, blockchain, network, table_name)%}
+{% macro evm_bronze_traces(schema, blockchain, network, table_name)%}
 WITH blocks_agg AS (
     SELECT
         batch_id,
@@ -176,28 +176,51 @@ LATERAL FLATTEN(input => result) v
 {% endmacro %}
 
 {% macro evm_fact_blocks(schema, blockchain, network) %}
-    {%- set evm__fact_blocks = get_rendered_model('livequery_models', 'evm__fact_blocks', schema, blockchain, network) -%}
+    {%- set evm__fact_blocks = get_rendered_model('livequery_models', 'evm__fact_blocks', schema, blockchain, network, 'True') -%}
     {{ evm__fact_blocks }}
 {% endmacro %}
 
 {% macro evm_fact_transactions(schema, blockchain, network) %}
-    {%- set evm__fact_transactions = get_rendered_model('livequery_models', 'evm__fact_transactions', schema, blockchain, network) -%}
+    {%- set evm__fact_transactions = get_rendered_model('livequery_models', 'evm__fact_transactions', schema, blockchain, network, 'False') -%}
+
+    WITH __dbt__cte__core__fact_blocks AS (
+        SELECT * FROM table({{ schema }}.tf_fact_blocks(block_height, to_latest, block_size))
+    ),
+
     {{ evm__fact_transactions }}
 {% endmacro %}
 
 {% macro evm_fact_event_logs(schema, blockchain, network) %}
-    {%- set evm__fact_event_logs = get_rendered_model('livequery_models', 'evm__fact_event_logs', schema, blockchain, network) -%}
+    {%- set evm__fact_event_logs = get_rendered_model('livequery_models', 'evm__fact_event_logs', schema, blockchain, network, 'True') -%}
     {{ evm__fact_event_logs }}
 {% endmacro %}
 
 {% macro evm_fact_traces(schema, blockchain, network) %}
-    {%- set evm__fact_traces = get_rendered_model('livequery_models', 'evm__fact_traces', schema, blockchain, network) -%}
+    {%- set evm__fact_traces = get_rendered_model('livequery_models', 'evm__fact_traces', schema, blockchain, network, 'True') -%}
     {{ evm__fact_traces }}
 {% endmacro %}
 
 {% macro evm_ez_native_transfers(schema, blockchain, network) %}
-    {%- set evm__ez_native_transfers = get_rendered_model('livequery_models', 'evm__ez_native_transfers', schema, blockchain, network) -%}
+    {%- set evm__ez_native_transfers = get_rendered_model('livequery_models', 'evm__ez_native_transfers', schema, blockchain, network, 'True') -%}
     {{ evm__ez_native_transfers }}
+{% endmacro %}
+
+{% macro evm_ez_decoded_event_logs(schema, blockchain, network) %}
+    {%- set evm__ez_decoded_event_logs = get_rendered_model('livequery_models', 'evm__ez_decoded_event_logs', schema, blockchain, network, 'False') -%}
+
+    WITH __dbt__cte__core__fact_blocks AS (
+        SELECT * FROM table({{ schema }}.tf_fact_blocks(block_height, to_latest, block_size))
+    )
+
+    , __dbt_cte__core__fact_transactions AS (
+        SELECT * FROM table({{ schema }}.tf_fact_transactions(block_height, to_latest, block_size))
+    )
+
+    , __dbt_cte__core__fact_event_logs AS (
+        SELECT * FROM table({{ schema }}.tf_fact_event_logs(block_height, to_latest, block_size))
+    ),
+
+    {{ evm__ez_decoded_event_logs }}
 {% endmacro %}
 
 -- UDTF Return Columns

@@ -41,6 +41,14 @@ models:
   fsc_evm:
     +enabled: false # disable package by default
     +materialized: ephemeral
+    decoder_package:
+      decoded_logs:
+        gold:
+          core__ez_decoded_event_logs:
+            +enabled: true
+        silver:
+          silver__decoded_logs:
+            +enabled: true
     main_package:
       core:
         gold:
