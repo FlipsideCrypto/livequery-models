@@ -181,12 +181,7 @@ LATERAL FLATTEN(input => result) v
 {% endmacro %}
 
 {% macro evm_fact_transactions(schema, blockchain, network) %}
-    {%- set evm__fact_transactions = get_rendered_model('livequery_models', 'evm__fact_transactions', schema, blockchain, network, 'False') -%}
-
-    WITH __dbt__cte__core__fact_blocks AS (
-        SELECT * FROM table({{ schema }}.tf_fact_blocks(block_height, to_latest, block_size))
-    ),
-
+    {%- set evm__fact_transactions = get_rendered_model('livequery_models', 'evm__fact_transactions', schema, blockchain, network) -%}
     {{ evm__fact_transactions }}
 {% endmacro %}
 
