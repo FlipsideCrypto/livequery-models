@@ -1,4 +1,4 @@
-{% macro get_rendered_model(package_name, model_name, schema, blockchain, network, start_sql_with_clause) %}
+{% macro get_rendered_model(package_name, model_name, schema, blockchain, network) %}
     {#
     This macro retrieves and renders a specified model from the graph.
 
@@ -8,7 +8,6 @@
         schema (str): The schema to be used.
         blockchain (str): The blockchain to be used.
         network (str): The network to be used.
-        start_sql_with_clause (str): Whether to start the SQL with a WITH clause.
 
     Returns:
         str: The rendered SQL of the specified model.
@@ -54,11 +53,7 @@ __dbt__cte__{{ dep_node.name }} AS (
 
     {# Combine CTEs with main query #}
     {%- set final_sql -%}
-{%- if start_sql_with_clause.upper() == 'TRUE' -%}
 WITH {{ ctes | join(',\n\n') }}
-{%- else -%}
-    {{ ctes | join(',\n\n') }}
-{%- endif -%}
 
 {{ render(target_node.raw_code) }}
     {%- endset -%}

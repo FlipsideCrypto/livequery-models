@@ -176,7 +176,7 @@ LATERAL FLATTEN(input => result) v
 {% endmacro %}
 
 {% macro evm_fact_blocks(schema, blockchain, network) %}
-    {%- set evm__fact_blocks = get_rendered_model('livequery_models', 'evm__fact_blocks', schema, blockchain, network, 'True') -%}
+    {%- set evm__fact_blocks = get_rendered_model('livequery_models', 'evm__fact_blocks', schema, blockchain, network) -%}
     {{ evm__fact_blocks }}
 {% endmacro %}
 
@@ -191,35 +191,22 @@ LATERAL FLATTEN(input => result) v
 {% endmacro %}
 
 {% macro evm_fact_event_logs(schema, blockchain, network) %}
-    {%- set evm__fact_event_logs = get_rendered_model('livequery_models', 'evm__fact_event_logs', schema, blockchain, network, 'True') -%}
+    {%- set evm__fact_event_logs = get_rendered_model('livequery_models', 'evm__fact_event_logs', schema, blockchain, network) -%}
     {{ evm__fact_event_logs }}
 {% endmacro %}
 
 {% macro evm_fact_traces(schema, blockchain, network) %}
-    {%- set evm__fact_traces = get_rendered_model('livequery_models', 'evm__fact_traces', schema, blockchain, network, 'True') -%}
+    {%- set evm__fact_traces = get_rendered_model('livequery_models', 'evm__fact_traces', schema, blockchain, network) -%}
     {{ evm__fact_traces }}
 {% endmacro %}
 
 {% macro evm_ez_native_transfers(schema, blockchain, network) %}
-    {%- set evm__ez_native_transfers = get_rendered_model('livequery_models', 'evm__ez_native_transfers', schema, blockchain, network, 'True') -%}
+    {%- set evm__ez_native_transfers = get_rendered_model('livequery_models', 'evm__ez_native_transfers', schema, blockchain, network) -%}
     {{ evm__ez_native_transfers }}
 {% endmacro %}
 
 {% macro evm_ez_decoded_event_logs(schema, blockchain, network) %}
-    {%- set evm__ez_decoded_event_logs = get_rendered_model('livequery_models', 'evm__ez_decoded_event_logs', schema, blockchain, network, 'False') -%}
-
-    WITH __dbt__cte__core__fact_blocks AS (
-        SELECT * FROM table({{ schema }}.tf_fact_blocks(block_height, to_latest, block_size))
-    )
-
-    , __dbt_cte__core__fact_transactions AS (
-        SELECT * FROM table({{ schema }}.tf_fact_transactions(block_height, to_latest, block_size))
-    )
-
-    , __dbt_cte__core__fact_event_logs AS (
-        SELECT * FROM table({{ schema }}.tf_fact_event_logs(block_height, to_latest, block_size))
-    ),
-
+    {%- set evm__ez_decoded_event_logs = get_rendered_model('livequery_models', 'evm__ez_decoded_event_logs', schema, blockchain, network) -%}
     {{ evm__ez_decoded_event_logs }}
 {% endmacro %}
 
