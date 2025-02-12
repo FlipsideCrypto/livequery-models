@@ -62,6 +62,8 @@ models:
             +enabled: true
           core__ez_native_transfers:
             +enabled: true
+          core__ez_token_transfers:
+            +enabled: true
         silver:
           silver__blocks:
             +enabled: true

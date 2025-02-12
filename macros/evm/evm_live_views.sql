@@ -200,6 +200,11 @@ LATERAL FLATTEN(input => result) v
     {{ evm__ez_native_transfers }}
 {% endmacro %}
 
+{% macro evm_ez_token_transfers(schema, blockchain, network) %}
+    {%- set evm__ez_token_transfers = get_rendered_model('livequery_models', 'evm__ez_token_transfers', schema, blockchain, network) -%}
+    {{ evm__ez_token_transfers }}
+{% endmacro %}
+
 {% macro evm_ez_decoded_event_logs(schema, blockchain, network) %}
     {%- set evm__ez_decoded_event_logs = get_rendered_model('livequery_models', 'evm__ez_decoded_event_logs', schema, blockchain, network) -%}
     {{ evm__ez_decoded_event_logs }}
