@@ -4,7 +4,8 @@
 
     SELECT
         block_number,
-        fact_event_logs_id AS id,
+        tx_hash :: STRING || '-' || event_index :: STRING AS id,
+        OBJECT_CONSTRUCT('topics', topics, 'data', data, 'address', contract_address) AS event_data,
         utils.udf_evm_decode_log(abi, event_data)[0] AS DATA,
         TO_TIMESTAMP_NTZ(_inserted_timestamp) AS _inserted_timestamp
     FROM
@@ -14,5 +15,5 @@
     USING
         (contract_address)
     WHERE
-        tx_status = 'SUCCESS'
+        tx_succeeded = TRUE
 

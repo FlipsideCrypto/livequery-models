@@ -4,7 +4,7 @@ packages:
 - package: dbt-labs/dbt_utils
   version: 1.0.0
 - git: https://github.com/FlipsideCrypto/fsc-evm.git
-  revision: 0898439658da5a0d830c7dc40d9f4859a4f1012d
+  revision: 31a7c51d6486abdbf9e8c6f2f1a2e7079413df43
 - package: calogica/dbt_date
   version: 0.7.2
 - package: dbt-labs/dbt_external_tables
