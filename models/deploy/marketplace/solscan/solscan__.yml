@@ -7,8 +7,8 @@ models:
           - test_udf:
               name: test_solscan_public_api_get__get_status_200
               args: >
-                '/block/last'
-                , {'limit': 10}
+                '/chaininfo'
+                , {}
               assertions:
                 - result:status_code = 200
                 - result:error IS NULL
