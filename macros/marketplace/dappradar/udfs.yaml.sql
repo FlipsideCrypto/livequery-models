@@ -15,8 +15,8 @@
     SELECT
       live.udf_api(
         'GET',
-        concat('https://api.dappradar.com', PATH, '?', utils.udf_object_to_url_query_string(QUERY_ARGS)),
-        {'X-BLOBR-KEY': '{API_KEY}'},
+        concat('https://apis.dappradar.com', PATH, '?', utils.udf_object_to_url_query_string(QUERY_ARGS)),
+        {'X-API-KEY': '{API_KEY}'},
         {},
         '_FSC_SYS/DAPPRADAR'
     ) as response
@@ -33,8 +33,8 @@
     SELECT
       live.udf_api(
         'POST',
-        CONCAT('https://api.dappradar.com', PATH),
-        {'X-BLOBR-KEY': '{API_KEY}'},
+        CONCAT('https://apis.dappradar.com', PATH),
+        {'X-API-KEY': '{API_KEY}'},
         BODY,
         '_FSC_SYS/DAPPRADAR'
     ) as response

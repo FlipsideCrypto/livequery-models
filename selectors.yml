@@ -9,3 +9,7 @@ selectors:
           - livequery_models.deploy.marketplace.quicknode.test_quicknode_polygon*
           - livequery_models.deploy.marketplace.bitquery.* # API Credits not enough
           - livequery_models.deploy.marketplace.covalent.* # API Credits not enough
+          - livequery_models.deploy.marketplace.coingecko.* # API Credits not enough
+          - livequery_models.deploy.marketplace.allday.* # GraphQL API not working
+          - livequery_models.deploy.marketplace.playgrounds.* # API Endpoints not working
+          - livequery_models.deploy.marketplace.strangelove.* # API Endpoints not working
