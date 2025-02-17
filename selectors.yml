@@ -9,4 +9,3 @@ selectors:
           - livequery_models.deploy.marketplace.quicknode.test_quicknode_polygon*
           - livequery_models.deploy.marketplace.bitquery.* # API Credits not enough
           - livequery_models.deploy.marketplace.covalent.* # API Credits not enough
-          - livequery_models.deploy.marketplace.cmc.* # Cloudflare is blocking snowflake from accessing the endpoint

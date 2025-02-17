@@ -8,7 +8,11 @@ models:
               name: test_claude__post_status_200
               args: >
                 '/v1/messages'
-                , {'messages': [{'role': 'user', 'content': 'Hello, how are you?'}]}
+                , {
+                    'model': 'claude-3-5-sonnet-20241022',
+                    'max_tokens': 1024,
+                    'messages': [{'role': 'user', 'content': 'Hello, how are you?'}]
+                  }
               assertions:
                 - result:status_code = 200
                 - result:error IS NULL
