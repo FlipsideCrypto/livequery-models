@@ -6,6 +6,7 @@
 - name: {{ schema -}}.nfts_get
   signature:
     - [NETWORK, STRING, The blockchain/network]
+    - [VERSION, STRING, The version of the API to use]
     - [PATH, STRING, The path starting with '/']
     - [QUERY_ARGS, OBJECT, The query arguments]
   return_type:
@@ -16,7 +17,7 @@
     SELECT
       live.udf_api(
         concat(
-            'https://', NETWORK,'.g.alchemy.com/nft/v2/{',NETWORK,'}', PATH, '?',
+            'https://', NETWORK,'.g.alchemy.com/nft/', VERSION, '/{',NETWORK,'}', PATH, '?',
             utils.udf_object_to_url_query_string(QUERY_ARGS)
         ),
         '_FSC_SYS/ALCHEMY'

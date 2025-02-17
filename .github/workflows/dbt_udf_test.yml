@@ -25,6 +25,9 @@ on:
   schedule:
     # Runs “Daily at midnight GMT” (see https://crontab.guru)
     - cron: '0 0 * * *'
+  pull_request:
+    paths:
+      - 'models/deploy/marketplace/**'
 
 concurrency:
   group: ${{ github.workflow }}

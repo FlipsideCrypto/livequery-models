@@ -111,7 +111,7 @@
     - "VARIANT"
   options: |
     COMMENT = $$Triggers metadata refresh for an entire NFT collection and refreshes stale metadata after a collection reveal/collection changes. [Alchemy docs here](https://docs.alchemy.com/reference/reingestcontract).$$
-  sql: {{ alchemy_nft_get_api_call(utils_schema_name, 'reingestContract') | trim }}
+  sql: {{ alchemy_nft_get_api_call_version(utils_schema_name, 'invalidateContract', 'v3') | trim }}
 
 - name: {{ schema_name -}}.search_contract_metadata
   signature:
