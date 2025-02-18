@@ -28,6 +28,7 @@ on:
   pull_request:
     paths:
       - 'models/deploy/marketplace/**'
+      - 'macros/marketplace/**'
 
 concurrency:
   group: ${{ github.workflow }}
@@ -49,4 +50,13 @@ jobs:
     with:
       warehouse: ${{ inputs.warehouse }}
       environment: ${{ inputs.environment }}
+      command: dbt test --selector test_udfs --threads 24
+
+  pull_request:
+    uses: ./.github/workflows/dbt.yml
+    if: github.event_name == 'pull_request'
+    secrets: inherit
+    with:
+      warehouse: ${{ vars.WAREHOUSE }}
+      environment: dev
       command: dbt test --selector test_udfs --threads 24
