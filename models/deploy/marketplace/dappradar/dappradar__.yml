@@ -7,7 +7,7 @@ models:
           - test_udf:
               name: test_dappradar__get_status_200
               args: >
-                '/4tsxo4vuhotaojtl/defi/chains'
+                '/v2/defi/chains'
                 , {}
               assertions:
                 - result:status_code = 200
