@@ -17,7 +17,7 @@
         'GET',
         concat('https://pro-api.coinmarketcap.com', PATH, '?', utils.udf_object_to_url_query_string(QUERY_ARGS)),
         {'X-CMC_PRO_API_KEY': '{API_KEY}'},
-        {},
+        NULL,
         '_FSC_SYS/CMC'
     ) as response
 
