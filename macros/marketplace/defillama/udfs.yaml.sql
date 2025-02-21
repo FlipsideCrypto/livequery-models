@@ -17,7 +17,7 @@
         'GET',
         concat('https://api.llama.fi', PATH, '?', utils.udf_object_to_url_query_string(QUERY_ARGS)),
         {'Accept': '*/*', 'User-Agent': 'livequery/1.0 (Snowflake)', 'Host':'api.llama.fi', 'Connection': 'keep-alive'},
-        {},
+        NULL,
         IFF(ARRAY_CONTAINS('api_key'::VARIANT, OBJECT_KEYS(QUERY_ARGS)), '_FSC_SYS/DEFILLAMA', '')
     ) as response
 
