@@ -1,0 +1,157 @@
+version: 2
+models:
+  - name: claude__
+    columns:
+      - name: post
+        tests:
+          - test_udf:
+              name: test_claude__post_status_200
+              args: >
+                '/v1/messages'
+                , {
+                    'model': 'claude-3-5-sonnet-20241022',
+                    'max_tokens': 1024,
+                    'messages': [{'role': 'user', 'content': 'Hello, how are you?'}]
+                  }
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL
+
+      - name: post_messages
+        tests:
+          - test_udf:
+              name: test_claude__post_messages_only_one_message
+              args: >
+                [{'role': 'user', 'content': 'Hello, how are you?'}]
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL
+          - test_udf:
+              name: test_claude__post_messages_with_model
+              args: >
+                'claude-3-5-sonnet-20241022',
+                [{'role': 'user', 'content': 'Hello, how are you?'}],
+                1024
+              assertions:
+                - result:status_code = 200
+          - test_udf:
+              name: test_claude__post_messages_with_all_params
+              args: >
+                'claude-3-5-sonnet-20241022',
+                [{'role': 'user', 'content': 'Hello, how are you?'}],
+                1024,
+                0.5,
+                10,
+                0.95,
+                'You are a helpful assistant.'
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL
+
+      - name: count_message_tokens
+        tests:
+          - test_udf:
+              name: test_claude__count_message_tokens
+              args: >
+                'claude-3-5-sonnet-20241022',
+                [{'role': 'user', 'content': 'Hello, how are you?'}]
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL
+
+      - name: list_models
+        tests:
+          - test_udf:
+              name: test_claude__list_models
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL
+
+      - name: get_model
+        tests:
+          - test_udf:
+              name: test_claude__get_model
+              args: >
+                'claude-3-5-sonnet-20241022'
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL
+
+      - name: post_messages_batch
+        tests:
+          - test_udf:
+              name: test_claude__post_messages_batch
+              args: >
+                {
+                  'requests': [
+                    {
+                      'custom_id': '1',
+                      'params': {
+                        'model': 'claude-3-5-sonnet-20241022',
+                        'max_tokens': 1024,
+                        'messages': [{'role': 'user', 'content': 'Hello, how are you?'}]
+                      }
+                    },
+                    {
+                      'custom_id': '2',
+                      'params': {
+                        'model': 'claude-3-5-sonnet-20241022',
+                        'max_tokens': 1024,
+                        'messages': [{'role': 'user', 'content': 'What time is it?'}]
+                      }
+                    }
+                  ]
+                }
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL
+
+      - name: list_message_batches
+        tests:
+          - test_udf:
+              name: test_claude__list_message_batches
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL
+
+      - name: list_message_batches_with_before
+        tests:
+          - test_udf:
+              name: test_claude__list_message_batches_with_before
+              args: >
+                'msgbatch_01R8HDAhnozagFWe466yECsz',
+                1
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL
+
+      - name: list_message_batches_with_after
+        tests:
+          - test_udf:
+              name: test_claude__list_message_batches_with_after
+              args: >
+                'msgbatch_019gz7y3oXnLxgemRP4D7qnQ',
+                1
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL
+
+      - name: get_message_batch
+        tests:
+          - test_udf:
+              name: test_claude__get_message_batch
+              args: >
+                'msgbatch_019gz7y3oXnLxgemRP4D7qnQ'
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL
+
+      - name: get_message_batch_results
+        tests:
+          - test_udf:
+              name: test_claude__get_message_batch_results
+              args: >
+                'msgbatch_019gz7y3oXnLxgemRP4D7qnQ'
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL
