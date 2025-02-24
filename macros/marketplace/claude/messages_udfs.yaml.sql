@@ -1,4 +1,4 @@
-{% macro config_claude_messages_udfs(schema_name = "claude_messages", utils_schema_name = "claude_utils") -%}
+{% macro config_claude_messages_udfs(schema_name = "claude", utils_schema_name = "claude_utils") -%}
 {#
     This macro is used to generate API calls to Claude API endpoints
  #}
