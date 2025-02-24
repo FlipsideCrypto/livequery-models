@@ -86,7 +86,7 @@
           'GET',
           url,
           {},
-          {},
+          NULL,
           _utils.UDF_WHOAMI(),
           ''
       )

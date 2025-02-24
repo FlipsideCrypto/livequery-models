@@ -8,7 +8,7 @@ models:
               name: test_apilayer__get_status_200
               args: >
                 '/odds/sports'
-                , {}
+                , {'all': 'true'}
               assertions:
                 - result:status_code = 200
                 - result:error IS NULL
