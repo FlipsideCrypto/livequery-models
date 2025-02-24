@@ -29,10 +29,10 @@
 -- depends_on: {{ ref('fsc_evm', 'core__fact_event_logs') }}
 -- depends_on: {{ ref('fsc_evm', 'core__fact_traces') }}
 -- depends_on: {{ ref('fsc_evm', 'core__ez_native_transfers') }}
+-- depends_on: {{ ref('fsc_evm', 'core__ez_token_transfers') }}
 -- depends_on: {{ ref('fsc_evm', 'core__ez_decoded_event_logs') }}
 {%- set configs = [
     config_evm_rpc_primitives,
     config_evm_high_level_abstractions,
-    config_eth_high_level_abstractions
     ] -%}
 {{- ephemeral_deploy(configs) -}}

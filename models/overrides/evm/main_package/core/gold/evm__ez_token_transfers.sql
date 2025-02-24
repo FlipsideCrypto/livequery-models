@@ -11,5 +11,6 @@
 -- depends_on: {{ ref('fsc_evm', 'core__fact_transactions') }}
 -- depends_on: {{ ref('fsc_evm', 'core__fact_event_logs') }}
 -- depends_on: {{ ref('price__ez_prices_hourly') }}
+-- depends_on: {{ ref('core__dim_contracts') }}
 
 SELECT * FROM {{ ref('fsc_evm', 'core__ez_token_transfers') }}

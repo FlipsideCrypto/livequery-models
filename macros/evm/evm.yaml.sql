@@ -408,7 +408,7 @@
   sql: |
     {{ evm_fact_event_logs(schema,  blockchain, network) | indent(4) -}}
 
-- name: {{ schema -}}.tf_ez_decoded_event_logs
+{# - name: {{ schema -}}.tf_ez_decoded_event_logs
   signature:
     - [block_height, INTEGER, The start block height to get the logs from]
     - [to_latest, BOOLEAN, Whether to continue fetching logs until the latest block or not]
@@ -421,10 +421,8 @@
     VOLATILE
     COMMENT = $$Returns the ez decoded event logs data for a given block height. If to_latest is true, it will continue fetching blocks until the latest block. Otherwise, it will fetch blocks until the block height is reached.$$
   sql: |
-    {{ evm_ez_decoded_event_logs(schema, blockchain, network) | indent(4) -}}
+    {{ evm_ez_decoded_event_logs(schema, blockchain, network) | indent(4) -}} #}
 
-
-{#
 - name: {{ schema -}}.tf_fact_traces
   signature:
     - [block_height, INTEGER, The start block height to get the traces from]
@@ -438,10 +436,8 @@
     VOLATILE
     COMMENT = $$Returns the traces for a given block height. If to_latest is true, it will continue fetching traces until the latest block. Otherwise, it will fetch traces until the block height is reached.$$
   sql: |
-    {{ evm_fact_traces(schema,  blockchain, network) | indent(4) -}} #}
+    {{ evm_fact_traces(schema,  blockchain, network) | indent(4) -}}
 
-
-{#
 - name: {{ schema -}}.tf_ez_native_transfers
   signature:
     - [block_height, INTEGER, The start block height to get the transfers from]
@@ -449,24 +445,25 @@
     - [block_size, INTEGER, The number of blocks to fetch]
   return_type:
     - "TABLE(
-          tx_hash STRING,
-          block_number NUMBER,
+          block_number INTEGER,
           block_timestamp TIMESTAMP_NTZ,
-          tx_position NUMBER,
-          trace_index NUMBER,
-          origin_from_address STRING,
-          origin_to_address STRING,
-          origin_function_signature STRING,
+          tx_hash STRING,
+          tx_position INTEGER,
+          trace_index INTEGER,
+          trace_address STRING,
+          TYPE STRING,
           from_address STRING,
           to_address STRING,
           amount FLOAT,
           amount_precise_raw STRING,
           amount_precise STRING,
           amount_usd FLOAT,
+          origin_from_address STRING,
+          origin_to_address STRING,
+          origin_function_signature STRING,
           ez_native_transfers_id STRING,
           inserted_timestamp TIMESTAMP_NTZ,
-          modified_timestamp TIMESTAMP_NTZ,
-          identifier STRING
+          modified_timestamp TIMESTAMP_NTZ
           )"
   options: |
     NOT NULL
@@ -474,9 +471,8 @@
     VOLATILE
     COMMENT = $$Returns the native transfers for a given block height. If to_latest is true, it will continue fetching traces until the latest block. Otherwise, it will fetch traces until the block height is reached.$$
   sql: |
-    {{ evm_ez_native_transfers(schema,  blockchain, network) | indent(4) -}} #}
+    {{ evm_ez_native_transfers(schema,  blockchain, network) | indent(4) -}}
 
-{#
 - name: {{ schema -}}.tf_ez_token_transfers
   signature:
     - [block_height, INTEGER, The start block height to get the transfers from]
@@ -484,23 +480,23 @@
     - [block_size, INTEGER, The number of blocks to fetch]
   return_type:
     - "TABLE(
-          block_number NUMBER,
+          block_number INTEGER,
           block_timestamp TIMESTAMP_NTZ,
           tx_hash STRING,
-          tx_position NUMBER,
-          event_index NUMBER,
+          tx_position INTEGER,
+          event_index INTEGER,
           from_address STRING,
           to_address STRING,
           contract_address STRING,
           token_standard STRING,
           NAME STRING,
           symbol STRING,
-          decimals NUMBER,
+          decimals INTEGER,
           raw_amount_precise STRING,
-          raw_amount STRING,
-          amount_precise STRING,
-          amount FLOAT,
-          amount_usd FLOAT,
+          raw_amount FLOAT,
+          amount_precise_heal STRING,
+          amount_heal FLOAT,
+          amount_usd_heal FLOAT,
           origin_function_signature STRING,
           origin_from_address STRING,
           origin_to_address STRING,
@@ -514,7 +510,7 @@
     VOLATILE
     COMMENT = $$Returns the token transfers for a given block height. If to_latest is true, it will continue fetching traces until the latest block. Otherwise, it will fetch traces until the block height is reached.$$
   sql: |
-    {{ evm_ez_token_transfers(schema,  blockchain, network) | indent(4) -}} #}
+    {{ evm_ez_token_transfers(schema,  blockchain, network) | indent(4) -}}
 
 
 {%- endmacro -%}
