@@ -1,4 +1,4 @@
--- depends_on: {{ ref('live') }}
+
 {{ config(
     materialized = 'view',
     grants = {'+select': fromyaml(var('ROLES'))}
