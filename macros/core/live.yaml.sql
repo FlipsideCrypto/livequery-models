@@ -86,7 +86,7 @@
           'GET',
           url,
           {},
-          {},
+          NULL,
           _utils.UDF_WHOAMI(),
           ''
       )
@@ -103,7 +103,7 @@
           'GET',
           url,
           {},
-          {},
+          NULL,
           _utils.UDF_WHOAMI(),
           secret_name
       )
