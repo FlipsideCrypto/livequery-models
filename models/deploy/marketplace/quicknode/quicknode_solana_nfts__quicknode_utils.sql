@@ -1,4 +1,4 @@
--- depends_on: {{ ref('live') }}
+
 {%- set configs = [
     config_quicknode_solana_nfts_udfs,
     ] -%}
