@@ -1,4 +1,4 @@
-{% macro config_claude_messages_udfs(schema_name = "claude_messages", utils_schema_name = "claude_utils") -%}
+{% macro config_claude_messages_udfs(schema_name = "claude", utils_schema_name = "claude_utils") -%}
 {#
     This macro is used to generate API calls to Claude API endpoints
  #}
@@ -6,7 +6,7 @@
 {# Claude API Messages #}
 - name: {{ schema_name -}}.post_messages
   signature:
-    - [MESSAGES, OBJECT, Object of array of message objects]
+    - [MESSAGES, ARRAY, Array of message objects]
   return_type:
     - "VARIANT"
   options: |
@@ -24,7 +24,7 @@
 - name: {{ schema_name -}}.post_messages
   signature:
     - [MODEL, STRING, The model to use (e.g. 'claude-3-opus-20240229')]
-    - [MESSAGES, OBJECT, Object of array of message objects]
+    - [MESSAGES, ARRAY, Array of message objects]
     - [MAX_TOKENS, INTEGER, Maximum number of tokens to generate]
   return_type:
     - "VARIANT"
@@ -43,7 +43,7 @@
 - name: {{ schema_name -}}.post_messages
   signature:
     - [MODEL, STRING, The model to use (e.g. 'claude-3-opus-20240229')]
-    - [MESSAGES, OBJECT, Object of array of message objects]
+    - [MESSAGES, ARRAY, Array of message objects]
     - [MAX_TOKENS, INTEGER, Maximum number of tokens to generate]
     - [TEMPERATURE, FLOAT, Temperature for sampling (0-1)]
     - [TOP_K, INTEGER, Top K for sampling]

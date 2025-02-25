@@ -13,3 +13,4 @@ selectors:
           - livequery_models.deploy.marketplace.allday.* # GraphQL API not working
           - livequery_models.deploy.marketplace.playgrounds.* # API Endpoints not working
           - livequery_models.deploy.marketplace.strangelove.* # API Endpoints not working
+          - livequery_models.deploy.marketplace.apilayer.* # API Endpoints not working
