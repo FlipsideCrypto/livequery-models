@@ -1,9 +1,0 @@
-selectors:
-  - name: test_udfs
-    definition:
-      union:
-        - method: package
-          value: livequery_models
-        - exclude:
-          - livequery_models.deploy.marketplace.quicknode.test_quicknode_solana*
-          - livequery_models.deploy.marketplace.quicknode.test_quicknode_polygon*
