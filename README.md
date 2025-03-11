@@ -565,6 +565,10 @@ dbt run --var '{"UPDATE_SNOWFLAKE_TAGS":False}' -s models/core/core__fact_blocks
 ### Querying for existing tags on a model in snowflake
 
 ```sql
+-- Query for existing tags on a model in snowflake
+-- using the TAG_REFERENCES( '<object_name>' , '<object_domain>' ) function
+-- https://docs.snowflake.com/en/sql-reference/functions/tag_references#arguments
+
 select *
 from table(livequery.information_schema.tag_references('ethereum.core.fact_traces', 'table'));
 ```
