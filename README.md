@@ -10,39 +10,38 @@ enhancements to ensure effective use of the LiveQuery Functions.**
 
 ## Table of Contents
 
-- [LiveQuery Functions Overview](#livequery-functions-overview)
-  - [Table of Contents](#table-of-contents)
-- [LiveQuery Functions](#livequery-functions)
-- [Live Functions](#live-functions)
-  - [Limits and Best Practices](#limits-and-best-practices)
-  - [udf_api](#udf_api)
+* [LiveQuery Functions Overview](#livequery-functions-overview)
+  + [Table of Contents](#table-of-contents)
+* [LiveQuery Functions](#livequery-functions)
+* [Live Functions](#live-functions)
+  + [Limits and Best Practices](#limits-and-best-practices)
+  + [udf_api](#udf_api)
     - [Syntax](#syntax)
     - [Arguments](#arguments)
     - [Approved APIs](#approved-apis)
     - [Sample Queries](#sample-queries)
-- [Utility Functions](#utility-functions)
-  - [udf_hex_to_int](#udf_hex_to_int)
+* [Utility Functions](#utility-functions)
+  + [udf_hex_to_int](#udf_hex_to_int)
     - [Syntax](#syntax-1)
     - [Arguments](#arguments-1)
     - [Sample Queries](#sample-queries-1)
-  - [udf_hex_to_string](#udf_hex_to_string)
+  + [udf_hex_to_string](#udf_hex_to_string)
     - [Syntax](#syntax-2)
     - [Arguments](#arguments-2)
     - [Sample Queries](#sample-queries-2)
-  - [udf_json_rpc_call](#udf_json_rpc_call)
+  + [udf_json_rpc_call](#udf_json_rpc_call)
     - [Syntax](#syntax-3)
     - [Arguments](#arguments-3)
     - [Sample Queries](#sample-queries-3)
-- [Registering Secrets](#registering-secrets)
-- [Other DBT docs - LiveQuery Models](#other-dbt-docs---livequery-models)
-  - [Profile Set Up](#profile-set-up)
-  - [Variables](#variables)
-  - [Resources](#resources)
-  - [Applying Model Tags](#applying-model-tags)
-  - [Database / Schema level tags](#database--schema-level-tags)
+* [Registering Secrets](#registering-secrets)
+* [Other DBT docs - LiveQuery Models](#other-dbt-docs---livequery-models)
+  + [Profile Set Up](#profile-set-up)
+  + [Variables](#variables)
+  + [Resources](#resources)
+  + [Applying Model Tags](#applying-model-tags)
+  + [Database / Schema level tags](#database--schema-level-tags)
     - [Model tags](#model-tags)
     - [Querying for existing tags on a model in snowflake](#querying-for-existing-tags-on-a-model-in-snowflake)
-
 # LiveQuery Functions
 
 | Function Name                                 | Purpose                                       | Status      |
@@ -58,47 +57,54 @@ enhancements to ensure effective use of the LiveQuery Functions.**
 
 ## Limits and Best Practices
 
-- The `udf_api` function is very powerful, but it is also very easy to abuse.
+* The `udf_api` function is very powerful, but it is also very easy to abuse.
   Please be mindful of the following limits and best practices when using this
   function.
-  - We reserve the right to disable the `udf_api` function for particular users,
+  + We reserve the right to disable the `udf_api` function for particular users, 
     or as a whole, if we see it being abused.
-- Most APIs have rate limits. Please be mindful of these limits and do not abuse
+
+* Most APIs have rate limits. Please be mindful of these limits and do not abuse
   them.
-- Most of the limits you will encounter using this function will be on the API
+* Most of the limits you will encounter using this function will be on the API
   side. Please be sure to thoroughly read an API's documentation before using
   it.
-- **However, certain limits do apply to the `udf_api` function itself,
+* **However, certain limits do apply to the `udf_api` function itself, 
   including:**
-  - API request = 1 row in the query
-  - API request (per row) response size limit: 6MB
-  - API request timeout (per row) limit: 30 seconds
-  - Data app query timeout limit: 15 minutes
-- Batching is supported for JSON RPC requests.
-  - Again, this is very easy to abuse. Be mindful of the API's rate limits when
+  + API request = 1 row in the query
+  + API request (per row) response size limit: 6MB
+  + API request timeout (per row) limit: 30 seconds
+  + Data app query timeout limit: 15 minutes
+* Batching is supported for JSON RPC requests.
+  + Again, this is very easy to abuse. Be mindful of the API's rate limits when
     using this functionality.
-- It is strongly recommended that you start small and test your queries before
+
+* It is strongly recommended that you start small and test your queries before
   requesting large amounts of data.
-- Response data is not cached.
-  - This means that if you run the same query twice, that API will be called
+* Response data is not cached.
+  + This means that if you run the same query twice, that API will be called
     twice. A future enhancement may address this need, but for now, please be
     mindful of this limitation.
-- Many APIs require authentication.
-  - Please see the [secret registration section](#registering-secrets) below for
+
+* Many APIs require authentication.
+  + Please see the [secret registration section](#registering-secrets) below for
     more information on how to register secrets for use with the `udf_api`
+
     function.
-  - Technically, you can pass secrets into the `udf_api` function directly, but
+
+  + Technically, you can pass secrets into the `udf_api` function directly, but
     this is not recommended.
+
     - If you do pass your secrets without following the steps in the
       [secret registration section](#registering-secrets), your secrets will be
       visible in Flipside's internal query history.
-- These docs and this process will continue to evolve. More detailed examples
+
+* These docs and this process will continue to evolve. More detailed examples
   and powerful use cases will continue to be added. We are just getting started!
-- Please be patient with us as we work to improve this process.
-  - Upcoming enhancements include:
+* Please be patient with us as we work to improve this process.
+  + Upcoming enhancements include:
     - Support for more APIs
     - Secret management improvements
-- If you build something that you believe is powerful enough to be included in
+* If you build something that you believe is powerful enough to be included in
   this documentation, please reach out to us on
   [Discord](https://discord.com/channels/784442203187314689/1095714436599267409)!
   We would love to hear feedback and see what you are building.
@@ -125,7 +131,7 @@ livequery.live.udf_api(
 
 **Required**
 
-- `url` (string): The URL to call. If you are doing a GET request that does not
+* `url` (string): The URL to call. If you are doing a GET request that does not
   require authentication, you can pass the URL directly. Otherwise, you may need
   to pass in some or all of the optional arguments below. You may also need to
   pass a secret value into the URL if you are using an API that requires
@@ -134,13 +140,13 @@ livequery.live.udf_api(
 
 **Optional**
 
-- `method` (string): The HTTP method to use (GET, POST, etc.)
-- `headers` (object): A JSON object containing the headers to send with the
+* `method` (string): The HTTP method to use (GET, POST, etc.)
+* `headers` (object): A JSON object containing the headers to send with the
   request
-- `data` (object): A JSON object containing the data to send with the request.
+* `data` (object): A JSON object containing the data to send with the request.
   Batched JSON RPC requests are supported by passing an array of JSON RPC
   requests.
-- `secret_name` (string): The name of the secret to use for authentication.
+* `secret_name` (string): The name of the secret to use for authentication.
   Please see the [secret registration section](#registering-secrets) below for
   more information.
 
@@ -198,7 +204,6 @@ SELECT
      livequery.utils.udf_hex_to_int(hex_block) :: INT AS int_block
 FROM
      base;
-
 
 -- Get the latest balance for a wallet, please note you will need to register your node secrets
 -- This is a general ETH call example, and can be used for any contract and function
@@ -305,7 +310,6 @@ FROM
             input => response :data
      );
 
-
 ```
 
 </details>
@@ -346,13 +350,13 @@ livequery.utils.udf_hex_to_int(
 
 **Required**
 
-- `hex` (string): The hex string to convert
+* `hex` (string): The hex string to convert
 
 **Optional**
 
-- `encoding` (string): The encoding to use. Valid values are `s2c` and `hex`.
+* `encoding` (string): The encoding to use. Valid values are `s2c` and `hex`.
   This parameter is optional. If not provided, the function will default to
-  `hex`.
+`hex` .
 
 ### Sample Queries
 
@@ -399,7 +403,7 @@ livequery.utils.udf_hex_to_string(
 
 **Required**
 
-- `hex` (string): The hex string to convert
+* `hex` (string): The hex string to convert
 
 ### Sample Queries
 
@@ -433,13 +437,13 @@ livequery.utils.udf_json_rpc_call(
 
 **Required**
 
-- `method` (string): The method to call
-- `params` (array, object): The parameters to pass to the method. This can be an
+* `method` (string): The method to call
+* `params` (array, object): The parameters to pass to the method. This can be an
   array or an object.
 
 **Optional**
 
-- `id` (string): The ID of the request. This parameter is optional. If not
+* `id` (string): The ID of the request. This parameter is optional. If not
   provided, the function will default to a random number.
 
 ### Sample Queries
@@ -490,7 +494,7 @@ FROM
 
 # Registering Secrets
 
-With LiveQuery you can safely store encrypted credentials, such as an API key,
+With LiveQuery you can safely store encrypted credentials, such as an API key, 
 with Flipside. This allows you to securely reference your credentials in your
 queries without exposing them directly.
 
@@ -502,7 +506,7 @@ To register a secret, follow these steps:
    without referencing it or exposing keys directly.
 2. Fill out the form and click **_Submit this Credential_**
 3. Paste the provided query into [Flipside](https://flipside.new) and query your
-   node directly in the app with your submitted Credential (`{my_key}`)
+   node directly in the app with your submitted Credential ( `{my_key}` )
 
 Registering a secret from Quicknode to query nodes directly in Flipside:
 
@@ -513,7 +517,6 @@ Registering a secret from Quicknode to query nodes directly in Flipside:
    Setup or Security parameters.
 3. Follow the steps above to register your secret
 4. See [live.udf_api](#udf_api) for sample queries
-
 # Other DBT docs - LiveQuery Models
 
 Dbt repo for managing LiveQuery database.
@@ -558,13 +561,13 @@ livequery:
 
 To control the creation of UDF or SP macros with dbt run:
 
-- UPDATE_UDFS_AND_SPS When True, executes all macros included in the
-  on-run-start hooks within dbt_project.yml on model run as normal When False,
+* UPDATE_UDFS_AND_SPS When True, executes all macros included in the
+  on-run-start hooks within dbt_project.yml on model run as normal When False, 
   none of the on-run-start macros are executed on model run
 
 Default values are False
 
-- Usage: `dbt run --vars '{"UPDATE_UDFS_AND_SPS":True}' -m ...`
+* Usage: `dbt run --vars '{"UPDATE_UDFS_AND_SPS":True}' -m ...`
 
 Dropping and creating udfs can also be done without running a model:
 
@@ -575,13 +578,13 @@ dbt run-operation create_udfs --vars '{"UPDATE_UDFS_AND_SPS":True}' --args '{"dr
 
 ## Resources
 
-- Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
-- Check out [Discourse](https://discourse.getdbt.com/) for commonly asked
+* Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
+* Check out [Discourse](https://discourse.getdbt.com/) for commonly asked
   questions and answers
-- Join the [chat](https://community.getdbt.com/) on Slack for live discussions
+* Join the [chat](https://community.getdbt.com/) on Slack for live discussions
   and support
-- Find [dbt events](https://events.getdbt.com) near you
-- Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's
+* Find [dbt events](https://events.getdbt.com) near you
+* Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's
   development and best practices
 
 ## Applying Model Tags
@@ -589,6 +592,7 @@ dbt run-operation create_udfs --vars '{"UPDATE_UDFS_AND_SPS":True}' --args '{"dr
 ## Database / Schema level tags
 
 Database and schema tags are applied via the `add_database_or_schema_tags`
+
 macro. These tags are inherited by their downstream objects. To add/modify tags
 call the appropriate tag set function within the macro.
 
