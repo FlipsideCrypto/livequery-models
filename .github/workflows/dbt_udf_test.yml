@@ -1,5 +1,5 @@
 name: test udfs
-run-name: ${{ github.event_name == 'schedule' && 'prod' || github.event_name == 'workflow_dispatch' && inputs.environment || 'dev' }} - ${{ github.event.inputs.branch || github.pull_request.title || 'main' }}
+run-name: ${{ github.event_name == 'schedule' && 'prod' || github.event_name == 'workflow_dispatch' && inputs.environment || 'dev' }} - ${{ github.event.inputs.branch || github.event.pull_request.title || 'main' }}
 
 on:
   workflow_dispatch:
