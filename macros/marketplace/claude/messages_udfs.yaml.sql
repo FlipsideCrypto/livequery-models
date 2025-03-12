@@ -70,7 +70,7 @@
 - name: {{ schema_name -}}.count_message_tokens
   signature:
     - [MODEL, STRING, The model to use (e.g. 'claude-3-5-sonnet-20241022')]
-    - [MESSAGES, OBJECT, Object of array of message objects]
+    - [MESSAGES, ARRAY, Array of message objects]
   return_type:
     - "VARIANT"
   options: |
