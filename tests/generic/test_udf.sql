@@ -2,14 +2,13 @@
     {#
         This is a generic test for UDFs.
         The udfs are deployed using ephemeral models, as of dbt-core > 1.8
-        we need to use `this.identifier` get schema.udf to test the udf.
+        we need to use `this.identifier` to extract the schema from for base_test_udf().
      #}
     
     {% set schema = none %}
     
-    {# Try to extract schema from 'this' when executing #}
     {% if execute %}
-        {# Extract schema based on standard pattern #}
+        {# Extract schema based on standard pattern `test__<schema_name>_<test_name> #}
         {% set test_identifier = this.identifier %}
         
         {% if test_identifier.startswith('test_') %}
@@ -21,10 +20,8 @@
             {# For identifiers like _utils_<test_name> #}
             {% set parts = test_identifier.split('_') %}
             {% if parts | length > 2 %}
-                {# Reconstruct schema with underscore prefix #}
                 {% set schema = '_' ~ parts[1] %}
             {% else %}
-                {# Fallback for simple cases #}
                 {% set schema = parts[0] %}
             {% endif %}
         {% else %}
