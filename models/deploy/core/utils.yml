@@ -5,6 +5,7 @@ models:
       - name: udf_json_rpc_call
         tests:
           - test_udf:
+              name: test__utils_udf_json_rpc_call
               args: "'foo', [], 1"
               assertions:
                 - >
@@ -17,182 +18,182 @@ models:
       - name: udf_urlencode
         tests:
           - test_udf:
-              name: test_utils__udf_urlencode_dict_true_1
+              name: test__utils_udf_urlencode_dict_true_1
               args: >
                 {'a':'b'}, TRUE
               assertions:
                 - result = 'a=b'
           - test_udf:
-              name: test_utils__udf_urlencode_dict_true_2
+              name: test__utils_udf_urlencode_dict_true_2
               args: >
                 {'a':'a', 'b':'b'}, TRUE
               assertions:
                 - result = 'a=a&b=b'
           - test_udf:
-              name: test_utils__udf_urlencode_dict_true_space
+              name: test__utils_udf_urlencode_dict_true_space
               args: >
                   {'space': 'abc 123'}, TRUE
               assertions:
                 - result = 'space=abc+123'
           - test_udf:
-              name: test_utils__udf_urlencode_dict_true_special
+              name: test__utils_udf_urlencode_dict_true_special
               args: >
                   {'special!': ' !@#$,+"'}, TRUE
               assertions:
                 - result = 'special%21=+%21%40%23%24%2C%2B%22'
           - test_udf:
-              name: test_utils__udf_urlencode_dict_true_array
+              name: test__utils_udf_urlencode_dict_true_array
               args: >
                   {'array': [0, 1, 2]}, TRUE
               assertions:
                 - result = 'array=0&array=1&array=2'
           - test_udf:
-              name: test_utils__udf_urlencode_dict_false_1
+              name: test__utils_udf_urlencode_dict_false_1
               args: >
                 {'a':'b'}, FALSE
               assertions:
                 - result = 'a=b'
           - test_udf:
-              name: test_utils__udf_urlencode_dict_false_2
+              name: test__utils_udf_urlencode_dict_false_2
               args: >
                 {'a':'b', 'b':'b'}, FALSE
               assertions:
                 - result = 'a=b&b=b'
           - test_udf:
-              name: test_utils__udf_urlencode_dict_false_space
+              name: test__utils_udf_urlencode_dict_false_space
               args: >
                   {'space': 'abc 123'}, FALSE
               assertions:
                 - result = 'space=abc+123'
           - test_udf:
-              name: test_utils__udf_urlencode_dict_false_special
+              name: test__utils_udf_urlencode_dict_false_special
               args: >
                   {'special!': ' !@#$,+"'}, FALSE
               assertions:
                 - result = 'special%21=+%21%40%23%24%2C%2B%22'
           - test_udf:
-              name: test_utils__udf_urlencode_dict_false_array
+              name: test__utils_udf_urlencode_dict_false_array
               args: >
                   {'array': [0, 1, 2]}, FALSE
               assertions:
                 - result = 'array=%5B0%2C+1%2C+2%5D'
           - test_udf:
-              name: test_utils__udf_urlencode_dict_1
+              name: test__utils_udf_urlencode_dict_1
               args: >
                 {'a':'b'}
               assertions:
                 - result = 'a=b'
           - test_udf:
-              name: test_utils__udf_urlencode_dict_2
+              name: test__utils_udf_urlencode_dict_2
               args: >
                 {'a':'b', 'b':'b'}
               assertions:
                 - result = 'a=b&b=b'
           - test_udf:
-              name: test_utils__udf_urlencode_dict_space
+              name: test__utils_udf_urlencode_dict_space
               args: >
                   {'space': 'abc 123'}
               assertions:
                 - result = 'space=abc+123'
           - test_udf:
-              name: test_utils__udf_urlencode_dict_special
+              name: test__utils_udf_urlencode_dict_special
               args: >
                   {'special!': ' !@#$,+"'}
               assertions:
                 - result = 'special%21=+%21%40%23%24%2C%2B%22'
           - test_udf:
-              name: test_utils__udf_urlencode_dict_array
+              name: test__utils_udf_urlencode_dict_array
               args: >
                   {'array': [0, 1, 2]}
               assertions:
                 - result = 'array=%5B0%2C+1%2C+2%5D'
           # write tests but use arrays of arrays instead of dictionaries
           - test_udf:
-              name: test_utils__udf_urlencode_array_true_1
+              name: test__utils_udf_urlencode_array_true_1
               args: >
                 [['a', 'b']], TRUE
               assertions:
                 - result = 'a=b'
           - test_udf:
-              name: test_utils__udf_urlencode_array_true_2
+              name: test__utils_udf_urlencode_array_true_2
               args: >
                 [['a', 'a'], ['b', 'b']], TRUE
               assertions:
                 - result = 'a=a&b=b'
           - test_udf:
-              name: test_utils__udf_urlencode_array_true_space
+              name: test__utils_udf_urlencode_array_true_space
               args: >
                   [['space', 'abc 123']], TRUE
               assertions:
                 - result = 'space=abc+123'
           - test_udf:
-              name: test_utils__udf_urlencode_array_true_special
+              name: test__utils_udf_urlencode_array_true_special
               args: >
                   [['special!', ' !@#$,+"']], TRUE
               assertions:
                 - result = 'special%21=+%21%40%23%24%2C%2B%22'
           - test_udf:
-              name: test_utils__udf_urlencode_array_true_array
+              name: test__utils_udf_urlencode_array_true_array
               args: >
                   [['array', [0, 1, 2]]], TRUE
               assertions:
                 - result = 'array=0&array=1&array=2'
           - test_udf:
-              name: test_utils__udf_urlencode_array_false_1
+              name: test__utils_udf_urlencode_array_false_1
               args: >
                 [['a', 'b']], FALSE
               assertions:
                 - result = 'a=b'
           - test_udf:
-              name: test_utils__udf_urlencode_array_false_2
+              name: test__utils_udf_urlencode_array_false_2
               args: >
                 [['a', 'a'], ['b', 'b']], FALSE
               assertions:
                 - result = 'a=a&b=b'
           - test_udf:
-              name: test_utils__udf_urlencode_array_false_space
+              name: test__utils_udf_urlencode_array_false_space
               args: >
                   [['space', 'abc 123']], FALSE
               assertions:
                 - result = 'space=abc+123'
           - test_udf:
-              name: test_utils__udf_urlencode_array_false_special
+              name: test__utils_udf_urlencode_array_false_special
               args: >
                   [['special!', ' !@#$,+"']], FALSE
               assertions:
                 - result = 'special%21=+%21%40%23%24%2C%2B%22'
           - test_udf:
-              name: test_utils__udf_urlencode_array_false_array
+              name: test__utils_udf_urlencode_array_false_array
               args: >
                   [['array', [0, 1, 2]]], FALSE
               assertions:
                 - result = 'array=%5B0%2C+1%2C+2%5D'
           - test_udf:
-              name: test_utils__udf_urlencode_array_1
+              name: test__utils_udf_urlencode_array_1
               args: >
                 [['a', 'b']]
               assertions:
                 - result = 'a=b'
           - test_udf:
-              name: test_utils__udf_urlencode_array_2
+              name: test__utils_udf_urlencode_array_2
               args: >
                 [['a', 'a'], ['b', 'b']]
               assertions:
                 - result = 'a=a&b=b'
           - test_udf:
-              name: test_utils__udf_urlencode_array_space
+              name: test__utils_udf_urlencode_array_space
               args: >
                   [['space', 'abc 123']]
               assertions:
                 - result = 'space=abc+123'
           - test_udf:
-              name: test_utils__udf_urlencode_array_special
+              name: test__utils_udf_urlencode_array_special
               args: >
                   [['special!', ' !@#$,+"']]
               assertions:
                 - result = 'special%21=+%21%40%23%24%2C%2B%22'
           - test_udf:
-              name: test_utils__udf_urlencode_array_array
+              name: test__utils_udf_urlencode_array_array
               args: >
                   [['array', [0, 1, 2]]]
               assertions:
@@ -200,35 +201,35 @@ models:
       - name: udf_int_to_binary
         tests:
           - test_udf:
-              name: test_utils__udf_int_to_binary
+              name: test__utils_udf_int_to_binary
               args: 123456789
               assertions: 
               - result = '111010110111100110100010101'
       - name: udf_int_to_binary
         tests:
           - test_udf:
-              name: test_utils__udf_int_to_binary_large_number
+              name: test__utils_udf_int_to_binary_large_number
               args: "'123456789123456789123456789123456789123456789'"
               assertions: 
               - result = '101100010010011011011100101001111010001001110011010111111101111101010111011001001101000001111110001010100001011011010000100000001000101111100010101'
       - name: udf_binary_to_int
         tests:
           - test_udf:
-              name: test_utils__udf_binary_to_int
+              name: test__utils_udf_binary_to_int
               args: '111010110111100110100010101'
               assertions: 
               - result = '123456789'
       - name: udf_binary_to_int
         tests:
           - test_udf:
-              name: test_utils__udf_binary_to_int_large_number
+              name: test__utils_udf_binary_to_int_large_number
               args: "'110110110100110110100101110101100110100000101111100010101'"
               assertions: 
               - result = '123456789123456789'
       - name: udf_evm_decode_log
         tests:
           - test_udf:
-              name: test_utils__udf_evm_decode_log
+              name: test__utils_udf_evm_decode_log
               args: >
                 {
                   'anonymous': false,
