@@ -1,5 +1,6 @@
 -- Get Near Chain Head
-{% macro near_live_view_latest_block_height() %}
+
+{% macro near_live_view_latest_block_height(schema, blockchain, network) %}
 {#
      This macro retrieves the latest block height from the NEAR blockchain.
     
@@ -31,6 +32,36 @@ SELECT
     ) as max_height
 {% endmacro %}
 
+-- Get Near Block Data
+{% macro near_live_view_target_blocks(schema, blockchain, network, batch_size=10) %}
+    WITH heights AS (
+        {{ near_live_view_latest_block_height(schema, blockchain, network) | indent(4) -}}
+    ),
+    block_spine AS (
+        SELECT
+            ROW_NUMBER() OVER (
+                ORDER BY
+                    NULL
+            ) - 1 + COALESCE(block_height, latest_block_height)::integer AS block_number,
+            min_height,
+            IFF(
+                COALESCE(to_latest, false),
+                block_height,
+                min_height
+            ) AS max_height,
+            latest_block_height
+        FROM
+            TABLE(generator(ROWCOUNT => 1000)),
+            heights qualify block_number BETWEEN min_height
+            AND max_height
+    )
+
+    SELECT
+        CEIL(ROW_NUMBER() OVER (ORDER BY block_number) / {{ batch_size }}) AS batch_id,
+        block_number,
+        latest_block_height
+    FROM block_spine
+{% endmacro %}
 
 {% macro near_live_view_udf_get_block_data() %}
 {#

@@ -38,6 +38,13 @@
     {%- for dep_id in target_node.depends_on.nodes -%}
         {{ log("Processing dependency: " ~ dep_id, info=True) }}
         {%- set dep_node = graph.nodes[dep_id] -%}
+
+        {# Skip FR nodes if this is an incremental run #}
+        {%- if 'FR' in dep_node.name -%}
+            {{ log("Skipping FR dependency for incremental run: " ~ dep_node.name, info=True) }}
+            {%- continue -%}
+        {%- endif -%}
+
         {%- set rendered_sql = render(dep_node.raw_code) | trim -%}
 
         {%- if rendered_sql -%}

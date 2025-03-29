@@ -4,4 +4,4 @@ packages:
   - package: dbt-labs/dbt_utils
     version: [">=1.0.0", "<1.1.0"]
   - git: "https://github.com/FlipsideCrypto/near-models.git" 
-    revision: "04fc27bec7971b3bbd9d77591889ce163db31eb4" 
+    revision: "v1.0.0" 

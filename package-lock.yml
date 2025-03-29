@@ -4,7 +4,7 @@ packages:
 - package: dbt-labs/dbt_utils
   version: 1.0.0
 - git: https://github.com/FlipsideCrypto/near-models.git
-  revision: 04fc27bec7971b3bbd9d77591889ce163db31eb4
+  revision: fae117661d70ca9dac1fde6966ce102e5f438f21
 - package: calogica/dbt_date
   version: 0.7.2
 - git: https://github.com/FlipsideCrypto/fsc-utils.git
@@ -12,5 +12,5 @@ packages:
 - package: get-select/dbt_snowflake_query_tags
   version: 2.5.0
 - git: https://github.com/FlipsideCrypto/livequery-base.git
-  revision: 10b53fd690bbbcfc26d65a3a432c004c9e4978bb
-sha1_hash: 4540b0d3844a74ca5fae20487414c67b310b9d75
+  revision: d60977ef9abf27435cd61146a3681f8fab0d3a3a
+sha1_hash: e829360e608a6713d3d45880218815ed538206be

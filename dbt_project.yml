@@ -44,33 +44,19 @@ models:
     overrides:
       +materialized: ephemeral
   near_models:
-    +enabled: false # disable package by default
-    +schema: streamline
-    +database: near_dev
+    +enabled: false # enable package
     gold:
       core:
         +schema: core
         +materialized: ephemeral
         core__fact_blocks:
           +enabled: true
-        core__fact_transactions:
-          +enabled: true
-        core__fact_receipts:
-          +enabled: true
     silver:
-      streamline:
+      core:
         +materialized: ephemeral
-        silver__streamline_blocks:
+        silver__blocks_final:
           +enabled: true
-        silver__streamline_receipts:
-          +enabled: true
-        silver__streamline_receipts_final:
-          +enabled: true
-        silver__streamline_transactions:
-          +enabled: true
-        silver__streamline_transactions_final:
-          +enabled: true
-        silver__flatten_receipts:
+        silver__blocks_v2:
           +enabled: true
 
 
