@@ -14,8 +14,15 @@ raw_blocks AS (
     {{ near_live_table_get_raw_block_data('spine') | indent(4) -}}
 )
 
-SELECT *, 
-    value as data,
-    round(block_height,-3) as partition_key,
-    CURRENT_TIMESTAMP() as _inserted_timestamp
-FROM raw_blocks
+SELECT
+    OBJECT_INSERT(
+        rb.rpc_data_result,          
+        'BLOCK_ID',                 
+        rb.block_height,             
+        TRUE                         
+    ) AS value,
+    rb.rpc_data_result AS data,
+    round(rb.block_height, -3) AS partition_key,
+    CURRENT_TIMESTAMP() AS _inserted_timestamp
+FROM
+    raw_blocks rb
