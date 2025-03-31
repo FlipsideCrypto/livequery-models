@@ -75,12 +75,18 @@ FROM
 {% macro near_live_table_get_raw_block_data(spine) %} 
 SELECT
     block_height,
+    DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS request_timestamp,
     live.udf_api(
-        'https://rpc.mainnet.near.org',
-        livequery_dev.utils.udf_json_rpc_call(
-            'block',
-            {'block_id': block_height}
-        )
+        'POST',
+        '{Service}',
+        {'Content-Type' : 'application/json'},
+        {
+            'jsonrpc' : '2.0',
+            'method' : 'block',
+            'id' : 'Flipside/getBlock/' || request_timestamp || '/' || block_height :: STRING,
+            'params':{'block_id': block_height}
+        },
+        'Vault/prod/near/quicknode/mainnet'
     ):data.result AS rpc_data_result
 from
     {{spine}}
