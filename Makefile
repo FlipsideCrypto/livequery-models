@@ -7,7 +7,8 @@ rm_logs:
 		echo "Logs directory does not exist"; \
 	fi
 
-deploy_near_mainnet_lv: rm_logs
+# deploy near mainnet live table udtf
+deploy_near_mainnet_lt: rm_logs
 	dbt run \
 	-s livequery_models.deploy.near.near__mainnet \
 	--vars '{LQ_UPDATE_UDFS_AND_SPS: true, UPDATE_UDFS_AND_SPS: false}' \
