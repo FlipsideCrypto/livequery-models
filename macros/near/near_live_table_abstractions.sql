@@ -76,7 +76,7 @@ SELECT
             'block',
             {'block_id': block_height}
         )
-    ):data.result AS value
+    ):data.result AS rpc_data_result
 from
     {{spine}}
 
