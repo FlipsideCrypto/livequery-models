@@ -13,12 +13,12 @@ SELECT
     coalesce(
         block_height,
         latest_block_height
-    ) as min_height,
+    ) AS min_height,
     iff(
         coalesce(to_latest, false),
         latest_block_height,
         min_height
-    ) as max_height
+    ) AS max_height
 {% endmacro %}
 
 -- Get Near Block Data
@@ -32,17 +32,17 @@ SELECT
                 ORDER BY
                     NULL
             ) - 1 + COALESCE(block_height, latest_block_height)::integer AS block_height,
-            min_height,
+            h.min_height,
             IFF(
                 COALESCE(to_latest, false),
                 block_height,
                 min_height
             ) AS max_height,
-            latest_block_height
+            h.latest_block_height
         FROM
-            TABLE(generator(ROWCOUNT => 1000)),
-            heights qualify block_height BETWEEN min_height
-            AND max_height
+            TABLE(generator(ROWCOUNT => block_size)),
+            heights h
+            qualify block_height BETWEEN h.min_height AND h.max_height
     )
     SELECT
         block_height,
@@ -60,10 +60,15 @@ FROM
             row_number() over (order by seq4()) - 1 + COALESCE(block_id, 0)::integer as block_height,
             min_height,
             max_height
+        
         FROM
-            table(generator(ROWCOUNT => 1000)),
-            {{ table_name }}
-        QUALIFY block_height BETWEEN min_height AND max_height
+                TABLE(generator(ROWCOUNT => IFF(
+                    COALESCE(to_latest, false),
+                    latest_block_height - min_height + 1,
+                    1
+                ))),
+                {{ table_name }}
+            qualify block_height BETWEEN min_height AND max_height
     )
 {% endmacro %}
    
