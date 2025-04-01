@@ -2,24 +2,24 @@
 
 {% macro near_live_table_latest_block_height() %}
     SELECT
-        (
-            SELECT
-                rpc_result:result:header:height::INTEGER
-            FROM
-                (
-                    SELECT
-                        live.udf_api(
-                            'https://rpc.mainnet.near.org',
-                            utils.udf_json_rpc_call('block', {'finality' : 'final'})
-                        ) :data AS rpc_result
-                )
-        ) AS latest_block_height,
+        f.value::INTEGER AS latest_block_height,
         coalesce(_block_height, latest_block_height) AS min_height,
         IFF(
             coalesce(to_latest, false),
             latest_block_height,
             min_height
         ) AS max_height
+    FROM
+        (
+            SELECT
+                ARRAY_CONSTRUCT( 
+                    live.udf_api(
+                        'https://rpc.mainnet.near.org',
+                        utils.udf_json_rpc_call('block', {'finality' : 'final'})
+                    ) :data :result:header:height::INTEGER
+                ) AS result_array
+        ) volatile_data
+        , LATERAL FLATTEN(input => volatile_data.result_array) f
 {% endmacro %}
 
 -- Get Near Block Data
@@ -38,7 +38,7 @@
             h.max_height,
             h.latest_block_height
         FROM
-            TABLE(generator(ROWCOUNT => 1000)),
+            TABLE(generator(ROWCOUNT => 10)),
             heights h
         qualify block_number BETWEEN h.min_height AND h.max_height
     )
