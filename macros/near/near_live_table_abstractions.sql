@@ -2,7 +2,6 @@
 
 {% macro near_live_table_latest_block_height() %}
     SELECT
-        -- Calculate latest_block_height once using a scalar subquery
         (
             SELECT
                 rpc_result:result:header:height::INTEGER
@@ -15,7 +14,7 @@
                         ) :data AS rpc_result
                 )
         ) AS latest_block_height,
-        coalesce(block_height, latest_block_height) AS min_height,
+        coalesce(_block_height, latest_block_height) AS min_height,
         IFF(
             coalesce(to_latest, false),
             latest_block_height,
@@ -34,21 +33,17 @@
             ROW_NUMBER() OVER (
                 ORDER BY
                     NULL
-            ) - 1 + COALESCE(block_height, latest_block_height)::integer AS block_height,
-            min_height,
-            IFF(
-                COALESCE(to_latest, false),
-                block_height,
-                min_height
-            ) AS max_height,
-            latest_block_height
+            ) - 1 + h.min_height::integer AS block_number,
+            h.min_height,
+            h.max_height,
+            h.latest_block_height
         FROM
-            TABLE(generator(ROWCOUNT => 100)),
-            heights qualify block_height BETWEEN min_height
-            AND max_height
+            TABLE(generator(ROWCOUNT => 1000)),
+            heights h
+        qualify block_number BETWEEN h.min_height AND h.max_height
     )
     SELECT
-        block_height,
+        block_number as block_height,
         latest_block_height
     FROM block_spine
 {% endmacro %}
@@ -144,4 +139,68 @@ FROM {{raw_blocks}}
     {{ near_live_table_fact_blocks }}
 {% endmacro %}
 
+{% macro near_live_table_fact_transactions(schema, blockchain, network) %}
+WITH spine AS (
+    {{ near_live_table_target_blocks() | indent(4) -}}
+),
+raw_block_details AS (
+    SELECT
+        s.block_height,
+        live.udf_api(
+            'https://rpc.mainnet.near.org',
+            utils.udf_json_rpc_call('block', {'block_id': s.block_height})
+        ):data:result AS block_data
+    FROM spine s
+),
+block_chunks AS (
+    SELECT
+        b.block_height,
+        b.block_data:header:timestamp::STRING AS block_timestamp_str,
+        f.value AS chunk
+    FROM raw_block_details b,
+            LATERAL FLATTEN(input => b.block_data:chunks) f
+),
+chunk_txs AS (
+    SELECT
+        bc.block_height,
+        bc.block_timestamp_str,
+        tx.value:hash::STRING AS tx_hash,
+        tx.value:signer_id::STRING AS tx_signer -- Crucial for EXPERIMENTAL_tx_status
+    FROM block_chunks bc,
+            LATERAL FLATTEN(input => bc.chunk:transactions) tx
+),
+tx_status_details AS (
+    SELECT
+        tx.block_height,
+        tx.block_timestamp_str,
+        tx.tx_hash,
+        tx.tx_signer,
+        live.udf_api(
+            'https://rpc.mainnet.near.org',
+            utils.udf_json_rpc_call(
+                'EXPERIMENTAL_tx_status',
+                [tx.tx_hash, tx.tx_signer]
+                -- Possibly add {'wait_until': 'FINAL'} if needed/supported by UDF
+            )
+        ):data:result AS tx_result
+    FROM chunk_txs tx
+)
+SELECT
+    tx_hash,
+    block_height AS block_id,
+    TO_TIMESTAMP_NTZ(block_timestamp_str) AS block_timestamp,
+    tx_result:transaction:nonce::INT AS nonce,
+    tx_result:transaction:signature::STRING AS signature,
+    tx_result:transaction:receiver_id::STRING AS tx_receiver,
+    tx_result:transaction:signer_id::STRING AS tx_signer,
+    tx_result:transaction AS tx, -- Entire transaction object
+    tx_result:transaction_outcome:outcome:gas_burnt::FLOAT AS gas_used,
+    0.0::FLOAT AS transaction_fee, -- Placeholder - needs calculation
+    0.0::FLOAT AS attached_gas, -- Placeholder - needs extraction from tx:actions
+    (tx_result:status:SuccessValue IS NOT NULL) AS tx_succeeded,
+    MD5(tx_hash) AS fact_transactions_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp
+FROM tx_status_details
+{% endmacro %}
 

@@ -108,13 +108,31 @@
     blockchain: blockchain name
     network: network name
     drop_: whether to drop or create the udfs
- #}
+#}
   {% set schema = blockchain if not network else blockchain ~ "_" ~ network %}
     CREATE SCHEMA IF NOT EXISTS {{ schema }};
-    {%-  set configs = fromyaml(config_func(blockchain, network)) if network else fromyaml(config_func(schema, blockchain)) -%}
+
+    {# Log the macro name received #}
+    {% do log("crud_udfs_by_chain: Received config_func macro name: " ~ config_func, info=True) %}
+
+    {# Log the raw output of calling the config macro #}
+    {% set raw_config_output = config_func(blockchain, network) if network else config_func(schema, blockchain) %}
+    {% do log("crud_udfs_by_chain: Raw output from calling " ~ config_func ~ ":\n" ~ raw_config_output, info=True) %}
+
+    {# Log before and after fromyaml #}
+    {% do log("crud_udfs_by_chain: Attempting fromyaml...", info=True) %}
+    {%- set configs = fromyaml(raw_config_output) -%}
+    {% do log("crud_udfs_by_chain: Result of fromyaml: " ~ configs, info=True) %}
+
+    {# Log before the problematic loop #}
+    {% do log("crud_udfs_by_chain: Starting loop over configs...", info=True) %}
     {%- for udf in configs -%}
+        {% do log("crud_udfs_by_chain: Processing UDF: " ~ udf.name, info=True) %}
         {{- create_or_drop_function_from_config(udf, drop_=drop_) -}}
+    {%- else -%}
+        {% do log("crud_udfs_by_chain: Loop over configs was empty.", info=True) %}
     {%- endfor -%}
+    {% do log("crud_udfs_by_chain: Finished loop over configs.", info=True) %}
 {%- endmacro -%}
 
 {% macro crud_udfs_by_marketplace(config_func, schema, utility_schema, drop_) %}

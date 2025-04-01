@@ -51,12 +51,18 @@ models:
         +materialized: ephemeral
         core__fact_blocks:
           +enabled: true
+        core__fact_transactions:
+          +enabled: true
     silver:
       core:
         +materialized: ephemeral
         silver__blocks_final:
           +enabled: true
         silver__blocks_v2:
+          +enabled: true
+        silver__transactions_final:
+          +enabled: true
+        silver__transactions_v2:
           +enabled: true
 
 

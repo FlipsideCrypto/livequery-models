@@ -1,0 +1,1 @@
+SELECT 1 -- FR blocks are not needed for the near_fact_blocks model
