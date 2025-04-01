@@ -1,28 +1,31 @@
 -- Get Near Chain Head
 
 {% macro near_live_table_latest_block_height() %}
-SELECT
-    live.udf_api(
-        'https://rpc.mainnet.near.org',
-        utils.udf_json_rpc_call(
-            'block',
-            {'finality': 'final'}
-        )
-    ):data AS result,
-    result:result:header:height::integer as latest_block_height,
-    coalesce(
-        block_height,
-        latest_block_height
-    ) AS min_height,
-    iff(
-        coalesce(to_latest, false),
-        latest_block_height,
-        min_height
-    ) AS max_height
+    SELECT
+        -- Calculate latest_block_height once using a scalar subquery
+        (
+            SELECT
+                rpc_result:result:header:height::INTEGER
+            FROM
+                (
+                    SELECT
+                        live.udf_api(
+                            'https://rpc.mainnet.near.org',
+                            utils.udf_json_rpc_call('block', {'finality' : 'final'})
+                        ) :data AS rpc_result
+                )
+        ) AS latest_block_height,
+        coalesce(block_height, latest_block_height) AS min_height,
+        IFF(
+            coalesce(to_latest, false),
+            latest_block_height,
+            min_height
+        ) AS max_height
 {% endmacro %}
 
 -- Get Near Block Data
 {% macro near_live_table_target_blocks() %}
+    
     WITH heights AS (
         {{ near_live_table_latest_block_height() | indent(4) -}}
     ),
@@ -32,17 +35,17 @@ SELECT
                 ORDER BY
                     NULL
             ) - 1 + COALESCE(block_height, latest_block_height)::integer AS block_height,
-            h.min_height,
+            min_height,
             IFF(
                 COALESCE(to_latest, false),
                 block_height,
                 min_height
             ) AS max_height,
-            h.latest_block_height
+            latest_block_height
         FROM
-            TABLE(generator(ROWCOUNT => block_size)),
-            heights h
-            qualify block_height BETWEEN h.min_height AND h.max_height
+            TABLE(generator(ROWCOUNT => 100)),
+            heights qualify block_height BETWEEN min_height
+            AND max_height
     )
     SELECT
         block_height,
