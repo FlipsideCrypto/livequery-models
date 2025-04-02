@@ -111,10 +111,6 @@
 #}
   {% set schema = blockchain if not network else blockchain ~ "_" ~ network %}
     CREATE SCHEMA IF NOT EXISTS {{ schema }};
-
-    {# Log the macro name received #}
-    {% do log("crud_udfs_by_chain: Received config_func macro name: " ~ config_func, info=True) %}
-
     {# Log the raw output of calling the config macro #}
     {% set raw_config_output = config_func(blockchain, network) if network else config_func(schema, blockchain) %}
     {% do log("crud_udfs_by_chain: Raw output from calling " ~ config_func ~ ":\n" ~ raw_config_output, info=True) %}

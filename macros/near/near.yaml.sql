@@ -22,7 +22,7 @@
 
 - name: {{ schema -}}.tf_fact_transactions
   signature:
-    - [block_height, INTEGER, The start block height to get the transactions from]
+    - [_block_height, INTEGER, The start block height to get the transactions from]
     - [to_latest, BOOLEAN, Whether to continue fetching blocks until the latest block or not]
   return_type:
     - "TABLE(tx_hash STRING, block_id NUMBER, block_timestamp TIMESTAMP_NTZ, nonce INT, signature STRING, tx_receiver STRING, tx_signer STRING, tx VARIANT, gas_used FLOAT, transaction_fee FLOAT, attached_gas FLOAT, tx_succeeded BOOLEAN, fact_transactions_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"

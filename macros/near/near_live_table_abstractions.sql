@@ -26,7 +26,14 @@
 {% macro near_live_table_target_blocks() %}
     
     WITH heights AS (
-        {{ near_live_table_latest_block_height() | indent(4) -}}
+        SELECT
+            latest_block_height,
+            min_height,
+            max_height,
+            GREATEST(1, (max_height - min_height + 1)::integer) AS row_count_needed
+        FROM (
+             {{- near_live_table_latest_block_height() | indent(13) -}}
+        )
     ),
     block_spine AS (
         SELECT
@@ -38,8 +45,8 @@
             h.max_height,
             h.latest_block_height
         FROM
-            TABLE(generator(ROWCOUNT => 10)),
-            heights h
+            heights h,
+            TABLE(generator(ROWCOUNT => h.row_count_needed))
         qualify block_number BETWEEN h.min_height AND h.max_height
     )
     SELECT
@@ -141,7 +148,48 @@ FROM {{raw_blocks}}
 
 {% macro near_live_table_fact_transactions(schema, blockchain, network) %}
 WITH spine AS (
-    {{ near_live_table_target_blocks() | indent(4) -}}
+    
+        
+        WITH heights AS (
+            
+            SELECT
+                f.value::INTEGER AS latest_block_height,
+                coalesce(_block_height, latest_block_height) AS min_height,
+                IFF(
+                    coalesce(to_latest, false),
+                    latest_block_height,
+                    min_height
+                ) AS max_height
+            FROM
+                (
+                    SELECT
+                        ARRAY_CONSTRUCT( 
+                            live.udf_api(
+                                'https://rpc.mainnet.near.org',
+                                utils.udf_json_rpc_call('block', {'finality' : 'final'})
+                            ) :data :result:header:height::INTEGER
+                        ) AS result_array
+                ) volatile_data
+                , LATERAL FLATTEN(input => volatile_data.result_array) f
+    ),
+        block_spine AS (
+            SELECT
+                ROW_NUMBER() OVER (
+                    ORDER BY
+                        NULL
+                ) - 1 + h.min_height::integer AS block_number,
+                h.min_height,
+                h.max_height,
+                h.latest_block_height
+            FROM
+                TABLE(generator(ROWCOUNT => 100)),
+                heights h
+            qualify block_number BETWEEN h.min_height AND h.max_height
+        )
+        SELECT
+            block_number as block_height,
+            latest_block_height
+        FROM block_spine
 ),
 raw_block_details AS (
     SELECT
@@ -152,24 +200,39 @@ raw_block_details AS (
         ):data:result AS block_data
     FROM spine s
 ),
-block_chunks AS (
+block_chunk_hashes AS (
+    -- Updated: Extract only block info and the chunk_hash from each chunk header
     SELECT
         b.block_height,
         b.block_data:header:timestamp::STRING AS block_timestamp_str,
-        f.value AS chunk
+        ch.value:chunk_hash::STRING AS chunk_hash -- Get the hash of the chunk
     FROM raw_block_details b,
-            LATERAL FLATTEN(input => b.block_data:chunks) f
+         LATERAL FLATTEN(input => b.block_data:chunks) ch -- Flatten the chunks array (chunk headers)
+    WHERE ch.value:tx_root::STRING <> '11111111111111111111111111111111' -- Optimization: Skip chunks with no transactions
+),
+raw_chunk_details AS (
+    -- New CTE: Fetch full chunk details using the chunk_hash
+    SELECT
+        bch.block_height,
+        bch.block_timestamp_str,
+        live.udf_api(
+            'https://rpc.mainnet.near.org',
+            utils.udf_json_rpc_call('chunk', [bch.chunk_hash]) -- Call 'chunk' RPC method with hash
+        ):data:result AS chunk_data -- The result contains the 'transactions' array
+    FROM block_chunk_hashes bch
 ),
 chunk_txs AS (
+    -- Updated: Flatten the transactions array from the actual chunk_data result
     SELECT
-        bc.block_height,
-        bc.block_timestamp_str,
+        rcd.block_height,
+        rcd.block_timestamp_str,
         tx.value:hash::STRING AS tx_hash,
-        tx.value:signer_id::STRING AS tx_signer -- Crucial for EXPERIMENTAL_tx_status
-    FROM block_chunks bc,
-            LATERAL FLATTEN(input => bc.chunk:transactions) tx
+        tx.value:signer_id::STRING AS tx_signer
+    FROM raw_chunk_details rcd,
+         LATERAL FLATTEN(input => rcd.chunk_data:transactions) tx -- Flatten transactions from the 'chunk' RPC result
 ),
 tx_status_details AS (
+    -- This CTE remains the same
     SELECT
         tx.block_height,
         tx.block_timestamp_str,
@@ -180,27 +243,43 @@ tx_status_details AS (
             utils.udf_json_rpc_call(
                 'EXPERIMENTAL_tx_status',
                 [tx.tx_hash, tx.tx_signer]
-                -- Possibly add {'wait_until': 'FINAL'} if needed/supported by UDF
             )
         ):data:result AS tx_result
     FROM chunk_txs tx
+),
+-- New CTE to calculate attached gas per transaction
+tx_attached_gas AS (
+    SELECT
+        tsd.tx_hash,
+        -- Calculate attached gas by summing gas from FunctionCall actions
+        SUM(iff(action.value:FunctionCall is not null, action.value:FunctionCall:gas::NUMBER, 0)) AS calculated_attached_gas
+    FROM
+        tx_status_details tsd,
+        LATERAL FLATTEN(input => tsd.tx_result:transaction:actions) action
+    GROUP BY
+        tsd.tx_hash
 )
+-- Final SELECT joining the details and the calculated gas
 SELECT
-    tx_hash,
-    block_height AS block_id,
-    TO_TIMESTAMP_NTZ(block_timestamp_str) AS block_timestamp,
-    tx_result:transaction:nonce::INT AS nonce,
-    tx_result:transaction:signature::STRING AS signature,
-    tx_result:transaction:receiver_id::STRING AS tx_receiver,
-    tx_result:transaction:signer_id::STRING AS tx_signer,
-    tx_result:transaction AS tx, -- Entire transaction object
-    tx_result:transaction_outcome:outcome:gas_burnt::FLOAT AS gas_used,
-    0.0::FLOAT AS transaction_fee, -- Placeholder - needs calculation
-    0.0::FLOAT AS attached_gas, -- Placeholder - needs extraction from tx:actions
-    (tx_result:status:SuccessValue IS NOT NULL) AS tx_succeeded,
-    MD5(tx_hash) AS fact_transactions_id,
+    tsd.tx_hash,
+    tsd.block_height AS block_id,
+    TO_TIMESTAMP_NTZ(tsd.block_timestamp_str) AS block_timestamp,
+    tsd.tx_result:transaction:nonce::INT AS nonce,
+    tsd.tx_result:transaction:signature::STRING AS signature,
+    tsd.tx_result:transaction:receiver_id::STRING AS tx_receiver,
+    tsd.tx_result:transaction:signer_id::STRING AS tx_signer,
+    tsd.tx_result:transaction AS tx,
+    tsd.tx_result:transaction_outcome:outcome:gas_burnt::FLOAT AS gas_used,
+    (tsd.tx_result:transaction_outcome:outcome:tokens_burnt::NUMBER / pow(10, 24))::FLOAT AS transaction_fee,
+    -- Use the pre-calculated attached gas from the new CTE
+    COALESCE(tag.calculated_attached_gas, 0)::FLOAT AS attached_gas,
+    (tsd.tx_result:status:SuccessValue IS NOT NULL) AS tx_succeeded,
+    MD5(tsd.tx_hash) AS fact_transactions_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp
-FROM tx_status_details
+FROM
+    tx_status_details tsd
+    -- Left join in case a transaction has zero actions (though COALESCE above handles null)
+    LEFT JOIN tx_attached_gas tag ON tsd.tx_hash = tag.tx_hash
 {% endmacro %}
 
