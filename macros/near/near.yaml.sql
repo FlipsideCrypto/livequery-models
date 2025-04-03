@@ -25,7 +25,7 @@
     - [_block_height, INTEGER, The start block height to get the transactions from]
     - [to_latest, BOOLEAN, Whether to continue fetching blocks until the latest block or not]
   return_type:
-    - "TABLE(tx_hash STRING, block_id NUMBER, block_timestamp TIMESTAMP_NTZ, block_timestamp_epoch INTEGER, shard_id INTEGER, nonce INT, signature STRING, tx_receiver STRING, tx_signer STRING, tx VARIANT, gas_used FLOAT, transaction_fee FLOAT, attached_gas FLOAT, tx_succeeded BOOLEAN, fact_transactions_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
+    - "TABLE(tx_hash STRING, block_id NUMBER, block_timestamp TIMESTAMP_NTZ, nonce INT, signature STRING, tx_receiver STRING, tx_signer STRING, tx VARIANT, gas_used FLOAT, transaction_fee FLOAT, attached_gas FLOAT, tx_succeeded BOOLEAN, fact_transactions_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
@@ -37,7 +37,22 @@
 - name: {{ schema -}}.tf_fact_transactions_test
   signature:
     - [_block_height, INTEGER, The start block height to get the transactions from]
-    - [to_latest, BOOLEAN, Whether to continue fetching blocks until the latest block or not]
+    - [to_latest, BOOLEAN, Whether to continue fetching the next 100 blocks or not]
+  return_type:
+    - "TABLE(tx_hash STRING, block_id NUMBER, block_timestamp TIMESTAMP_NTZ, nonce INT, signature STRING, tx_receiver STRING, tx_signer STRING, tx VARIANT, gas_used NUMBER, transaction_fee NUMBER, attached_gas NUMBER, tx_succeeded BOOLEAN, fact_transactions_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
+  options: |
+    NOT NULL
+    RETURNS NULL ON NULL INPUT
+    VOLATILE
+    COMMENT = $$Returns transaction details for blocks starting from a given height. Fetches up to the latest block if to_latest is true.$$
+  sql: |
+    {{ near_live_table_fact_transactions(schema, blockchain, network) | indent(4) -}}
+
+- name: {{ schema -}}.tf_fact_transactions_test
+  signature:
+    - [_block_height, INTEGER, The start block height to get the transactions from]
+    - [to_latest, BOOLEAN, Whether to continue fetching blocks until we have the number of blocks specified in num_blocks or not]
+    - [num_blocks, INTEGER, The number of block transactions to fetch (to_latest must be set to true)]
   return_type:
     - "TABLE(tx_hash STRING, block_id NUMBER, block_timestamp TIMESTAMP_NTZ, nonce INT, signature STRING, tx_receiver STRING, tx_signer STRING, tx VARIANT, gas_used NUMBER, transaction_fee NUMBER, attached_gas NUMBER, tx_succeeded BOOLEAN, fact_transactions_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
   options: |
