@@ -147,6 +147,11 @@ FROM {{raw_blocks}}
 {% endmacro %}
 
 {% macro near_live_table_fact_transactions(schema, blockchain, network) %}
+    {%- set near_live_table_fact_transactions = get_rendered_model('livequery_models', 'near_fact_transactions', schema, blockchain, network) -%}
+    {{ near_live_table_fact_transactions }}
+{% endmacro %}
+
+{% macro near_live_table_fact_transactions_unabstracted(schema, blockchain, network) %}
 WITH spine AS (
     
         
@@ -205,7 +210,8 @@ block_chunk_hashes AS (
     SELECT
         b.block_height,
         b.block_data:header:timestamp::STRING AS block_timestamp_str,
-        ch.value:chunk_hash::STRING AS chunk_hash -- Get the hash of the chunk
+        ch.value:chunk_hash::STRING AS chunk_hash, -- Get the hash of the chunk
+        ch.value:shard_id::INTEGER AS shard_id -- Extract shard_id here
     FROM raw_block_details b,
          LATERAL FLATTEN(input => b.block_data:chunks) ch -- Flatten the chunks array (chunk headers)
     WHERE ch.value:tx_root::STRING <> '11111111111111111111111111111111' -- Optimization: Skip chunks with no transactions
@@ -215,6 +221,7 @@ raw_chunk_details AS (
     SELECT
         bch.block_height,
         bch.block_timestamp_str,
+        bch.shard_id, -- Pass shard_id through
         live.udf_api(
             'https://rpc.mainnet.near.org',
             utils.udf_json_rpc_call('chunk', [bch.chunk_hash]) -- Call 'chunk' RPC method with hash
@@ -226,16 +233,18 @@ chunk_txs AS (
     SELECT
         rcd.block_height,
         rcd.block_timestamp_str,
+        rcd.shard_id, -- Pass shard_id through
         tx.value:hash::STRING AS tx_hash,
         tx.value:signer_id::STRING AS tx_signer
     FROM raw_chunk_details rcd,
          LATERAL FLATTEN(input => rcd.chunk_data:transactions) tx -- Flatten transactions from the 'chunk' RPC result
 ),
 tx_status_details AS (
-    -- This CTE remains the same
+    -- This CTE remains the same for fetching, but passes shard_id
     SELECT
         tx.block_height,
         tx.block_timestamp_str,
+        tx.shard_id, -- Pass shard_id through
         tx.tx_hash,
         tx.tx_signer,
         live.udf_api(
@@ -264,6 +273,8 @@ SELECT
     tsd.tx_hash,
     tsd.block_height AS block_id,
     TO_TIMESTAMP_NTZ(tsd.block_timestamp_str) AS block_timestamp,
+    DATE_PART('EPOCH_SECOND', TO_TIMESTAMP_NTZ(tsd.block_timestamp_str))::INTEGER AS block_timestamp_epoch,
+    tsd.shard_id, -- Add shard_id to the final output
     tsd.tx_result:transaction:nonce::INT AS nonce,
     tsd.tx_result:transaction:signature::STRING AS signature,
     tsd.tx_result:transaction:receiver_id::STRING AS tx_receiver,
