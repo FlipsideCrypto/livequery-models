@@ -32,6 +32,43 @@ models:
         +tags: evm
       marketplace:
         +tags: marketplace
+    overrides:
+      +materialized: ephemeral
+  fsc_evm:
+    +enabled: false # disable package by default
+    +materialized: ephemeral
+    decoder_package:
+      decoded_logs:
+        gold:
+          core__ez_decoded_event_logs:
+            +enabled: true
+        silver:
+          silver__decoded_logs:
+            +enabled: true
+    main_package:
+      core:
+        gold:
+          core__fact_blocks:
+            +enabled: true
+          core__fact_transactions:
+            +enabled: true
+          core__fact_event_logs:
+            +enabled: true
+          core__fact_traces:
+            +enabled: true
+          core__ez_native_transfers:
+            +enabled: true
+          core__ez_token_transfers:
+            +enabled: true
+        silver:
+          silver__blocks:
+            +enabled: true
+          silver__transactions:
+            +enabled: true
+          silver__receipts:
+            +enabled: true
+          silver__traces:
+            +enabled: true
 
 tests:
   +store_failures: true # all tests
@@ -40,7 +77,7 @@ tests:
       marketplace:
         blockpour:
           # TODO: enable tests for blockpour once we get an API key
-          +enabled: false
+      +enabled: false
 
 on-run-start:
   - "{{ create_sps() }}"
@@ -57,7 +94,7 @@ on-run-end:
 
 vars:
   "dbt_date:time_zone": GMT
-  UPDATE_UDFS_AND_SPS: false
+  LQ_UPDATE_UDFS_AND_SPS: false
   DROP_UDFS_AND_SPS: false
   UPDATE_SNOWFLAKE_TAGS: true
   STREAMLINE_INVOKE_STREAMS: False
@@ -67,9 +104,10 @@ vars:
   API_INTEGRATION: '{{ var("config")[target.name]["API_INTEGRATION"] }}'
   EXTERNAL_FUNCTION_URI: '{{ var("config")[target.name]["EXTERNAL_FUNCTION_URI"] }}'
   ROLES: '{{ var("config")[target.name]["ROLES"] }}'
+  GLOBAL_PROD_DB_NAME: 'LIVEQUERY_DEV'
 
   config:
-  # The keys correspond to dbt profiles and are case sensitive
+    # The keys correspond to dbt profiles and are case sensitive
     dev:
       API_INTEGRATION: AWS_LIVE_QUERY_STG
       EXTERNAL_FUNCTION_URI: u5z0tu43sc.execute-api.us-east-1.amazonaws.com/stg/
