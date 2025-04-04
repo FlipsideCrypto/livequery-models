@@ -17,7 +17,7 @@
         'GET',
         concat('https://api.apilayer.com', PATH, '?', utils.udf_object_to_url_query_string(QUERY_ARGS)),
         {'apikey': '{API_KEY}'},
-        {},
+        NULL,
         '_FSC_SYS/APILAYER'
     ) as response
 

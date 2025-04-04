@@ -65,7 +65,7 @@
           WHEN NETWORK = 'devnet' THEN
               'https://devnet.helius-rpc.com?api-key={API_KEY}'
           ELSE
-              'https://rpc.helius.xyz?api-key={API_KEY}'
+              'https://mainnet.helius-rpc.com?api-key={API_KEY}'
       END,
       {},
       {'id': 1,'jsonrpc': '2.0','method': METHOD,'params': PARAMS},

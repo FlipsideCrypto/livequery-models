@@ -334,4 +334,5 @@ LATERAL FLATTEN(input => result) v
         {'name': 'modified_timestamp', 'type': 'TIMESTAMP_NTZ'}
     ] %}
     {{ return(columns) }}
+
 {% endmacro %}

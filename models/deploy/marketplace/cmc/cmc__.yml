@@ -8,7 +8,7 @@ models:
               name: test_cmc__get_status_200
               args: >
                 '/v2/cryptocurrency/ohlcv/historical'
-                , {'interval': 'hourly', 'time_period': 'hourly', 'time_start': 1691524740, 'time_end': 1691528400, 'id': '15478,15479'}
+                , {'interval': 'hourly', 'time_period': 'hourly', 'time_start': DATE_PART('EPOCH_SECOND', DATEADD('hour', -2, CURRENT_TIMESTAMP())), 'time_end': DATE_PART('EPOCH_SECOND', DATEADD('hour', -1, CURRENT_TIMESTAMP())), 'id': '15478,15479'}
               assertions:
                 - result:status_code = 200
                 - result:error IS NULL

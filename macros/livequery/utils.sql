@@ -4,7 +4,7 @@
 
     Parameters:
         method (string): The JSON RPC method to call.
-        params (string): The JSON RPC parameters to pass to the method.
+        params (array): The JSON RPC parameters to pass to the method.
         blockchain (string): The blockchain to call the method on.
         network (string): The network to call the method on.
     Returns:
@@ -15,7 +15,7 @@
             live.udf_api(
                 '{endpoint}'
                 ,utils.udf_json_rpc_call({{ method }}, {{ params }})
-                ,concat_ws('/', 'integration', _utils.udf_provider(), {{ blockchain }}, {{ network }})
+                ,concat_ws('/', 'integration', _utils.udf_provider(), '{{ blockchain }}', '{{ network }}')
             )::VARIANT:data AS data
     )
     SELECT

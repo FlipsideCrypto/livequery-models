@@ -28,10 +28,6 @@ models:
   livequery_models:
     deploy:
       +materialized: ephemeral
-      core:
-        +tags: core
-        secrets:
-          +enabled: '{{ true if env_var("ENABLE_SNOWFLAKE_SECRETS", "") else false }}'
       evm:
         +tags: evm
       marketplace:

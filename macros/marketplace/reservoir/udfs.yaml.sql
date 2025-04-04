@@ -17,7 +17,7 @@
         'GET',
         concat('https://api.reservoir.tools', PATH, '?', utils.udf_object_to_url_query_string(QUERY_ARGS)),
         {'x-api-key': '{API_KEY}'},
-        {},
+        NULL,
         '_FSC_SYS/RESERVOIR'
     ) as response
 
