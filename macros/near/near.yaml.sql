@@ -23,7 +23,7 @@
 - name: {{ schema -}}.tf_fact_transactions
   signature:
     - [_block_height, INTEGER, The start block height to get the transactions from]
-    - [to_latest, BOOLEAN, Whether to continue fetching blocks until the latest block or not]
+    - [to_latest, BOOLEAN, Whether to continue fetching the next 100 blocks or not]
   return_type:
     - "TABLE(tx_hash STRING, block_id NUMBER, block_timestamp TIMESTAMP_NTZ, nonce INT, signature STRING, tx_receiver STRING, tx_signer STRING, tx VARIANT, gas_used FLOAT, transaction_fee FLOAT, attached_gas FLOAT, tx_succeeded BOOLEAN, fact_transactions_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
   options: |
@@ -37,7 +37,8 @@
 - name: {{ schema -}}.tf_fact_transactions_test
   signature:
     - [_block_height, INTEGER, The start block height to get the transactions from]
-    - [to_latest, BOOLEAN, Whether to continue fetching the next 100 blocks or not]
+    - [to_latest, BOOLEAN, Whether to continue fetching blocks until we have the number of blocks specified in num_blocks or not]
+
   return_type:
     - "TABLE(tx_hash STRING, block_id NUMBER, block_timestamp TIMESTAMP_NTZ, nonce INT, signature STRING, tx_receiver STRING, tx_signer STRING, tx VARIANT, gas_used NUMBER, transaction_fee NUMBER, attached_gas NUMBER, tx_succeeded BOOLEAN, fact_transactions_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
   options: |

@@ -6,13 +6,13 @@ WITH rpc_call AS (
         live.udf_api(
             'https://rpc.mainnet.near.org',
             utils.udf_json_rpc_call('block', {'finality' : 'final'})
-        ):data::object AS rpc_result -- Call UDF and cast result to OBJECT
+        ):data::object AS rpc_result 
     FROM dual
     ORDER BY 1 
     LIMIT 1 
 )
 SELECT
-    rpc_result:result:header:height::INTEGER AS latest_block_height, -- Extract height from the OBJECT
+    rpc_result:result:header:height::INTEGER AS latest_block_height, 
     coalesce(_block_height, latest_block_height) AS min_height,
     CASE
         WHEN coalesce(to_latest, false) THEN latest_block_height
@@ -27,6 +27,7 @@ FROM
 
 -- Get Near Block Data
 {% macro near_live_table_target_blocks() %}
+    
     WITH heights AS (
         SELECT
             latest_block_height,
@@ -47,14 +48,36 @@ FROM
             h.max_height,
             h.latest_block_height
         FROM
-            heights h,
-            TABLE(generator(ROWCOUNT => 1000))
+            heights h, 
+            TABLE(generator(ROWCOUNT => 5)) 
         qualify block_number BETWEEN h.min_height AND h.max_height
     )
     SELECT
         block_number as block_height,
         latest_block_height
     FROM block_spine
+{% endmacro %}
+
+{% macro near_live_table_get_spine(table_name) %}
+SELECT
+    block_height,
+    ROW_NUMBER() OVER (ORDER BY block_height) - 1 as partition_num
+FROM 
+    (
+        SELECT 
+            row_number() over (order by seq4()) - 1 + COALESCE(block_id, 0)::integer as block_height,
+            min_height,
+            max_height
+        
+        FROM
+                TABLE(generator(ROWCOUNT => IFF(
+                    COALESCE(to_latest, false),
+                    latest_block_height - min_height + 1,
+                    1
+                ))),
+                {{ table_name }}
+            qualify block_height BETWEEN min_height AND max_height
+    )
 {% endmacro %}
    
 {% macro near_live_table_get_raw_block_data(spine) %} 
@@ -75,6 +98,7 @@ SELECT
     ):data.result AS rpc_data_result
 from
     {{spine}}
+
 {% endmacro %}
 
 {% macro near_live_table_extract_raw_block_data(raw_blocks) %}
@@ -139,13 +163,11 @@ WITH spine AS (
             SELECT
                 f.value::INTEGER AS latest_block_height,
                 coalesce(_block_height, latest_block_height) AS min_height,
-                CASE
-                    WHEN coalesce(to_latest, false) THEN latest_block_height
-                    {% if num_blocks is defined and num_blocks is not none and num_blocks > 0 %}
-                    WHEN TRUE THEN min_height + {{ num_blocks | int }} - 1
-                    {% endif %}
-                    ELSE min_height
-                END AS max_height
+                IFF(
+                    coalesce(to_latest, false),
+                    latest_block_height,
+                    min_height
+                ) AS max_height
             FROM
                 (
                     SELECT
@@ -168,7 +190,7 @@ WITH spine AS (
                 h.max_height,
                 h.latest_block_height
             FROM
-                TABLE(generator(ROWCOUNT => 100)),
+                TABLE(generator(ROWCOUNT => 1000)),
                 heights h
             qualify block_number BETWEEN h.min_height AND h.max_height
         )
