@@ -510,7 +510,7 @@
     VOLATILE
     COMMENT = $$Returns the token transfers for a given block height. If to_latest is true, it will continue fetching transfers until the latest block. Otherwise, it will fetch transfers until the block height is reached.$$
   sql: |
-    {{ evm_live_view_ez_token_transfers(schema,  blockchain, network) | indent(4) -}}
+    {{ evm_ez_token_transfers(schema,  blockchain, network) | indent(4) -}}
 
 {%- endmacro -%}
 
