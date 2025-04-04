@@ -408,7 +408,7 @@
   sql: |
     {{ evm_fact_event_logs(schema,  blockchain, network) | indent(4) -}}
 
-{# - name: {{ schema -}}.tf_ez_decoded_event_logs
+- name: {{ schema -}}.tf_ez_decoded_event_logs
   signature:
     - [block_height, INTEGER, The start block height to get the logs from]
     - [to_latest, BOOLEAN, Whether to continue fetching logs until the latest block or not]
@@ -421,7 +421,7 @@
     VOLATILE
     COMMENT = $$Returns the ez decoded event logs data for a given block height. If to_latest is true, it will continue fetching blocks until the latest block. Otherwise, it will fetch blocks until the block height is reached.$$
   sql: |
-    {{ evm_ez_decoded_event_logs(schema, blockchain, network) | indent(4) -}} #}
+    {{ evm_ez_decoded_event_logs(schema, blockchain, network) | indent(4) -}}
 
 - name: {{ schema -}}.tf_fact_traces
   signature:
