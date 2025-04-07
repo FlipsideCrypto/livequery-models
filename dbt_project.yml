@@ -53,6 +53,8 @@ models:
           +enabled: true
         core__fact_transactions:
           +enabled: true
+        core__fact_receipts:
+          +enabled: true
     silver:
       core:
         +materialized: ephemeral
@@ -63,6 +65,8 @@ models:
         silver__transactions_final:
           +enabled: true
         silver__transactions_v2:
+          +enabled: true
+        silver__receipts_final:
           +enabled: true
 
 

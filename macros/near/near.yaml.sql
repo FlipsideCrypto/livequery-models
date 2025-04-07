@@ -5,6 +5,11 @@
  #}
 {% set schema = blockchain ~ "_" ~ network %}
 
+- name: {{ schema }}.udf_get_latest_block_height
+  signature: []
+  return_type: INTEGER
+  sql: |
+    {{ near_live_table_latest_block_height() | indent(4) -}}
 
 - name: {{ schema -}}.tf_fact_blocks
   signature:
@@ -34,20 +39,19 @@
   sql: |
     {{ near_live_table_fact_transactions(schema, blockchain, network) | indent(4) -}}
 
-- name: {{ schema -}}.tf_fact_transactions_test
+- name: {{ schema -}}.tf_fact_receipts
   signature:
-    - [_block_height, INTEGER, The start block height to get the transactions from]
+    - [_block_height, INTEGER, The start block height to get the receipts from]
     - [row_count, INTEGER, The number of rows to fetch]
-
   return_type:
-    - "TABLE(tx_hash STRING, block_id NUMBER, block_timestamp TIMESTAMP_NTZ, nonce INT, signature STRING, tx_receiver STRING, tx_signer STRING, tx VARIANT, gas_used FLOAT, transaction_fee FLOAT, attached_gas FLOAT, tx_succeeded BOOLEAN, fact_transactions_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
+    - "TABLE(block_timestamp TIMESTAMP_NTZ, block_id NUMBER, tx_hash STRING, receipt_id STRING, receipt_outcome_id ARRAY, receiver_id STRING, predecessor_id STRING, actions VARIANT, outcome VARIANT, gas_burnt FLOAT, status_value VARIANT, logs ARRAY, proof ARRAY, metadata VARIANT, receipt_succeeded BOOLEAN, fact_receipts_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
     VOLATILE
-    COMMENT = $$Returns transaction details for blocks starting from a given height. Fetches up to the latest block if to_latest is true.$$
+    COMMENT = $$Returns receipt details for blocks starting from a given height. Fetches receipts for the specified number of blocks.$$
   sql: |
-    {{ near_live_table_fact_transactions_unabstracted(_bh_name='_block_height', _tl_name='to_latest') | indent(4) -}}
+    {{ near_live_table_fact_receipts(schema, blockchain, network) | indent(4) -}}
 
 {%- endmacro -%}
 

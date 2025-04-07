@@ -8,7 +8,7 @@
 {%- set schema = blockchain ~ "_" ~ network -%}
 
 WITH spine AS (
-    {{ near_live_table_target_blocks() | indent(4) -}}
+    {{ near_live_table_target_blocks(start_block='_block_height', block_count='row_count') | indent(4) -}}
 ),
 raw_blocks AS (
     {{ near_live_table_get_raw_block_data('spine') | indent(4) -}}
@@ -75,14 +75,14 @@ transactions AS (
         tx.chunk_hash,
         tx.chunk_height_created,
         tx.chunk_height_included,
-        _live.udf_api(
+        _live.lt_udf_api(
             'POST',
             '{Service}',
-            {'Content-Type' : 'application/json'},
+            {'Content-Type' : 'application/json', 'fsc-compression-mode' : 'auto'},
             {
                 'jsonrpc' : '2.0',
                 'method' : 'EXPERIMENTAL_tx_status',
-                'id' : 'Flipside/getBlock/' || request_timestamp || '/' || tx.block_height :: STRING,
+                'id' : 'Flipside/EXPERIMENTAL_tx_status/' || request_timestamp || '/' || tx.block_height :: STRING,
                 'params' : {
                             'tx_hash': tx.tx_hash,
                             'sender_account_id': tx.tx_signer,

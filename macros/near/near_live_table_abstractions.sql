@@ -12,30 +12,28 @@ WITH rpc_call AS (
     LIMIT 1 
 )
 SELECT
-    rpc_result:result:header:height::INTEGER AS latest_block_height, 
-    coalesce(_block_height, latest_block_height) AS min_height,
-    CASE
-        WHEN coalesce(to_latest, false) THEN latest_block_height
-        {% if num_blocks is defined and num_blocks is not none and num_blocks > 0 %}
-        WHEN TRUE THEN min_height + {{ num_blocks | int }} - 1
-        {% endif %}
-        ELSE min_height
-    END AS max_height
+    rpc_result:result:header:height::INTEGER AS latest_block_height
 FROM
     rpc_call
 {% endmacro %}
 
+{% macro near_live_table_min_max_block_height(start_block, block_count) %}
+SELECT
+    {{ start_block }} AS min_height,
+    min_height + {{ block_count }} AS max_height, 
+FROM
+    dual    
+{% endmacro %}
+
 -- Get Near Block Data
-{% macro near_live_table_target_blocks() %}
+{% macro near_live_table_target_blocks(start_block, block_count) %}
     
     WITH heights AS (
         SELECT
-            latest_block_height,
             min_height,
             max_height,
-            GREATEST(1, (max_height - min_height + 1)::integer) AS row_count_needed
         FROM (
-             {{- near_live_table_latest_block_height() | indent(13) -}}
+             {{- near_live_table_min_max_block_height(start_block=start_block, block_count=block_count) | indent(13) -}}
         )
     ),
     block_spine AS (
@@ -44,17 +42,13 @@ FROM
                 ORDER BY
                     NULL
             ) - 1 + h.min_height::integer AS block_number,
-            h.min_height,
-            h.max_height,
-            h.latest_block_height
         FROM
             heights h, 
-            TABLE(generator(ROWCOUNT => 5)) 
+            TABLE(generator(ROWCOUNT => {{ block_count }} )) 
         qualify block_number BETWEEN h.min_height AND h.max_height
     )
     SELECT
-        block_number as block_height,
-        latest_block_height
+        block_number as block_height    
     FROM block_spine
 {% endmacro %}
 
@@ -154,7 +148,86 @@ FROM {{raw_blocks}}
     {{ near_live_table_fact_transactions }}
 {% endmacro %}
 
-{% macro near_live_table_fact_transactions_unabstracted(schema, blockchain, network) %}
+{% macro near_live_table_fact_receipts(schema, blockchain, network) %}
+WITH spine AS (
+    {{ near_live_table_target_blocks(start_block='_block_height', block_count='row_count') | indent(4) -}}
+),
+raw_blocks AS (
+    -- Fetching raw block data using the helper macro, assuming it handles the API call correctly
+    {{ near_live_table_get_raw_block_data('spine') | indent(4) -}}
+),
+block_chunk_hashes AS (
+    -- Extract block info and the chunk_hash from each chunk header
+    SELECT
+        rb.block_height,
+        rb.rpc_data_result:header:timestamp::STRING AS block_timestamp_str,
+        ch.value:chunk_hash::STRING AS chunk_hash,
+        ch.value:shard_id::INTEGER AS shard_id, -- Keep shard_id temporarily for the chunk call
+        ch.value:height_created::INTEGER AS chunk_height_created, -- Not in final schema, but might be useful
+        ch.value:height_included::INTEGER AS chunk_height_included -- Not in final schema
+    FROM raw_blocks rb,
+         LATERAL FLATTEN(input => rb.rpc_data_result:chunks) ch
+    -- Optimization: Potentially filter chunks with tx_root = '111...' if needed
+),
+raw_chunk_details AS (
+    -- Fetch full chunk details using the chunk_hash
+    SELECT
+        bch.block_height,
+        bch.block_timestamp_str,
+        -- bch.shard_id, -- No longer needed after this CTE
+        -- bch.chunk_hash, -- No longer needed after this CTE
+        live.udf_api( -- Use the direct UDF call for chunk RPC
+            'https://rpc.mainnet.near.org',
+            utils.udf_json_rpc_call('chunk', {'chunk_id': bch.chunk_hash}) -- Use OBJECT format for parameters
+        ):data:result AS chunk_data 
+    FROM block_chunk_hashes bch
+),
+receipt_details AS (
+    -- Flatten the receipts array from the chunk_data result and extract fields based on core__fact_receipts
+    SELECT
+        rcd.block_height,
+        rcd.block_timestamp_str,
+        receipt.value:receipt_id::STRING AS receipt_id,
+        -- tx_hash is still unavailable directly from chunk RPC
+        NULL::STRING AS tx_hash, 
+        receipt.value:predecessor_id::STRING AS predecessor_id, 
+        receipt.value:receiver_id::STRING AS receiver_id,
+        receipt.value:receipt AS actions, -- Map raw receipt data to 'actions'
+        receipt.value:outcome AS outcome, -- Map outcome object to 'outcome'
+        receipt.value:outcome:gas_burnt::FLOAT AS gas_burnt,
+        receipt.value:outcome:status::VARIANT AS status_value,
+        receipt.value:outcome:logs::ARRAY AS logs,
+        receipt.value:outcome:receipt_ids::ARRAY AS receipt_outcome_id,
+        receipt.value:proof::ARRAY AS proof, 
+        receipt.value:outcome:metadata::VARIANT AS metadata, 
+        (receipt.value:outcome:status:SuccessValue IS NOT NULL OR receipt.value:outcome:status:SuccessReceiptId IS NOT NULL) AS receipt_succeeded
+    FROM raw_chunk_details rcd,
+         LATERAL FLATTEN(input => rcd.chunk_data:receipts) receipt
+)
+-- Final SELECT statement matching core__fact_receipts schema
+SELECT
+    TO_TIMESTAMP_NTZ(rd.block_timestamp_str) AS block_timestamp,
+    rd.block_height AS block_id,
+    rd.tx_hash, -- Mapped to NULL
+    rd.receipt_id,
+    rd.receipt_outcome_id,
+    rd.receiver_id,
+    rd.predecessor_id, 
+    rd.actions,
+    rd.outcome,
+    rd.gas_burnt,
+    rd.status_value,
+    rd.logs,
+    rd.proof,
+    rd.metadata,
+    rd.receipt_succeeded,
+    rd.receipt_id AS fact_receipts_id, -- Map receipt_id to fact_receipts_id as per core__fact_receipts
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp
+FROM receipt_details rd
+{% endmacro %}
+
+{% macro near_live_table_fact_transactions_unabstracted(start_block, _tl_name) %}
 WITH spine AS (
     
         
@@ -162,9 +235,9 @@ WITH spine AS (
             
             SELECT
                 f.value::INTEGER AS latest_block_height,
-                coalesce(_block_height, latest_block_height) AS min_height,
+                coalesce({{ start_block }}, latest_block_height) AS min_height,
                 IFF(
-                    coalesce(to_latest, false),
+                    coalesce({{ _tl_name }}, false),
                     latest_block_height,
                     min_height
                 ) AS max_height

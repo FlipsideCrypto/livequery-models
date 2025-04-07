@@ -8,6 +8,7 @@
 -- depends_on: {{ ref('near_models', 'silver__transactions_v2') }}
 -- depends_on: {{ ref('livequery_models', 'bronze__transactions') }}
 -- depends_on: {{ ref('livequery_models', 'bronze__FR_transactions') }}
+-- depends_on: {{ ref('near_models','core__fact_receipts') }}
 {%- set configs = [
     config_near_high_level_abstractions
     ] -%}

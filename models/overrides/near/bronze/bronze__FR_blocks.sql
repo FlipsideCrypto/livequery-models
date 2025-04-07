@@ -8,7 +8,7 @@
 {%- set schema = blockchain ~ "_" ~ network -%}
 
 WITH spine AS (
-    {{ near_live_table_target_blocks() | indent(4) -}}
+    {{ near_live_table_target_blocks(start_block='_block_height', block_count='row_count') | indent(4) -}}
 ),
 raw_blocks AS (
     {{ near_live_table_get_raw_block_data('spine') | indent(4) -}}
