@@ -78,7 +78,7 @@ FROM
 SELECT
     block_height,
     DATE_PART('EPOCH', SYSDATE()) :: INTEGER AS request_timestamp,
-    live.udf_api(
+    _live.lt_near_tx_udf_api(
         'POST',
         '{Service}',
         {'Content-Type' : 'application/json'},
@@ -88,6 +88,7 @@ SELECT
             'id' : 'Flipside/getBlock/' || request_timestamp || '/' || block_height :: STRING,
             'params':{'block_id': block_height}
         },
+        _utils.UDF_WHOAMI(),
         'Vault/prod/near/quicknode/mainnet'
     ):data.result AS rpc_data_result
 from
