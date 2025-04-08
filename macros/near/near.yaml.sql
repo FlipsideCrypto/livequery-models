@@ -44,7 +44,7 @@
     - [_block_height, INTEGER, The start block height to get the receipts from]
     - [row_count, INTEGER, The number of rows to fetch]
   return_type:
-    - "TABLE(block_timestamp TIMESTAMP_NTZ, block_id NUMBER, tx_hash STRING, receipt_id STRING, receipt_outcome_id ARRAY, receiver_id STRING, predecessor_id STRING, actions VARIANT, outcome VARIANT, gas_burnt FLOAT, status_value VARIANT, logs ARRAY, proof ARRAY, metadata VARIANT, receipt_succeeded BOOLEAN, fact_receipts_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
+    - "TABLE(block_timestamp TIMESTAMP_NTZ, block_id NUMBER, tx_hash STRING, receipt_id STRING, receipt_outcome_id ARRAY, receiver_id STRING, predecessor_id STRING, actions VARIANT, outcome VARIANT, gas_burnt NUMBER, status_value VARIANT, logs ARRAY, proof ARRAY, metadata VARIANT, receipt_succeeded BOOLEAN, fact_receipts_id STRING, inserted_timestamp TIMESTAMP_NTZ, modified_timestamp TIMESTAMP_NTZ)"
   options: |
     NOT NULL
     RETURNS NULL ON NULL INPUT
