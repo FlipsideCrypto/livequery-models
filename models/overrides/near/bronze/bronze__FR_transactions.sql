@@ -35,7 +35,7 @@ raw_chunk_details AS (
         bch.chunk_hash,
         bch.chunk_height_created,
         bch.chunk_height_included,
-        _live.udf_api(
+        _live.lt_near_tx_udf_api(
             'POST',
             '{Service}',
             {'Content-Type' : 'application/json'},
@@ -75,7 +75,7 @@ transactions AS (
         tx.chunk_hash,
         tx.chunk_height_created,
         tx.chunk_height_included,
-        _live.lt_udf_api(
+        _live.lt_near_tx_udf_api(
             'POST',
             '{Service}',
             {'Content-Type' : 'application/json', 'fsc-compression-mode' : 'auto'},
