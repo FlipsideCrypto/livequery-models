@@ -36,7 +36,7 @@
         func_type = none
     ) %}
     CREATE OR REPLACE {{ func_type }} FUNCTION {{ name_ }}(
-            {{- compile_signature(signature) }}
+            {{- livequery_base.compile_signature(signature) }}
     )
     COPY GRANTS
     RETURNS {{ return_type }}
@@ -67,7 +67,7 @@
     {% set func_type = config ["func_type"] %}
 
     {% if not drop_ -%}
-        {{ create_sql_function(
+        {{ livequery_base.create_sql_function(
             name_ = name_,
             signature = signature,
             return_type = return_type,
@@ -113,7 +113,7 @@
     CREATE SCHEMA IF NOT EXISTS {{ schema }};
     {%-  set configs = fromyaml(config_func(blockchain, network)) if network else fromyaml(config_func(schema, blockchain)) -%}
     {%- for udf in configs -%}
-        {{- create_or_drop_function_from_config(udf, drop_=drop_) -}}
+        {{- livequery_base.create_or_drop_function_from_config(udf, drop_=drop_) -}}
     {%- endfor -%}
 {%- endmacro -%}
 
@@ -155,7 +155,7 @@
         {%- else -%}
             {%- do log("Deploy partner udfs: " ~ this.database ~ "." ~ schema, true) -%}
         {%- endif -%}
-        {%- do run_query(sql ~ apply_grants_by_schema(schema)) -%}
+        {%- do run_query(sql ~ livequery_base.apply_grants_by_schema(schema)) -%}
     {%- endif -%}
     SELECT '{{ model.schema }}' as schema_
 {%- endmacro -%}
