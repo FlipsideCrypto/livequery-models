@@ -154,4 +154,7 @@ FROM {{raw_blocks}}
     {{ near_live_table_fact_receipts }}
 {% endmacro %}
 
-
+{% macro near_live_table_ez_actions(schema, blockchain, network) %}
+    {%- set near_live_table_ez_actions = get_rendered_model('livequery_models', 'near_ez_actions', schema, blockchain, network) -%}
+    {{ near_live_table_ez_actions }}
+{% endmacro %}
