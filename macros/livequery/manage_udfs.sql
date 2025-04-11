@@ -45,7 +45,7 @@
     {% endif %}
     {%- if api_integration -%}
     api_integration = {{ api_integration }}
-    AS {{ construct_api_route(sql_) ~ ";" }}
+    AS {{ livequery_base.construct_api_route(sql_) ~ ";" }}
     {% else -%}
     AS
     $$
