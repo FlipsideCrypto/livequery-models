@@ -161,7 +161,7 @@
         {%- else -%}
             {%- do log("Deploy core udfs: " ~ this.database ~ "." ~ this.schema, true) -%}
         {%- endif -%}
-        {%- do run_query(sql ~ apply_grants_by_schema(this.schema)) -%}
+        {%- do run_query(sql ~ livequery_models.apply_grants_by_schema(this.schema)) -%}
     {%- endif -%}
     SELECT '{{ model.schema }}' as schema_
 {%- endmacro -%}
@@ -185,7 +185,7 @@
         {%- else -%}
             {%- do log("Deploy partner udfs: " ~ this.database ~ "." ~ schema, true) -%}
         {%- endif -%}
-        {%- do run_query(sql ~ apply_grants_by_schema(schema)) -%}
+        {%- do run_query(sql ~ livequery_models.apply_grants_by_schema(schema)) -%}
     {%- endif -%}
     SELECT '{{ model.schema }}' as schema_
 {%- endmacro -%}
@@ -208,7 +208,7 @@
         {%- else -%}
             {%- do log("Deploy marketplace udfs: " ~ this.database ~ "." ~ schema, true) -%}
         {%- endif -%}
-        {%- do run_query(sql ~ apply_grants_by_schema(schema)) -%}
+        {%- do run_query(sql ~ livequery_models.apply_grants_by_schema(schema)) -%}
     {%- endif -%}
     SELECT '{{ model.schema }}' as schema_
 {%- endmacro -%}
