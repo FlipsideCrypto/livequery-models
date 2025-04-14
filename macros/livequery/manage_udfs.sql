@@ -147,7 +147,7 @@
   {%- endfor -%}
 {%- endmacro -%}
 
-{% macro livequery_models.ephemeral_deploy_core(config) %}
+{% macro ephemeral_deploy_core(config) %}
 {#
     This macro is used to deploy functions using ephemeral models.
     It should only be used within an ephemeral model.
@@ -177,7 +177,7 @@
     {% if execute and (var("UPDATE_UDFS_AND_SPS") or var("DROP_UDFS_AND_SPS")) and model.unique_id in selected_resources %}
         {% set sql %}
             {% for config in configs %}
-                {{- crud_udfs_by_chain(config, blockchain, network, var("DROP_UDFS_AND_SPS")) -}}
+                {{- livequery_models.crud_udfs_by_chain(config, blockchain, network, var("DROP_UDFS_AND_SPS")) -}}
             {%- endfor -%}
         {%- endset -%}
         {%- if var("DROP_UDFS_AND_SPS") -%}
