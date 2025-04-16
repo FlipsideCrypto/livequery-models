@@ -4,5 +4,5 @@ packages:
   - package: dbt-labs/dbt_utils
     version: [">=1.0.0", "<1.1.0"]
   - git: https://github.com/FlipsideCrypto/livequery-models.git
-    revision: "STREAM-1175/reinstate-deploy-core"
+    revision: "v2.0.0"
 
