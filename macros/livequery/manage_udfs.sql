@@ -36,7 +36,7 @@
         func_type = none
     ) %}
     CREATE OR REPLACE {{ func_type }} FUNCTION {{ name_ }}(
-            {{- compile_signature(signature) }}
+            {{- livequery_models.compile_signature(signature) }}
     )
     COPY GRANTS
     RETURNS {{ return_type }}
@@ -45,7 +45,7 @@
     {% endif %}
     {%- if api_integration -%}
     api_integration = {{ api_integration }}
-    AS {{ construct_api_route(sql_) ~ ";" }}
+    AS {{ livequery_models.construct_api_route(sql_) ~ ";" }}
     {% else -%}
     AS
     $$
@@ -67,7 +67,7 @@
     {% set func_type = config ["func_type"] %}
 
     {% if not drop_ -%}
-        {{ create_sql_function(
+        {{ livequery_models.create_sql_function(
             name_ = name_,
             signature = signature,
             return_type = return_type,
@@ -113,7 +113,7 @@
     CREATE SCHEMA IF NOT EXISTS {{ schema }};
     {%-  set configs = fromyaml(config_func(blockchain, network)) if network else fromyaml(config_func(schema, blockchain)) -%}
     {%- for udf in configs -%}
-        {{- create_or_drop_function_from_config(udf, drop_=drop_) -}}
+        {{- livequery_models.create_or_drop_function_from_config(udf, drop_=drop_) -}}
     {%- endfor -%}
 {%- endmacro -%}
 
@@ -154,14 +154,14 @@
  #}
     {% if execute and (var("UPDATE_UDFS_AND_SPS") or var("DROP_UDFS_AND_SPS")) and model.unique_id in selected_resources %}
         {% set sql %}
-            {{- crud_udfs(config, this.schema, var("DROP_UDFS_AND_SPS")) -}}
+            {{- livequery_models.crud_udfs(config, this.schema, var("DROP_UDFS_AND_SPS")) -}}
         {%- endset -%}
         {%- if var("DROP_UDFS_AND_SPS") -%}
             {%- do log("Drop core udfs: " ~ this.database ~ "." ~ this.schema, true) -%}
         {%- else -%}
             {%- do log("Deploy core udfs: " ~ this.database ~ "." ~ this.schema, true) -%}
         {%- endif -%}
-        {%- do run_query(sql ~ apply_grants_by_schema(this.schema)) -%}
+        {%- do run_query(sql ~ livequery_models.apply_grants_by_schema(this.schema)) -%}
     {%- endif -%}
     SELECT '{{ model.schema }}' as schema_
 {%- endmacro -%}
@@ -177,7 +177,7 @@
     {% if execute and (var("UPDATE_UDFS_AND_SPS") or var("DROP_UDFS_AND_SPS")) and model.unique_id in selected_resources %}
         {% set sql %}
             {% for config in configs %}
-                {{- crud_udfs_by_chain(config, blockchain, network, var("DROP_UDFS_AND_SPS")) -}}
+                {{- livequery_models.crud_udfs_by_chain(config, blockchain, network, var("DROP_UDFS_AND_SPS")) -}}
             {%- endfor -%}
         {%- endset -%}
         {%- if var("DROP_UDFS_AND_SPS") -%}
@@ -185,7 +185,7 @@
         {%- else -%}
             {%- do log("Deploy partner udfs: " ~ this.database ~ "." ~ schema, true) -%}
         {%- endif -%}
-        {%- do run_query(sql ~ apply_grants_by_schema(schema)) -%}
+        {%- do run_query(sql ~ livequery_models.apply_grants_by_schema(schema)) -%}
     {%- endif -%}
     SELECT '{{ model.schema }}' as schema_
 {%- endmacro -%}
@@ -208,7 +208,7 @@
         {%- else -%}
             {%- do log("Deploy marketplace udfs: " ~ this.database ~ "." ~ schema, true) -%}
         {%- endif -%}
-        {%- do run_query(sql ~ apply_grants_by_schema(schema)) -%}
+        {%- do run_query(sql ~ livequery_models.apply_grants_by_schema(schema)) -%}
     {%- endif -%}
     SELECT '{{ model.schema }}' as schema_
 {%- endmacro -%}

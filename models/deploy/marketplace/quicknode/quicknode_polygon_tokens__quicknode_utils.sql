@@ -1,4 +1,4 @@
-
+-- depends_on: {{ ref('live') }}
 {%- set configs = [
     config_quicknode_polygon_tokens_udfs,
     ] -%}
