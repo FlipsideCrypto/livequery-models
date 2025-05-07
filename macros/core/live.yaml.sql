@@ -108,6 +108,24 @@
           secret_name
       )
 
+- name: {{ schema }}.udf_api
+  signature:
+    - [args, OBJECT]
+  return_type: VARIANT
+  options: |
+    NOT NULL
+    VOLATILE
+  sql: |
+    SELECT
+      _live.UDF_API(
+          COALESCE(args:method, 'GET'),
+          args:url,
+          COALESCE(args:headers, {}),
+          COALESCE(args:data, {}),
+          _utils.UDF_WHOAMI(),
+          COALESCE(args:secret_name, '')
+      )
+
 - name: {{ schema }}.udf_rpc
   signature:
     - [blockchain, STRING]
