@@ -131,4 +131,26 @@
     VOLATILE
     COMMENT = $$Returns a list of allowed domains.$$
   sql: allowed
+
+- name: {{ schema }}.udf_api_batched
+  signature:
+    - [method, STRING]
+    - [url, STRING]
+    - [headers, OBJECT]
+    - [data, VARIANT]
+    - [secret_name, STRING]
+  return_type: VARIANT
+  options: |
+    VOLATILE
+    MAX_BATCH_ROWS = 2
+  sql: |
+    SELECT
+      _live.UDF_API(
+          method,
+          url,
+          headers,
+          data,
+          _utils.UDF_WHOAMI(),
+          secret_name
+      )
 {% endmacro %}
