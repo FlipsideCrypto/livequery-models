@@ -1,5 +1,26 @@
 {% macro config_core_live(schema="live") %}
 
+- name: {{ schema }}.udf_api_batched
+  signature:
+    - [method, STRING]
+    - [url, STRING]
+    - [headers, OBJECT]
+    - [data, VARIANT]
+    - [secret_name, STRING]
+  return_type: VARIANT
+  options: |
+    VOLATILE
+  sql: |
+    SELECT
+      _live.UDF_API(
+          method,
+          url,
+          headers,
+          data,
+          _utils.UDF_WHOAMI(),
+          secret_name
+      )
+
 - name: {{ schema }}.udf_api
   signature:
     - [method, STRING]
