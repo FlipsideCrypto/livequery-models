@@ -267,15 +267,14 @@ LiveQuery is now available to be deployed into individual projects. For base fun
 
 1. Make sure `fsc-utils` package referenced in the project is version `v1.33.2` or greater. Re-run `dbt deps` if revision was changed.
 
-   **NOTE** : To circumvent a circular dependency issue with install FSC DBT packages into `livequery_models`, all the `livequer-models/deploy/core` models have been moved to [livequery-base](https://github.com/FlipsideCrypto/livequery-base). As such we need to use it to install the core `LiveQuery` schema's and functions.
 
-   `livequery_base deploy core` uses ephemeral models, therefore it is recommended to specify the materialization for `livequery_models` in your project's `dbt_project.yml` to `ephemeral` to avoid any conflicts.
+   `livequery_models deploy core` uses ephemeral models, therefore it is recommended to specify the materialization for `livequery_models` in your project's `dbt_project.yml` to `ephemeral` to avoid any conflicts.
 
    ```yml
    # dbt_project.yml
    ---
    models:
-     livequery_base:
+     livequery_models:
        deploy:
          core:
            materialized: ephemeral
@@ -286,13 +285,13 @@ LiveQuery is now available to be deployed into individual projects. For base fun
    By Schema
 
    ```
-   dbt run -s livequery_base.deploy.core --vars '{UPDATE_UDFS_AND_SPS: true}'
+   dbt run -s livequery_models.deploy.core --vars '{UPDATE_UDFS_AND_SPS: true}'
    ```
 
    By Tag
 
    ```
-   dbt run -s "livequery_base,tag:core" --vars '{UPDATE_UDFS_AND_SPS: true}'
+   dbt run -s "livequery_models,tag:core" --vars '{UPDATE_UDFS_AND_SPS: true}'
    ```
 
 3. Deploy any additional functions
@@ -316,7 +315,7 @@ LiveQuery is now available to be deployed into individual projects. For base fun
 
 Individual projects have the option to point to a different LiveQuery API endpoint. To do so, modify your project's `dbt_projects.yml` to include the additional configurations within the project `vars`. If no configurations are specified, the default endpoints defined in the `livequery_models` package are used.
 
-Below is a sample configuration. The `API_INTEGRATION` and `EXTERNAL_FUNCTION_URI` should point to the specific resources deployed for your project. The `ROLES` property is a list of Snowflake role names that are granted usage to the LiveQuery functions on deployment.
+Below is a sample configuration. The `API_INTEGRATION` and `EXTERNAL_FUNCTION_URI` should point to the specific resources deployed for your project. The `ROLES` property is a list of Snowflake role names that are granted usage to the LiveQuery functions on deployment. You can also add the optional `MAX_BATCH_ROWS` variable to limit the number of rows processed in a single batch to the `udf_api_batched` function (available starting with `v1.8.0`).
 
 ```
 config:
@@ -326,6 +325,7 @@ config:
       EXTERNAL_FUNCTION_URI: myproject.api.livequery.com/path-to-endpoint/
       ROLES:
         - INTERNAL_DEV
+      MAX_BATCH_ROWS: 10
 ```
 
 ## Snowflake Tasks for GitHub Actions
