@@ -2,6 +2,57 @@ version: 2
 models:
   - name: live
     columns:
+      - name: udf_api_batched
+        tests:
+          - test_udf:
+              name: test__live_udf_api_batched_post_data_object
+              args: |
+                'GET', 
+                'https://httpbin.org/get', 
+                {'Content-Type': 'application/json'}, 
+                {'param1': 'value1', 'param2': 'value2'}, 
+                ''
+              assertions:
+                - result:status_code = 200
+                - result:data.args is not null
+                - result:data.args:param1 = 'value1'
+                - result:data.args:param2 = 'value2'
+          - test_udf:
+              name: test__live_udf_api_batched_post_jsonrpc_ethereum_batch
+              args: |
+                'POST',
+                'https://ethereum-rpc.publicnode.com',
+                {'Content-Type': 'application/json'},
+                [
+                  {'jsonrpc': '2.0', 'id': 1, 'method': 'eth_blockNumber', 'params': []},
+                  {'jsonrpc': '2.0', 'id': 2, 'method': 'eth_chainId', 'params': []}
+                ],
+                ''
+              assertions:
+                - result:status_code = 200
+                - result:data[0]:jsonrpc = '2.0'
+                - result:data[0]:id = 1
+                - result:data[0]:result is not null
+                - result:data[1]:jsonrpc = '2.0'
+                - result:data[1]:id = 2
+                - result:data[1]:result = '0x1'
+          - test_udf:
+              name: test__live_udf_api_batched_post_jsonrpc_solana
+              args: |
+                'POST',
+                'https://api.mainnet-beta.solana.com',
+                {'Content-Type': 'application/json'},
+                {
+                  'jsonrpc': '2.0',
+                  'id': 1,
+                  'method': 'getVersion'
+                },
+                ''
+              assertions:
+                - result:status_code = 200
+                - result:data.jsonrpc = '2.0'
+                - result:data.id = 1
+                - result:data.result is not null
       - name: udf_api
         tests:
           - test_udf:

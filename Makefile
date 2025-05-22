@@ -14,8 +14,14 @@ rm_logs:
 
 
 deploy_core: rm_logs
-	dbt run --select livequery_models.deploy.core._live \
+	dbt run --select livequery_models.deploy.core.live \
 	--vars '{UPDATE_UDFS_AND_SPS: true}' \
+	--profiles-dir ~/.dbt \
+	--profile livequery \
+	--target dev
+
+test_core: rm_logs
+	dbt test --select live \
 	--profiles-dir ~/.dbt \
 	--profile livequery \
 	--target dev
