@@ -33,7 +33,8 @@
         sql_,
         api_integration = none,
         options = none,
-        func_type = none
+        func_type = none,
+        max_batch_rows = none
     ) %}
     CREATE OR REPLACE {{ func_type }} FUNCTION {{ name_ }}(
             {{- livequery_models.compile_signature(signature) }}
@@ -44,9 +45,12 @@
         {{ options }}
     {% endif %}
     {%- if api_integration -%}
-    api_integration = {{ api_integration }}
-    AS {{ livequery_models.construct_api_route(sql_) ~ ";" }}
-    {% else -%}
+    api_integration = {{ api_integration -}}
+    {%- if max_batch_rows -%}
+    {{ "\n    max_batch_rows = " ~ max_batch_rows -}}
+    {%- endif -%}
+    {{ "\n    AS " ~ livequery_models.construct_api_route(sql_) ~ ";" -}}
+    {%- else -%}
     AS
     $$
     {{ sql_ }}
@@ -65,7 +69,7 @@
     {% set options = config ["options"] %}
     {% set api_integration = config ["api_integration"] %}
     {% set func_type = config ["func_type"] %}
-
+    {% set max_batch_rows = config ["max_batch_rows"] %}
     {% if not drop_ -%}
         {{ livequery_models.create_sql_function(
             name_ = name_,
@@ -74,6 +78,7 @@
             sql_ = sql_,
             options = options,
             api_integration = api_integration,
+            max_batch_rows = max_batch_rows,
             func_type = func_type
         ) }}
     {%- else -%}
