@@ -67,6 +67,7 @@ vars:
   API_INTEGRATION: '{{ var("config")[target.name]["API_INTEGRATION"] }}'
   EXTERNAL_FUNCTION_URI: '{{ var("config")[target.name]["EXTERNAL_FUNCTION_URI"] }}'
   ROLES: '{{ var("config")[target.name]["ROLES"] }}'
+  MAX_BATCH_ROWS: '{{ var("config")[target.name]["MAX_BATCH_ROWS"] }}'
 
   config:
   # The keys correspond to dbt profiles and are case sensitive
@@ -75,6 +76,7 @@ vars:
       EXTERNAL_FUNCTION_URI: u5z0tu43sc.execute-api.us-east-1.amazonaws.com/stg/
       ROLES:
         - INTERNAL_DEV
+      MAX_BATCH_ROWS: 10
     prod:
       API_INTEGRATION: AWS_LIVE_QUERY
       EXTERNAL_FUNCTION_URI: bqco8lkjsb.execute-api.us-east-1.amazonaws.com/prod/
@@ -83,8 +85,10 @@ vars:
         - VELOCITY_ETHEREUM
         - INTERNAL_DEV
         - BI_ANALYTICS_READER
+      MAX_BATCH_ROWS: 10
     hosted:
       API_INTEGRATION: AWS_LIVEQUERY
       EXTERNAL_FUNCTION_URI: dlcb3tpiz8.execute-api.us-east-1.amazonaws.com/hosted/
       ROLES:
         - DATA_READER
+      MAX_BATCH_ROWS: 10
