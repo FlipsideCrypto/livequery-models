@@ -12,7 +12,7 @@
     NULL
     LANGUAGE PYTHON
     STRICT IMMUTABLE
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.9'
     HANDLER = 'hex_to_int'
   sql: |
     {{ fsc_utils.python_hex_to_int() | indent(4) }}
@@ -25,7 +25,7 @@
     NULL
     LANGUAGE PYTHON
     STRICT IMMUTABLE
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.9'
     HANDLER = 'hex_to_int'
   sql: |
     {{ fsc_utils.python_udf_hex_to_int_with_encoding() | indent(4) }}
@@ -105,7 +105,7 @@
   return_type: TEXT
   options: |
     LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.9'
     HANDLER = 'get_simplified_signature'
   sql: |
     {{ fsc_utils.create_udf_evm_text_signature() | indent(4) }}
@@ -116,7 +116,7 @@
   return_type: TEXT
   options: |
     LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.9'
     PACKAGES = ('pycryptodome==3.15.0')
     HANDLER = 'udf_encode'
   sql: |
@@ -129,7 +129,7 @@
   return_type: VARCHAR
   options: |
     LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.9'
     HANDLER = 'custom_divide'
   sql: |
     {{ fsc_utils.create_udf_decimal_adjust() | indent(4) }}
@@ -141,7 +141,7 @@
   return_type: TABLE(workflow_name STRING, workflow_schedule STRING, timestamp TIMESTAMP_NTZ)
   options: |
     LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.9'
     PACKAGES = ('croniter')
     HANDLER = 'TimestampGenerator'
   sql: |
@@ -153,7 +153,7 @@
   return_type: VARIANT
   options: |
     LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.9'
     HANDLER = 'transform'
   sql: |
     {{ fsc_utils.create_udf_transform_logs() | indent(4) }}
@@ -164,7 +164,7 @@
   return_type: TEXT
   options: |
     LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.9'
     HANDLER = 'transform_base58_to_hex'
   sql: |
     {{ fsc_utils.create_udf_base58_to_hex() | indent(4) }}
@@ -175,7 +175,7 @@
   return_type: TEXT
   options: |
     LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.9'
     HANDLER = 'transform_hex_to_base58'
   sql: |
     {{ fsc_utils.create_udf_hex_to_base58() | indent(4) }}
@@ -187,7 +187,7 @@
   return_type: TEXT
   options: |
     LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.9'
     HANDLER = 'transform_hex_to_bech32'
   sql: |
     {{ fsc_utils.create_udf_hex_to_bech32() | indent(4) }}
@@ -198,7 +198,7 @@
   return_type: TEXT
   options: |
     LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.9'
     HANDLER = 'transform_hex_to_algorand'
   sql: |
     {{ fsc_utils.create_udf_hex_to_algorand() | indent(4) }}
@@ -210,7 +210,7 @@
   return_type: TEXT
   options: |
     LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.9'
     HANDLER = 'transform_hex_to_tezos'
   sql: |
     {{ fsc_utils.create_udf_hex_to_tezos() | indent(4) }}
