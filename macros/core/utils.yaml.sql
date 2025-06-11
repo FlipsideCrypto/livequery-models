@@ -24,7 +24,7 @@
     LANGUAGE PYTHON
     RETURNS NULL ON NULL INPUT
     IMMUTABLE
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.10'
     HANDLER = 'hex_to_int'
   sql: |
     {{ python_hex_to_int() | indent(4) }}
@@ -38,7 +38,7 @@
     LANGUAGE PYTHON
     RETURNS NULL ON NULL INPUT
     IMMUTABLE
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.10'
     HANDLER = 'hex_to_int'
   sql: |
     {{ python_udf_hex_to_int_with_encoding() | indent(4) }}
@@ -48,7 +48,7 @@
   return_type: TEXT
   options: |
     LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.10'
     HANDLER = 'get_simplified_signature'
   sql: |
     {{ create_udf_evm_text_signature() | indent(4) }}
@@ -58,7 +58,7 @@
   return_type: TEXT
   options: |
     LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.10'
     PACKAGES = ('pycryptodome==3.15.0')
     HANDLER = 'udf_encode'
   sql: |
@@ -150,7 +150,7 @@
     LANGUAGE PYTHON
     RETURNS NULL ON NULL INPUT
     IMMUTABLE
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.10'
     COMMENT=$$Pthon (function)[https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlencode] to convert an object to a URL query string.$$
     HANDLER = 'object_to_url_query_string'
   sql: |
@@ -165,7 +165,7 @@
     LANGUAGE PYTHON
     RETURNS NULL ON NULL INPUT
     IMMUTABLE
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.10'
     COMMENT=$$Pthon (function)[https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlencode] to convert an array to a URL query string.$$
     HANDLER = 'object_to_url_query_string'
   sql: |
@@ -210,7 +210,7 @@
     NULL
     LANGUAGE PYTHON
     IMMUTABLE
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.10'
     HANDLER = 'transform'
   sql: |
     {{ python_udf_evm_transform_log() | indent(4) }}
@@ -256,7 +256,7 @@
   return_type: TEXT
   options: |
     LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.10'
     HANDLER = 'transform_base58_to_hex'
   sql: |
     {{ create_udf_base58_to_hex() | indent(4) }}
@@ -267,7 +267,7 @@
   return_type: TEXT
   options: |
     LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.10'
     HANDLER = 'transform_hex_to_base58'
   sql: |
     {{ create_udf_hex_to_base58() | indent(4) }}
@@ -279,7 +279,7 @@
   return_type: TEXT
   options: |
     LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.10'
     HANDLER = 'transform_hex_to_bech32'
   sql: |
     {{ create_udf_hex_to_bech32() | indent(4) }}
@@ -290,7 +290,7 @@
   return_type: TEXT
   options: |
     LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.10'
     HANDLER = 'int_to_binary'
   sql: |
     {{ create_udf_int_to_binary() | indent(4) }}
@@ -301,7 +301,7 @@
   return_type: TEXT
   options: |
     LANGUAGE PYTHON
-    RUNTIME_VERSION = '3.8'
+    RUNTIME_VERSION = '3.10'
     HANDLER = 'binary_to_int'
   sql: |
     {{ create_udf_binary_to_int() | indent(4) }}
