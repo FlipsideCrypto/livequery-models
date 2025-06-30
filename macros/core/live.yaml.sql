@@ -28,6 +28,35 @@
     - [headers, OBJECT]
     - [data, VARIANT]
     - [secret_name, STRING]
+    - [is_async, BOOLEAN]
+  return_type: VARIANT
+  options: |
+    VOLATILE
+  sql: |
+    SELECT
+      CASE COALESCE(IS_ASYNC, FALSE)
+          WHEN TRUE
+          THEN
+              -- Async execution: run async function then test_requests
+              _live.redirect_s3_presigned_url(
+                  _live.udf_api_async(
+                      METHOD, URL, HEADERS, DATA, USER_ID, SECRET
+                  ) : s3_presigned_url :: STRING
+              ) : data [0][1]
+          ELSE
+              -- Default execution: run regular function
+              _live.udf_api_sync(
+                  METHOD, URL, HEADERS, DATA, USER_ID, SECRET
+              )
+      END AS results
+
+- name: {{ schema }}.udf_api
+  signature:
+    - [method, STRING]
+    - [url, STRING]
+    - [headers, OBJECT]
+    - [data, VARIANT]
+    - [secret_name, STRING]
   return_type: VARIANT
   options: |
     VOLATILE
@@ -41,6 +70,7 @@
           _utils.UDF_WHOAMI(),
           secret_name
       )
+
 - name: {{ schema }}.udf_api
   signature:
     - [method, STRING]

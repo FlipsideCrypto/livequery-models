@@ -26,6 +26,32 @@
     {% endfor -%}
 {%- endmacro -%}
 
+{%- macro format_headers(headers) -%}
+    {%- if headers -%}
+        {%- if headers is mapping -%}
+            {%- set header_items = [] -%}
+            {%- for key, value in headers.items() -%}
+                {%- set _ = header_items.append("'" ~ key ~ "' = '" ~ value ~ "'") -%}
+            {%- endfor -%}
+            HEADERS = (
+    {{ header_items | join(',\n    ') }}
+)
+        {%- elif headers is iterable -%}
+            {%- set header_items = [] -%}
+            {%- for item in headers -%}
+                {%- if item is mapping -%}
+                    {%- for key, value in item.items() -%}
+                        {%- set _ = header_items.append("'" ~ key ~ "' = '" ~ value ~ "'") -%}
+                    {%- endfor -%}
+                {%- endif -%}
+            {%- endfor -%}
+            HEADERS = (
+    {{ header_items | join(',\n    ') }}
+)
+        {%- endif -%}
+    {%- endif -%}
+{%- endmacro -%}
+
 {% macro create_sql_function(
         name_,
         signature,
@@ -34,7 +60,8 @@
         api_integration = none,
         options = none,
         func_type = none,
-        max_batch_rows = none
+        max_batch_rows = none,
+        headers = none
     ) %}
     CREATE OR REPLACE {{ func_type }} FUNCTION {{ name_ }}(
             {{- livequery_models.compile_signature(signature) }}
@@ -48,6 +75,9 @@
     api_integration = {{ api_integration -}}
     {%- if max_batch_rows -%}
     {{ "\n    max_batch_rows = " ~ max_batch_rows -}}
+    {%- endif -%}
+    {%- if headers -%}
+    {{ "\n" ~ livequery_models.format_headers(headers) -}}
     {%- endif -%}
     {{ "\n    AS " ~ livequery_models.construct_api_route(sql_) ~ ";" -}}
     {%- else -%}
@@ -70,6 +100,7 @@
     {% set api_integration = config ["api_integration"] %}
     {% set func_type = config ["func_type"] %}
     {% set max_batch_rows = config ["max_batch_rows"] %}
+    {% set headers = config ["headers"] %}
     {% if not drop_ -%}
         {{ livequery_models.create_sql_function(
             name_ = name_,
@@ -79,7 +110,8 @@
             options = options,
             api_integration = api_integration,
             max_batch_rows = max_batch_rows,
-            func_type = func_type
+            func_type = func_type,
+            headers = headers
         ) }}
     {%- else -%}
         {{ drop_function(
