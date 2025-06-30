@@ -309,7 +309,7 @@
 - name: {{ schema }}.udf_redirect_s3_presigned_url
   signature:
     - [url, STRING]
-  return_type: TEXT
+  return_type: VARIANT
   options: |
     LANGUAGE PYTHON
     RUNTIME_VERSION = '3.10'
