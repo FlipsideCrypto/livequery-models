@@ -46,7 +46,7 @@
                 ):data[0][1]
             ELSE
                 -- Default execution: run regular function
-                _live.udf_api_sync(
+                _live.udf_api(
                     METHOD, URL, HEADERS, DATA, USER_ID, SECRET_NAME
                 )
         END AS results
