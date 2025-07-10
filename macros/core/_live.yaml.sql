@@ -31,6 +31,24 @@
     NOT NULL
   sql: udf_api
 
+- name: {{ schema }}.udf_api_sync
+  signature:
+    - [method, STRING]
+    - [url, STRING]
+    - [headers, OBJECT]
+    - [DATA, VARIANT]
+    - [user_id, STRING]
+    - [SECRET, STRING]
+  return_type: VARIANT
+  func_type: EXTERNAL
+  api_integration: '{{ var("API_INTEGRATION") }}'
+  max_batch_rows: '1'
+  headers:
+    - 'fsc-quantum-execution-mode': 'sync'
+  options: |
+    NOT NULL
+  sql: 'v2/udf_api'
+
 - name: {{ schema }}.udf_api_async
   signature:
     - [method, STRING]
@@ -43,8 +61,10 @@
   func_type: EXTERNAL
   api_integration: '{{ var("API_INTEGRATION") }}'
   max_batch_rows: '1'
+  headers:
+    - 'fsc-quantum-execution-mode': 'async'
   options: |
     NOT NULL
-  sql: 'v2/udf_api_async'
+  sql: 'v2/udf_api'
 
 {% endmacro %}

@@ -72,8 +72,8 @@ vars:
   config:
   # The keys correspond to dbt profiles and are case sensitive
     dev:
-      API_INTEGRATION: AWS_LIVE_QUERY_STG
-      EXTERNAL_FUNCTION_URI: yn4219e0o6.execute-api.us-east-1.amazonaws.com/stg/
+      API_INTEGRATION: AWS_LIVEQUERY_API_STG_V2
+      EXTERNAL_FUNCTION_URI: xi7ila2p66.execute-api.us-east-1.amazonaws.com/stg/
       ROLES:
         - INTERNAL_DEV
       MAX_BATCH_ROWS: 10
