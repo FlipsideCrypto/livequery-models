@@ -236,7 +236,7 @@ def transform_hex_to_bech32(hex, hrp=''):
         return 'Data conversion failed'
 
     checksum = bech32_create_checksum(hrp, data5bit)
-    
+
     return hrp + '1' + ''.join([CHARSET[d] for d in data5bit + checksum])
 
 {% endmacro %}
@@ -260,14 +260,14 @@ def int_to_binary(num):
             if inverted_string[i] == "1" and carry == 1:
                 result = "0" + result
             elif inverted_string[i] == "0" and carry == 1:
-                result = "1" + result 
+                result = "1" + result
                 carry = 0
             else:
                 result = inverted_string[i] + result
 
-        binary_string = result 
+        binary_string = result
 
-    return binary_string 
+    return binary_string
 
 {% endmacro %}
 
@@ -278,7 +278,7 @@ def binary_to_int(binary):
   for char in binary:
     if char not in "01":
       raise ValueError("Input string must be a valid binary string.")
-      
+
   integer = 0
 
   for i, digit in enumerate(binary[::-1]):
@@ -287,5 +287,39 @@ def binary_to_int(binary):
     integer += digit_int * 2**i
 
   return str(integer)
-    
+
+{% endmacro %}
+
+{% macro create_udf_redirect_s3_presigned_url() %}
+    import requests
+    import json
+    import gzip
+    import io
+
+    def process_request(url):
+        resp = requests.get(url)
+        content = resp.content
+
+        # Decompress if URL contains .json.gz
+        if '.json.gz' in url:
+            try:
+                # Decompress the gzipped content
+                with gzip.GzipFile(fileobj=io.BytesIO(content), mode='rb') as f:
+                    content = f.read()
+            except Exception as e:
+                return {"error": "Failed to decompress gzip data", "message": str(e)}
+
+        # Try to parse as JSON
+        try:
+            text_content = content.decode('utf-8')
+            return json.loads(text_content)
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            # If not JSON or not valid UTF-8, return as string or base64
+            try:
+                # Try to return as string if its valid text
+                return content.decode('utf-8')
+            except UnicodeDecodeError:
+                # For binary data, return base64
+                import base64
+                return base64.b64encode(content).decode('ascii')
 {% endmacro %}

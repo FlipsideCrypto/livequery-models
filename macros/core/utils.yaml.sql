@@ -306,4 +306,17 @@
   sql: |
     {{ create_udf_binary_to_int() | indent(4) }}
 
+- name: {{ schema }}.udf_redirect_s3_presigned_url
+  signature:
+    - [url, STRING]
+  return_type: VARIANT
+  options: |
+    LANGUAGE PYTHON
+    RUNTIME_VERSION = '3.10'
+    HANDLER = 'process_request'
+    EXTERNAL_ACCESS_INTEGRATIONS = (S3_EXPRESS_EXTERNAL_ACCESS_INTEGRATION)
+    PACKAGES = ('requests')
+  sql: |
+    {{ create_udf_redirect_s3_presigned_url() | indent(4) }}
+
 {% endmacro %}
