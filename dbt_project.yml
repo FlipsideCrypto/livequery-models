@@ -78,8 +78,8 @@ vars:
         - INTERNAL_DEV
       MAX_BATCH_ROWS: 10
     prod:
-      API_INTEGRATION: AWS_LIVE_QUERY
-      EXTERNAL_FUNCTION_URI: bqco8lkjsb.execute-api.us-east-1.amazonaws.com/prod/
+      API_INTEGRATION: AWS_LIVEQUERY_API_PROD_V2
+      EXTERNAL_FUNCTION_URI: ae41qu1azg.execute-api.us-east-1.amazonaws.com/prod/
       ROLES:
         - VELOCITY_INTERNAL
         - VELOCITY_ETHEREUM
