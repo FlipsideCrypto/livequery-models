@@ -162,7 +162,7 @@
   return_type: VARIANT
   options: |
     VOLATILE
-    COMMENT = $$Executes an LiveQuery Sync or Async Externall Function.$$
+    COMMENT = $$Executes an LiveQuery Sync or Async External Function.$$
   sql: |
     SELECT
         utils.udf_redirect_s3_presigned_url(
@@ -195,7 +195,7 @@
   return_type: VARIANT
   options: |
     VOLATILE
-    COMMENT = $$Executes an LiveQuery Sync or Async Externall Function.$$
+    COMMENT = $$Executes an LiveQuery Sync or Async External Function.$$
   sql: |
     SELECT
         utils.udf_redirect_s3_presigned_url(
@@ -229,7 +229,7 @@
   return_type: VARIANT
   options: |
     VOLATILE
-    COMMENT = $$Executes an LiveQuery Sync or Async Externall Function.$$
+    COMMENT = $$Executes an LiveQuery Sync or Async External Function.$$
   sql: |
     SELECT
         utils.udf_redirect_s3_presigned_url(
@@ -264,7 +264,7 @@
   return_type: VARIANT
   options: |
     VOLATILE
-    COMMENT = $$Executes an LiveQuery Sync or Async Externall Function.$$
+    COMMENT = $$Executes an LiveQuery Sync or Async External Function.$$
   sql: |
     SELECT
     CASE is_async
@@ -290,7 +290,7 @@
   return_type: VARIANT
   options: |
     VOLATILE
-    COMMENT = $$Executes an LiveQuery Sync or Async Externall Function.$$
+    COMMENT = $$Executes an LiveQuery Sync or Async External Function.$$
   sql: |
     SELECT
         utils.udf_redirect_s3_presigned_url(
@@ -321,7 +321,7 @@
   return_type: VARIANT
   options: |
     VOLATILE
-    COMMENT = $$Executes an LiveQuery Sync or Async Externall Function.$$
+    COMMENT = $$Executes an LiveQuery Sync or Async External Function.$$
   sql: |
     SELECT
         _live.udf_api_sync(
@@ -341,7 +341,7 @@
   return_type: VARIANT
   options: |
     VOLATILE
-    COMMENT = $$Executes an LiveQuery Sync or Async Externall Function.$$
+    COMMENT = $$Executes an LiveQuery Sync or Async External Function.$$
   sql: |
     SELECT
         _live.udf_api_sync(
@@ -359,7 +359,7 @@
   return_type: VARIANT
   options: |
     VOLATILE
-    COMMENT = $$Executes an LiveQuery Sync or Async Externall Function.$$
+    COMMENT = $$Executes an LiveQuery Sync or Async External Function.$$
   sql: |
     SELECT
         _live.udf_api_sync(
@@ -378,7 +378,7 @@
   return_type: VARIANT
   options: |
     VOLATILE
-    COMMENT = $$Executes an LiveQuery Sync or Async Externall Function.$$
+    COMMENT = $$Executes an LiveQuery Sync or Async External Function.$$
   sql: |
     SELECT
         _live.udf_api_sync(
