@@ -254,5 +254,32 @@
   sql: |
     {{ fsc_utils.create_udtf_flatten_overflowed_responses() | indent(4) }}
 
+- name: {{ schema }}.udf_stablecoin_data_parse
+  signature:
+    - [peggeddata_content, STRING]
+  return_type: |
+    TABLE (
+        id STRING,
+        name STRING,
+        address STRING,
+        symbol STRING,
+        onCoinGecko BOOLEAN,
+        gecko_id STRING,
+        cmcId STRING,
+        pegType STRING,
+        pegMechanism STRING,
+        priceSource STRING,
+        deadFrom STRING,
+        delisted BOOLEAN,
+        deprecated BOOLEAN,
+        doublecounted BOOLEAN
+    )
+  options: |
+    LANGUAGE PYTHON
+    RUNTIME_VERSION = '3.10'
+    HANDLER = 'udf_stablecoin_data_parse'
+  sql: |
+    {{ fsc_utils.create_udf_stablecoin_data_parse() | indent(4) }}
+
 {% endmacro %}
 
