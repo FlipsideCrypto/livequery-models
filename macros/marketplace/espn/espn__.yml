@@ -1,0 +1,14 @@
+version: 2
+models:
+  - name: espn__
+    columns:
+      - name: get
+        tests:
+          - test_udf:
+              name: test_espn__get_status_200
+              args: >
+                'http://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard'
+                , {}
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL

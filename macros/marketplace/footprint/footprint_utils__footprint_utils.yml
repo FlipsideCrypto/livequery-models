@@ -1,0 +1,19 @@
+version: 2
+models:
+  - name: footprint_utils__footprint_utils
+    columns:
+      - name: get
+        tests:
+          - test_udf:
+              name: test_footprint_utils__get_status_200_v2_protocol_info
+              args: >
+                '/v3/protocol/getProtocolStatsHistory'
+                , {
+                    'chain': 'Polygon',
+                    'protocol_slug': 'planet-ix',
+                    'start_time': '2023-07-01',
+                    'end_time': '2023-07-25'
+                  }
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL

@@ -1,0 +1,29 @@
+version: 2
+models:
+  - name: subquery__
+    columns:
+      - name: graphql
+        tests:
+          - test_udf:
+              name: test_subquery__graphql_status_200
+              args: >
+                'subquery-mainnet',
+                {
+                  'query': '{
+                    _pois(first: 5) {
+                      nodes {
+                        id
+                        chainBlockHash
+                        hash
+                        parentHash
+                        createdAt
+                        operationHashRoot
+                        nodeId
+                        updatedAt
+                      }
+                    }
+                  }'
+                }
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL

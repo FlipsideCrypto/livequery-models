@@ -1,0 +1,35 @@
+version: 2
+models:
+  - name: allday__
+    columns:
+      - name: graphql
+        tests:
+          - test_udf:
+              name: test_allday__graphql_status_200
+              args: >
+                {
+                  'query': '{
+                    searchPlays(input: {filters: {byFlowIDs: ["1666"]}}){
+                    plays {
+                          id
+                          flowID
+                          metadata {
+                              description
+                              playerID
+                              playTypeV2
+                              classification
+                              week
+                              season
+                              playerFullName
+                              playerPosition
+                              playerDraftTeam
+                              gameDate
+                              teamName
+                          }
+                      }
+                  }',
+                  'variables': '{}'
+                }
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL

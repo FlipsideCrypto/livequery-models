@@ -1,0 +1,22 @@
+version: 2
+models:
+  - name: snapshot__
+    columns:
+      - name: query
+        tests:
+          - test_udf:
+              name: test_snapshot__query_status_200
+              args: >
+                {
+                  'query': '{
+                      space(id: "snapshot.dcl.eth") {
+                        id
+                        name
+                        members
+                    }
+                  }',
+                  'variables': {}
+                }
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL

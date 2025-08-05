@@ -1,0 +1,158 @@
+version: 2
+models:
+  - name: slack_utils__slack_utils
+    columns:
+      - name: post_webhook
+        tests:
+          - test_udf:
+              name: test_slack_utils__post_webhook_httpbin
+              args: >
+                'https://httpbin.org/post',
+                {'text': 'Test message from Livequery'}
+              assertions:
+                - result:status_code = 200
+                - result:data.json.text = 'Test message from Livequery'
+                - result IS NOT NULL
+          - test_udf:
+              name: test_slack_utils__post_webhook_invalid_url
+              args: >
+                'https://httpbin.org/status/404',
+                {'text': 'Test message'}
+              assertions:
+                - result:status_code = 404
+                - result IS NOT NULL
+          - test_udf:
+              name: test_slack_utils__post_webhook_null_url
+              args: >
+                NULL,
+                {'text': 'Test message'}
+              assertions:
+                - result:ok = false
+                - result:error = 'webhook_url is required'
+          - test_udf:
+              name: test_slack_utils__post_webhook_invalid_format
+              args: >
+                'https://invalid-url.com/webhook',
+                {'text': 'Test message'}
+              assertions:
+                - result:ok = false
+                - result:error = 'Invalid webhook URL format'
+          - test_udf:
+              name: test_slack_utils__post_webhook_null_payload
+              args: >
+                'https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX',
+                NULL
+              assertions:
+                - result:ok = false
+                - result:error = 'payload is required'
+
+      - name: post_message
+        tests:
+          - test_udf:
+              name: test_slack_utils__post_message_httpbin
+              args: >
+                'fake-test-token',
+                'https://httpbin.org/post',
+                {'text': 'Test message from Livequery'}
+              assertions:
+                - result:status_code = 200
+                - result:data.json.text = 'Test message from Livequery'
+                - result IS NOT NULL
+          - test_udf:
+              name: test_slack_utils__post_message_auth_error
+              args: >
+                'invalid-token',
+                'https://httpbin.org/status/401',
+                {'text': 'Test message'}
+              assertions:
+                - result:status_code = 401
+                - result IS NOT NULL
+
+      - name: post_reply
+        tests:
+          - test_udf:
+              name: test_slack_utils__post_reply_httpbin
+              args: >
+                'fake-test-token',
+                'https://httpbin.org/post',
+                '1234567890.123456',
+                {'text': 'Test reply from Livequery'}
+              assertions:
+                - result:status_code = 200
+                - result:data.json.text = 'Test reply from Livequery'
+                - result IS NOT NULL
+
+      - name: validate_webhook_url
+        tests:
+          - test_udf:
+              name: test_slack_utils__validate_webhook_url_valid
+              args: >
+                'https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX'
+              assertions:
+                - result = true
+          - test_udf:
+              name: test_slack_utils__validate_webhook_url_invalid
+              args: >
+                'https://invalid-url.com/webhook'
+              assertions:
+                - result = false
+
+      - name: validate_bot_token
+        tests:
+          - test_udf:
+              name: test_slack_utils__validate_bot_token_valid
+              args: >
+                'fake-1234567890-1234567890123-aBcDeFgHiJkLmNoPqRsTuVwX'
+              assertions:
+                - result = true
+          - test_udf:
+              name: test_slack_utils__validate_bot_token_invalid
+              args: >
+                'invalid-token'
+              assertions:
+                - result = false
+
+      - name: validate_channel
+        tests:
+          - test_udf:
+              name: test_slack_utils__validate_channel_id
+              args: >
+                'C1234567890'
+              assertions:
+                - result = true
+          - test_udf:
+              name: test_slack_utils__validate_channel_name
+              args: >
+                '#general'
+              assertions:
+                - result = true
+          - test_udf:
+              name: test_slack_utils__validate_channel_dm
+              args: >
+                'D1234567890'
+              assertions:
+                - result = true
+          - test_udf:
+              name: test_slack_utils__validate_channel_group
+              args: >
+                'G1234567890'
+              assertions:
+                - result = true
+          - test_udf:
+              name: test_slack_utils__validate_channel_invalid
+              args: >
+                'invalid-channel'
+              assertions:
+                - result = false
+          - test_udf:
+              name: test_slack_utils__validate_channel_null
+              args: >
+                NULL
+              assertions:
+                - result = false
+          - test_udf:
+              name: test_slack_utils__validate_channel_empty
+              args: >
+                ''
+              assertions:
+                - result = false

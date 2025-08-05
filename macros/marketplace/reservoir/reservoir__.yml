@@ -1,0 +1,14 @@
+version: 2
+models:
+  - name: reservoir__
+    columns:
+      - name: get
+        tests:
+          - test_udf:
+              name: test_reservoir__get_status_200
+              args: >
+                '/tokens/floor/v1'
+                , {'collection': '0x8d04a8c79ceb0889bdd12acdf3fa9d207ed3ff63'}
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL

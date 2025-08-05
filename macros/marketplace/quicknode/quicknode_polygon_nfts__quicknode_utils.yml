@@ -1,0 +1,90 @@
+version: 2
+models:
+  - name: quicknode_polygon_nfts__quicknode_utils
+    columns:
+      - name: fetch_nft_collection_details
+        tests:
+          - test_udf:
+              name: test_quicknode_polygon_nfts__fetch_nft_collection_details_status_200
+              args: >
+                {
+                'contracts': [
+                  '0x60E4d786628Fea6478F785A6d7e704777c86a7c6',
+                  '0x7Bd29408f11D2bFC23c34f18275bBf23bB716Bc7'
+                  ]
+                }
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL
+
+      - name: fetch_nfts
+        tests:
+          - test_udf:
+              name: test_quicknode_polygon_nfts__fetch_nfts_status_200
+              args: >
+                {
+                  'wallet': '0x91b51c173a4bdaa1a60e234fc3f705a16d228740',
+                  'omitFields': [
+                    'provenance',
+                    'traits'
+                    ],
+                  'page': 1,
+                  'perPage': 10,
+                  'contracts': [
+                    '0x2106c00ac7da0a3430ae667879139e832307aeaa',
+                    '0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D'
+                    ]
+                }
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL
+
+      - name: fetch_nfts_by_collection
+        tests:
+          - test_udf:
+              name: test_quicknode_polygon_nfts__fetch_nfts_by_collection_status_200
+              args: >
+                {
+                  'collection': '0x60E4d786628Fea6478F785A6d7e704777c86a7c6',
+                  'omitFields': [
+                    'imageUrl',
+                    'traits'
+                    ],
+                  'page': 1,
+                  'perPage': 10
+                }
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL
+
+      - name: get_transfers_by_nft
+        tests:
+          - test_udf:
+              name: test_quicknode_polygon_nfts__get_transfers_by_nft_status_200
+              args: >
+                {
+                'collection': '0x60E4d786628Fea6478F785A6d7e704777c86a7c6',
+                'collectionTokenId': '1',
+                'page': 1,
+                'perPage': 10
+                }
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL
+
+      - name: verify_nfts_owner
+        tests:
+          - test_udf:
+              name: test_quicknode_polygon_nfts__verify_nfts_owner_status_200
+              args: >
+                {
+                'wallet': '0x91b51c173a4bdaa1a60e234fc3f705a16d228740',
+                'contracts': [
+                    '0x2106c00ac7da0a3430ae667879139e832307aeaa:3643',
+                    '0xd07dc4262bcdbf85190c01c996b4c06a461d2430:133803'
+                  ]
+                }
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL
+

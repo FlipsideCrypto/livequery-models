@@ -1,0 +1,14 @@
+version: 2
+models:
+  - name: apilayer__
+    columns:
+      - name: get
+        tests:
+          - test_udf:
+              name: test_apilayer__get_status_200
+              args: >
+                '/odds/sports'
+                , {'all': 'true'}
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL

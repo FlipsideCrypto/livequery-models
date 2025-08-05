@@ -1,0 +1,16 @@
+version: 2
+models:
+  - name: opensea__
+    columns:
+      - name: get
+        tests:
+          - test_udf:
+              name: test_opensea__get_collection_stats_status_200
+              args: >
+                '/api/v2/collections/cryptopunks/stats'
+                , {}
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL
+                - result:data IS NOT NULL
+                - result:data:total IS NOT NULL

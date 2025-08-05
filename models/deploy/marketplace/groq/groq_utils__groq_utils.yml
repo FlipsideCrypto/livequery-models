@@ -1,0 +1,26 @@
+version: 2
+models:
+  - name: groq_utils__groq_utils
+    columns:
+      - name: post
+        tests:
+          - test_udf:
+              name: test_groq_utils__post_models_endpoint
+              args: >
+                '/openai/v1/models',
+                {},
+                'test-api-key'
+              assertions:
+                - result:data IS NOT NULL
+          - test_udf:
+              name: test_groq_utils__post_chat_endpoint
+              args: >
+                '/openai/v1/chat/completions',
+                {
+                  'model': 'llama3-8b-8192',
+                  'messages': [{'role': 'user', 'content': 'Hello'}],
+                  'max_tokens': 10
+                },
+                'test-api-key'
+              assertions:
+                - result:choices IS NOT NULL

@@ -1,0 +1,23 @@
+version: 2
+models:
+  - name: stakingrewards__
+    columns:
+      - name: query
+        tests:
+          - test_udf:
+              name: test_stakingrewards__query_status_200
+              args: >
+                {
+                  'query': '{
+                      assets(where: {symbols: ["ETH"]}, limit: 1) {
+                        name
+                        slug
+                        description
+                        symbol
+                    }
+                  }',
+                  'variables': {}
+                }
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL

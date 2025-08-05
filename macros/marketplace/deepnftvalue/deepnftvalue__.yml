@@ -1,0 +1,14 @@
+version: 2
+models:
+  - name: deepnftvalue__
+    columns:
+      - name: get
+        tests:
+          - test_udf:
+              name: test_deepnftvalue__get_status_200
+              args: >
+                '/v1/collections'
+                , {'limit': 5}
+              assertions:
+                - result:status_code = 200
+                - result:error IS NULL
