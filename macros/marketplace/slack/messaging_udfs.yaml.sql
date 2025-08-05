@@ -13,7 +13,7 @@
   options: |
     COMMENT = 'Send a message to Slack via webhook [API docs: Webhooks](https://api.slack.com/messaging/webhooks)'
   sql: |
-    SELECT {{ utils_schema_name }}.post_webhook(
+    SELECT slack_utils.post_webhook(
         WEBHOOK_SECRET_NAME,
         PAYLOAD
     ) as response
@@ -28,7 +28,7 @@
   options: |
     COMMENT = 'Send a message to Slack via Web API [API docs: chat.postMessage](https://api.slack.com/methods/chat.postMessage)'
   sql: |
-    SELECT {{ utils_schema_name }}.post_message(
+    SELECT slack_utils.post_message(
         CHANNEL,
         PAYLOAD
     ) as response
@@ -44,7 +44,7 @@
   options: |
     COMMENT = 'Send a threaded reply to Slack via Web API [API docs: chat.postMessage](https://api.slack.com/methods/chat.postMessage)'
   sql: |
-    SELECT {{ utils_schema_name }}.post_reply(
+    SELECT slack_utils.post_reply(
         CHANNEL,
         THREAD_TS,
         PAYLOAD
