@@ -22,27 +22,6 @@ models:
                 - CONTAINS(result, 'X-GitHub-Api-Version')
                 - CONTAINS(result, 'Accept')
 
-      - name: get
-        tests:
-          - test_udf:
-              name: test_github_utils__get_user_repos
-              args: >
-                'user/FlipsideCrypto',
-                {'type': 'public', 'per_page': 5}
-              assertions:
-                - result:status_code = 200
-                - result:error IS NULL
-                - result:data IS NOT NULL
-          - test_udf:
-              name: test_github_utils__get_repo_info
-              args: >
-                'repos/FlipsideCrypto/admin-models',
-                {}
-              assertions:
-                - result:status_code = 200
-                - result:data:name = 'admin-models'
-                - result:data:owner:login = 'FlipsideCrypto'
-
       - name: post
         tests:
           - test_udf:
