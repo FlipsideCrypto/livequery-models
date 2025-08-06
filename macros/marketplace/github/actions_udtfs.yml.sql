@@ -294,7 +294,7 @@
     - [repo, "TEXT"]
     - [run_id, "TEXT"]
     - [ai_provider, "TEXT"]
-    - [groq_model, "STRING"]
+    - [model_name, "STRING"]
   return_type:
     - "TABLE(run_id STRING, ai_analysis STRING, total_failures NUMBER, failure_metadata ARRAY)"
   options: |
@@ -345,12 +345,13 @@
         WHEN LOWER(ai_provider) = 'claude' THEN
           (
             SELECT COALESCE(
-              response:content[0]:text::STRING,
-              response:error:message::STRING,
+              response:data:content[0]:text::STRING,
+              response:data:error:message::STRING,
               'Claude analysis failed'
             )
             FROM (
               SELECT claude.post_messages(
+                COALESCE(NULLIF(model_name, ''), 'claude-3-5-sonnet-20241022'),
                 ARRAY_CONSTRUCT(
                   OBJECT_CONSTRUCT(
                     'role', 'user',
@@ -361,10 +362,11 @@
                       '1. Common failure patterns\n',
                       '2. Root cause analysis\n',
                       '3. Prioritized action items\n\n',
-                      SUBSTR(job_details, 1, 2000)
+                      job_details
                     )
                   )
-                )
+                ),
+                4096
               ) as response
             )
           )
@@ -379,9 +381,9 @@
                   '1. Common failure patterns\n',
                   '2. Root cause analysis\n',
                   '3. Prioritized action items\n\n',
-                  SUBSTR(job_details, 1, 2000)
+                  job_details
                 ),
-                COALESCE(NULLIF(groq_model, ''), 'llama3-8b-8192')
+                COALESCE(NULLIF(model_name, ''), 'llama3-8b-8192')
               )
             )
           )

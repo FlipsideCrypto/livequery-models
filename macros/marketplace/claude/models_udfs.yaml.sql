@@ -11,7 +11,7 @@
   options: |
     COMMENT = $$List available Claude models [API docs: List Models](https://docs.anthropic.com/claude/reference/models_get)$$
   sql: |
-    SELECT claude_utils.get(
+    SELECT claude_utils.get_api(
         '/v1/models'
     ) as response
 
@@ -23,7 +23,7 @@
   options: |
     COMMENT = $$Get details for a specific Claude model [API docs: Get Model](https://docs.anthropic.com/claude/reference/models_retrieve)$$
   sql: |
-    SELECT claude_utils.get(
+    SELECT claude_utils.get_api(
         CONCAT('/v1/models/', MODEL)
     ) as response
 

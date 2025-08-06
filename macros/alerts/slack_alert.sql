@@ -35,7 +35,7 @@
         ai_analysis,
         total_failures,
         failure_metadata
-      FROM TABLE(github_actions.tf_failure_analysis_with_ai('{{ owner }}', '{{ repo }}', '{{ run_id }}', '{{ ai_provider }}'))
+      FROM TABLE(github_actions.tf_failure_analysis_with_ai('{{ owner }}', '{{ repo }}', '{{ run_id }}', '{{ ai_provider }}', '{{ var("model_name", "") }}'))
     {% endset %}
 
     {%- set failure_results = run_query(failure_query) -%}
@@ -118,13 +118,13 @@
       }]
     } -%}
 
-    {# Add customization for success messages #}
-    {%- if username and username != 'GitHub Actions Bot' and username != 'none' -%}
+    {# Add customization for success messages at root level #}
+    {%- if username and username != 'none' -%}
       {%- do message_payload.update({'username': username}) -%}
     {%- endif -%}
     {%- if icon_url and icon_url != 'none' and icon_url != '' -%}
       {%- do message_payload.update({'icon_url': icon_url}) -%}
-    {%- elif icon_emoji and icon_emoji != ':github:' and icon_emoji != 'none' -%}
+    {%- elif icon_emoji and icon_emoji != 'none' -%}
       {%- do message_payload.update({'icon_emoji': icon_emoji}) -%}
     {%- endif -%}
   {%- else -%}
@@ -174,13 +174,13 @@
       }]
     } -%}
 
-    {# Add customization for failure messages #}
-    {%- if username and username != 'GitHub Actions Bot' and username != 'none' -%}
+    {# Add customization for failure messages at root level #}
+    {%- if username and username != 'none' -%}
       {%- do message_payload.update({'username': username}) -%}
     {%- endif -%}
     {%- if icon_url and icon_url != 'none' and icon_url != '' -%}
       {%- do message_payload.update({'icon_url': icon_url}) -%}
-    {%- elif icon_emoji and icon_emoji != ':github:' and icon_emoji != 'none' -%}
+    {%- elif icon_emoji and icon_emoji != 'none' -%}
       {%- do message_payload.update({'icon_emoji': icon_emoji}) -%}
     {%- endif -%}
   {%- endif -%}
@@ -237,21 +237,63 @@
         }]
       } -%}
 
+      {# Add customization to thread messages #}
+      {%- if username and username != 'none' -%}
+        {%- do job_summary.update({'username': username}) -%}
+      {%- endif -%}
+      {%- if icon_url and icon_url != 'none' and icon_url != '' -%}
+        {%- do job_summary.update({'icon_url': icon_url}) -%}
+      {%- elif icon_emoji and icon_emoji != 'none' -%}
+        {%- do job_summary.update({'icon_emoji': icon_emoji}) -%}
+      {%- endif -%}
+
       {% set job_thread_query %}
         SELECT slack.post_reply('{{ slack_channel }}', '{{ main_thread_ts }}', PARSE_JSON($${{ job_summary | tojson }}$$), '{{ bot_secret_name }}') as result
       {% endset %}
 
       {%- set job_result = run_query(job_thread_query) -%}
 
-      {# Post logs as additional thread reply if available #}
+      {# Post logs as additional thread replies if available - split long logs #}
       {%- if logs_preview and logs_preview != '' -%}
-        {%- set log_message = {'text': '```\n' ~ logs_preview[:2900] ~ '\n```'} -%}
+        {%- set max_chunk_size = 2900 -%}
+        {%- set log_chunks = [] -%}
+        
+        {# Split logs into chunks #}
+        {%- for i in range(0, logs_preview|length, max_chunk_size) -%}
+          {%- set chunk = logs_preview[i:i+max_chunk_size] -%}
+          {%- do log_chunks.append(chunk) -%}
+        {%- endfor -%}
+        
+        {# Send each chunk as a separate thread message #}
+        {%- for chunk_idx in range(log_chunks|length) -%}
+          {%- set chunk = log_chunks[chunk_idx] -%}
+          {%- set chunk_header = '' -%}
+          
+          {# Add chunk header if multiple chunks #}
+          {%- if log_chunks|length > 1 -%}
+            {%- set chunk_header = '📋 Logs (' ~ (chunk_idx + 1) ~ '/' ~ log_chunks|length ~ '):\n' -%}
+          {%- else -%}
+            {%- set chunk_header = '📋 Logs:\n' -%}
+          {%- endif -%}
+          
+          {%- set log_message = {'text': chunk_header ~ '```\n' ~ chunk ~ '\n```'} -%}
 
-        {% set log_thread_query %}
-          SELECT slack.post_reply('{{ slack_channel }}', '{{ main_thread_ts }}', PARSE_JSON($${{ log_message | tojson }}$$), '{{ bot_secret_name }}') as result
-        {% endset %}
+          {# Add customization to log thread messages #}
+          {%- if username and username != 'none' -%}
+            {%- do log_message.update({'username': username}) -%}
+          {%- endif -%}
+          {%- if icon_url and icon_url != 'none' and icon_url != '' -%}
+            {%- do log_message.update({'icon_url': icon_url}) -%}
+          {%- elif icon_emoji and icon_emoji != 'none' -%}
+            {%- do log_message.update({'icon_emoji': icon_emoji}) -%}
+          {%- endif -%}
 
-        {%- set log_result = run_query(log_thread_query) -%}
+          {% set log_thread_query %}
+            SELECT slack.post_reply('{{ slack_channel }}', '{{ main_thread_ts }}', PARSE_JSON($${{ log_message | tojson }}$$), '{{ bot_secret_name }}') as result
+          {% endset %}
+
+          {%- set log_result = run_query(log_thread_query) -%}
+        {%- endfor -%}
       {%- endif -%}
 
       {{ log("Posted thread for job: " ~ job_name, true) }}
