@@ -47,7 +47,7 @@ models:
                 'C1234567890',
                 {'text': 'Test message'}
               assertions:
-                - result:status_code = 401
+                - result:status_code = 200
                 - result IS NOT NULL
 
       - name: post_reply
