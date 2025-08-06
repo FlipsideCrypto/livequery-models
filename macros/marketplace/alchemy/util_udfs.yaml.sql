@@ -14,11 +14,12 @@
     COMMENT = $$Used to issue a 'GET' request to the Alchemy NFT API.$$
   sql: |
     SELECT
-      live.udf_api(
+      live.udf_api_v2(
         concat(
             'https://', NETWORK,'.g.alchemy.com/nft/v2/{',NETWORK,'}', PATH, '?',
             utils.udf_object_to_url_query_string(QUERY_ARGS)
         ),
+        {'fsc-quantum-execution-mode': 'async'},
         '_FSC_SYS/ALCHEMY'
     ) as response
 
@@ -34,11 +35,12 @@
     COMMENT = $$Used to issue a 'GET' request to the Alchemy NFT API.$$
   sql: |
     SELECT
-      live.udf_api(
+      live.udf_api_v2(
         concat(
             'https://', NETWORK,'.g.alchemy.com/nft/', VERSION, '/{',NETWORK,'}', PATH, '?',
             utils.udf_object_to_url_query_string(QUERY_ARGS)
         ),
+        {'fsc-quantum-execution-mode': 'async'},
         '_FSC_SYS/ALCHEMY'
     ) as response
 
@@ -53,10 +55,10 @@
     COMMENT = $$Used to issue a 'POST' request to the Alchemy NFT API.$$
   sql: |
     SELECT
-      live.udf_api(
+      live.udf_api_v2(
         'POST',
         concat('https://', NETWORK,'.g.alchemy.com/nft/v2/{',NETWORK,'}', PATH),
-        {},
+        {'fsc-quantum-execution-mode': 'async'},
         BODY,
         '_FSC_SYS/ALCHEMY'
     ) as response
@@ -71,10 +73,10 @@
   options: |
     COMMENT = $$Used to issue an RPC call to Alchemy.$$
   sql: |
-    SELECT live.udf_api(
+    SELECT live.udf_api_v2(
       'POST',
       concat('https://', NETWORK,'.g.alchemy.com/v2/{',NETWORK,'}'),
-      {},
+      {'fsc-quantum-execution-mode': 'async'},
       {'id': 1,'jsonrpc': '2.0','method': METHOD,'params': PARAMS},
       '_FSC_SYS/ALCHEMY') as response
 {% endmacro %}

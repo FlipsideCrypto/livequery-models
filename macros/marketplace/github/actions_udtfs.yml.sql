@@ -289,12 +289,10 @@
     - [owner, "TEXT"]
     - [repo, "TEXT"]
     - [run_id, "TEXT"]
-    - [enable_ai, "BOOLEAN"]
     - [ai_provider, "TEXT"]
-    - [groq_api_key, "TEXT"]
-    - [groq_model, "TEXT"]
+    - [groq_model, "STRING"]
   return_type:
-    - "TABLE(run_id STRING, ai_analysis STRING, total_failures NUMBER, failure_metadata VARIANT)"
+    - "TABLE(run_id STRING, ai_analysis STRING, total_failures NUMBER, failure_metadata ARRAY)"
   options: |
     COMMENT = $$Gets GitHub Actions failure analysis with configurable AI providers (cortex, claude, groq) for Slack notifications.$$
   sql: |
@@ -310,94 +308,89 @@
           'error_sections', ARRAY_SIZE(failed_step_logs),
           'logs_preview', SUBSTR(ARRAY_TO_STRING(failed_step_logs, '\n'), 1, 500)
         )) as failure_metadata,
-        CASE 
-          WHEN NOT enable_ai THEN NULL
-          WHEN LOWER(COALESCE(ai_provider, 'cortex')) = 'cortex' THEN
-            snowflake.cortex.complete(
-              'mistral-large',
-              CONCAT(
-                'Analyze these ', COUNT(*), ' GitHub Actions failures for run ', run_id, ' and provide:\n',
-                '1. Common failure patterns\n',
-                '2. Root cause analysis\n', 
-                '3. Prioritized action items\n\n',
-                LISTAGG(
-                  CONCAT(
-                    'Job: ', job_name, '\n',
-                    'Job ID: ', job_id, '\n',
-                    'Run ID: ', run_id, '\n',
-                    'Error: ', ARRAY_TO_STRING(failed_step_logs, '\n')
-                  ),
-                  '\n\n---\n\n'
-                ) WITHIN GROUP (ORDER BY job_name)
-              )
+        LISTAGG(
+          CONCAT(
+            'Job: ', job_name, '\n',
+            'Job ID: ', job_id, '\n',
+            'Run ID: ', run_id, '\n',
+            'Error: ', ARRAY_TO_STRING(failed_step_logs, '\n')
+          ),
+          '\n\n---\n\n'
+        ) WITHIN GROUP (ORDER BY job_name) as job_details
+      FROM TABLE({{ schema_name -}}.tf_failed_jobs_with_logs(owner, repo, run_id))
+      GROUP BY run_id
+    )
+    SELECT
+      run_id::STRING,
+      CASE
+        WHEN LOWER(COALESCE(ai_provider, 'cortex')) = 'cortex' THEN
+          snowflake.cortex.complete(
+            'mistral-large',
+            CONCAT(
+              'Analyze these ', total_failures, ' GitHub Actions failures for run ', run_id, ' and provide:\n',
+              '1. Common failure patterns\n',
+              '2. Root cause analysis\n',
+              '3. Prioritized action items\n\n',
+              job_details
             )
-          WHEN LOWER(ai_provider) = 'claude' THEN
-            (
-              SELECT COALESCE(
-                response:content[0]:text::STRING,
-                response:error:message::STRING,
-                'Claude analysis failed'
-              )
-              FROM (
-                SELECT claude.post_messages(
-                  ARRAY_CONSTRUCT(
-                    OBJECT_CONSTRUCT(
-                      'role', 'user',
-                      'content', CONCAT(
-                        'Analyze these ', COUNT(*), ' GitHub Actions failures for run ', run_id, ' and provide:\n',
-                        '1. Common failure patterns\n',
-                        '2. Root cause analysis\n', 
-                        '3. Prioritized action items\n\n',
-                        LISTAGG(
-                          CONCAT(
-                            'Job: ', job_name, '\n',
-                            'Job ID: ', job_id, '\n',
-                            'Run ID: ', run_id, '\n',
-                            'Error: ', SUBSTR(ARRAY_TO_STRING(failed_step_logs, '\n'), 1, 2000)
-                          ),
-                          '\n\n---\n\n'
-                        ) WITHIN GROUP (ORDER BY job_name)
-                      )
+          )
+        WHEN LOWER(ai_provider) = 'claude' THEN
+          (
+            SELECT COALESCE(
+              response:content[0]:text::STRING,
+              response:error:message::STRING,
+              'Claude analysis failed'
+            )
+            FROM (
+              SELECT claude.post_messages(
+                ARRAY_CONSTRUCT(
+                  OBJECT_CONSTRUCT(
+                    'role', 'user',
+                    'content', CONCAT(
+                      'Analyze these ', total_failures, ' GitHub Actions failures for run ', run_id, ' and provide:\n',
+                      '1. Common failure patterns\n',
+                      '2. Root cause analysis\n',
+                      '3. Prioritized action items\n\n',
+                      SUBSTR(job_details, 1, 2000)
                     )
                   )
-                ) as response
-              )
-            )
-          WHEN LOWER(ai_provider) = 'groq' THEN
-            (
-              SELECT groq.extract_response_text(
-                groq.quick_chat(
-                  CONCAT(
-                    'Analyze these ', COUNT(*), ' GitHub Actions failures for run ', run_id, ' and provide:\n',
-                    '1. Common failure patterns\n',
-                    '2. Root cause analysis\n', 
-                    '3. Prioritized action items\n\n',
-                    LISTAGG(
-                      CONCAT(
-                        'Job: ', job_name, '\n',
-                        'Job ID: ', job_id, '\n',
-                        'Run ID: ', run_id, '\n',
-                        'Error: ', SUBSTR(ARRAY_TO_STRING(failed_step_logs, '\n'), 1, 2000)
-                      ),
-                      '\n\n---\n\n'
-                    ) WITHIN GROUP (ORDER BY job_name)
-                  ),
-                  groq_api_key,
-                  COALESCE(groq_model, 'llama3-8b-8192')
                 )
-              )
+              ) as response
             )
-          ELSE 
-            CONCAT('Unsupported AI provider: ', COALESCE(ai_provider, 'null'))
-        END as ai_analysis
-      FROM TABLE({{ schema_name -}}.tf_failed_jobs_with_logs(owner, repo, run_id))
-      GROUP BY run_id, enable_ai, ai_provider, groq_api_key, groq_model
-    )
-    SELECT 
-      run_id::STRING,
-      ai_analysis::STRING,
+          )
+        WHEN LOWER(ai_provider) = 'groq' THEN
+          (
+            SELECT groq.extract_response_text(
+              groq.quick_chat(
+                CONCAT(
+                  'Analyze these ', total_failures, ' GitHub Actions failures for run ', run_id, ' and provide:\n',
+                  '1. Common failure patterns\n',
+                  '2. Root cause analysis\n',
+                  '3. Prioritized action items\n\n',
+                  SUBSTR(job_details, 1, 2000)
+                ),
+                COALESCE(NULLIF(groq_model, ''), 'llama3-8b-8192')
+              )
+            )  
+          )
+        ELSE
+          CONCAT('Unsupported AI provider: ', COALESCE(ai_provider, 'null'))
+      END as ai_analysis,
       total_failures,
       failure_metadata
     FROM failure_data
+
+- name: {{ schema_name -}}.tf_failure_analysis_with_ai
+  signature:
+    - [owner, "TEXT"]
+    - [repo, "TEXT"]
+    - [run_id, "TEXT"]
+    - [ai_provider, "TEXT"]
+  return_type:
+    - "TABLE(run_id STRING, ai_analysis STRING, total_failures NUMBER, failure_metadata ARRAY)"
+  options: |
+    COMMENT = $$Gets GitHub Actions failure analysis with configurable AI providers (cortex, claude, groq) for Slack notifications. Uses default groq model.$$
+  sql: |
+    SELECT * FROM TABLE({{ schema_name -}}.tf_failure_analysis_with_ai(owner, repo, run_id, ai_provider, ''))
 
 {% endmacro %}

@@ -17,10 +17,10 @@
       WHEN PAYLOAD IS NULL THEN
         OBJECT_CONSTRUCT('ok', false, 'error', 'payload is required')
       ELSE
-        live.udf_api(
+        live.udf_api_v2(
           'POST',
           '{WEBHOOK_URL}',
-          OBJECT_CONSTRUCT('Content-Type', 'application/json'),
+          OBJECT_CONSTRUCT('Content-Type', 'application/json', 'fsc-quantum-execution-mode', 'async'),
           PAYLOAD,
           IFF(_utils.udf_whoami() <> CURRENT_USER(),
               '_FSC_SYS/SLACK/' || WEBHOOK_SECRET_NAME,
@@ -43,12 +43,13 @@
       WHEN PAYLOAD IS NULL THEN
         OBJECT_CONSTRUCT('ok', false, 'error', 'payload is required')
       ELSE
-        live.udf_api(
+        live.udf_api_v2(
           'POST',
           'https://slack.com/api/chat.postMessage',
           OBJECT_CONSTRUCT(
             'Authorization', 'Bearer {BOT_TOKEN}',
-            'Content-Type', 'application/json'
+            'Content-Type', 'application/json',
+            'fsc-quantum-execution-mode', 'async'
           ),
           OBJECT_INSERT(PAYLOAD, 'channel', CHANNEL),
           IFF(_utils.udf_whoami() <> CURRENT_USER(), '_FSC_SYS/SLACK', 'Vault/prod/livequery/slack')
@@ -73,12 +74,13 @@
       WHEN PAYLOAD IS NULL THEN
         OBJECT_CONSTRUCT('ok', false, 'error', 'payload is required')
       ELSE
-        live.udf_api(
+        live.udf_api_v2(
           'POST',
           'https://slack.com/api/chat.postMessage',
           OBJECT_CONSTRUCT(
             'Authorization', 'Bearer {BOT_TOKEN}',
-            'Content-Type', 'application/json'
+            'Content-Type', 'application/json',
+            'fsc-quantum-execution-mode', 'async'
           ),
           OBJECT_INSERT(
             OBJECT_INSERT(PAYLOAD, 'channel', CHANNEL),

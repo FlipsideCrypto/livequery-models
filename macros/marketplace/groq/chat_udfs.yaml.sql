@@ -12,7 +12,7 @@
   options: |
     COMMENT = $$Send messages to Groq and get a chat completion response with optional model selection [API docs: Chat Completions](https://console.groq.com/docs/api-reference#chat-completions)$$
   sql: |
-    SELECT groq_utils.post(
+    SELECT groq_utils.post_api(
         '/openai/v1/chat/completions',
         {
             'model': COALESCE(MODEL, 'llama3-8b-8192'),

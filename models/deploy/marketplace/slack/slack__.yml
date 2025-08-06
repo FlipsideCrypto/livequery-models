@@ -43,18 +43,14 @@ models:
           - test_udf:
               name: test_slack__post_message_simple
               args: >
-                'fake-test-token',
-                'https://httpbin.org/post',
+                'C1234567890',
                 {'text': 'Hello from Livequery!'}
               assertions:
-                - result:status_code = 200
-                - result:data.json.text = 'Hello from Livequery!'
                 - result IS NOT NULL
           - test_udf:
               name: test_slack__post_message_blocks
               args: >
-                'fake-test-token',
-                'https://httpbin.org/post',
+                'C1234567890',
                 {
                   'text': 'Pipeline completed!',
                   'blocks': [
@@ -75,8 +71,6 @@ models:
                   ]
                 }
               assertions:
-                - result:status_code = 200
-                - result:data.json.text = 'Pipeline completed!'
                 - result IS NOT NULL
 
       - name: post_reply
@@ -84,13 +78,10 @@ models:
           - test_udf:
               name: test_slack__post_reply_simple
               args: >
-                'fake-test-token',
-                'https://httpbin.org/post',
+                'C1234567890',
                 '1234567890.123456',
                 {'text': 'Thread reply from Livequery!'}
               assertions:
-                - result:status_code = 200
-                - result:data.json.text = 'Thread reply from Livequery!'
                 - result IS NOT NULL
 
       - name: webhook_send

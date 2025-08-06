@@ -13,7 +13,7 @@
     COMMENT = $$[List repository workflows](https://docs.github.com/en/rest/actions/workflows?apiVersion=2022-11-28#list-repository-workflows).$$
   sql: |
     SELECT
-      {{ utils_schema_name }}.GET(
+      {{ utils_schema_name }}.get_api(
         CONCAT_WS('/', 'repos', owner, repo, 'actions/workflows'),
         query
     ):data::VARIANT
@@ -40,7 +40,7 @@
     COMMENT = $$Lists all workflow runs for a repository. You can use query parameters to narrow the list of results. [Docs](https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-repository).$$
   sql: |
     SELECT
-      {{ utils_schema_name }}.GET(
+      {{ utils_schema_name }}.get_api(
         CONCAT_WS('/', 'repos', owner, repo, 'actions/runs'),
         query
     ):data::VARIANT
@@ -68,7 +68,7 @@
     COMMENT = $$List all workflow runs for a workflow. You can replace workflow_id with the workflow file name. You can use query parameters to narrow the list of results. [Docs](https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-workflow).$$
   sql: |
     SELECT
-      {{ utils_schema_name }}.GET(
+      {{ utils_schema_name }}.get_api(
         CONCAT_WS('/', 'repos', owner, repo, 'actions/workflows', workflow_id, 'runs'),
         query
     ):data::VARIANT
@@ -97,7 +97,7 @@
     COMMENT = $$You can use this endpoint to manually trigger a GitHub Actions workflow run. You can replace workflow_id with the workflow file name. For example, you could use main.yaml. [Docs](https://docs.github.com/en/rest/actions/workflows?apiVersion=2022-11-28#create-a-workflow-dispatch-event).$$
   sql: |
     SELECT
-      {{ utils_schema_name }}.POST(
+      {{ utils_schema_name }}.post_api(
         CONCAT_WS('/', 'repos', owner, repo, 'actions/workflows', workflow_id, 'dispatches'),
         COALESCE(body, {'ref': 'main'})::OBJECT
     )::VARIANT
@@ -126,7 +126,7 @@
     COMMENT = $$Enables a workflow. You can replace workflow_id with the workflow file name. For example, you could use main.yaml. [Docs](https://docs.github.com/en/rest/reference/actions#enable-a-workflow).$$
   sql: |
     SELECT
-      {{ utils_schema_name }}.PUT(
+      {{ utils_schema_name }}.put_api(
         CONCAT_WS('/', 'repos', owner, repo, 'actions/workflows', workflow_id, 'enable'),
         {}
     )::VARIANT
@@ -141,7 +141,7 @@
     COMMENT = $$Disables a workflow. You can replace workflow_id with the workflow file name. For example, you could use main.yaml. [Docs](https://docs.github.com/en/rest/reference/actions#disable-a-workflow).$$
   sql: |
     SELECT
-      {{ utils_schema_name }}.PUT(
+      {{ utils_schema_name }}.put_api(
         CONCAT_WS('/', 'repos', owner, repo, 'actions/workflows', workflow_id, 'disable'),
         {}
     )::VARIANT
@@ -157,7 +157,7 @@
     COMMENT = $$Download workflow run logs as a ZIP archive. Gets a redirect URL to the actual log archive. [Docs](https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#download-workflow-run-logs).$$
   sql: |
     SELECT
-      {{ utils_schema_name }}.GET(
+      {{ utils_schema_name }}.get_api(
         CONCAT_WS('/', 'repos', owner, repo, 'actions/runs', run_id, 'logs'),
         {}
     ):data::TEXT
@@ -173,7 +173,7 @@
     COMMENT = $$Download job logs. Gets the plain text logs for a specific job. [Docs](https://docs.github.com/en/rest/actions/workflow-jobs?apiVersion=2022-11-28#download-job-logs-for-a-workflow-run).$$
   sql: |
     SELECT
-      {{ utils_schema_name }}.GET(
+      {{ utils_schema_name }}.get_api(
         CONCAT_WS('/', 'repos', owner, repo, 'actions/jobs', job_id, 'logs'),
         {}
     ):data::TEXT
@@ -190,7 +190,7 @@
     COMMENT = $$Lists jobs for a workflow run. [Docs](https://docs.github.com/en/rest/actions/workflow-jobs?apiVersion=2022-11-28#list-jobs-for-a-workflow-run).$$
   sql: |
     SELECT
-      {{ utils_schema_name }}.GET(
+      {{ utils_schema_name }}.get_api(
         CONCAT_WS('/', 'repos', owner, repo, 'actions/runs', run_id, 'jobs'),
         query
     ):data::VARIANT

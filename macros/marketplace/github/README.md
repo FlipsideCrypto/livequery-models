@@ -115,25 +115,25 @@ SELECT github_utils.headers();
 -- Returns: '{"Authorization": "Bearer {TOKEN}", ...}'
 ```
 
-#### `github_utils.get(route, query)`
+#### `github_utils.get_api(route, query)`
 Make GET requests to GitHub API.
 ```sql
-SELECT github_utils.get('repos/your-org/your-repo', {'per_page': 10});
+SELECT github_utils.get_api('repos/your-org/your-repo', {'per_page': 10});
 ```
 
-#### `github_utils.post(route, data)`
+#### `github_utils.post_api(route, data)`
 Make POST requests to GitHub API.
 ```sql
-SELECT github_utils.post('repos/your-org/your-repo/issues', {
+SELECT github_utils.post_api('repos/your-org/your-repo/issues', {
     'title': 'New Issue',
     'body': 'Issue description'
 });
 ```
 
-#### `github_utils.put(route, data)`
+#### `github_utils.put_api(route, data)`
 Make PUT requests to GitHub API.
 ```sql
-SELECT github_utils.put('repos/your-org/your-repo/actions/workflows/ci.yml/enable', {});
+SELECT github_utils.put_api('repos/your-org/your-repo/actions/workflows/ci.yml/enable', {});
 ```
 
 ### Workflow Functions (`github_actions` schema)
@@ -655,7 +655,7 @@ SELECT * FROM TABLE(github_actions.tf_workflows('your-org', 'your-repo'));
 | Function | Type | Purpose |
 |----------|------|---------|
 | `github_utils.octocat()` | UDF | Test API connectivity |
-| `github_utils.get/post/put()` | UDF | Generic API requests |
+| `github_utils.get_api/post_api/put_api()` | UDF | Generic API requests |
 | `github_actions.workflows()` | UDF | List workflows (JSON) |
 | `github_actions.runs()` | UDF | List runs (JSON) |
 | `github_actions.workflow_runs()` | UDF | List workflow runs (JSON) |

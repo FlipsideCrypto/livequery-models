@@ -49,11 +49,11 @@ Quick single or system+user message chat.
 
 Extract text content from Groq API responses.
 
-### `groq_utils.post(path, body)`
+### `groq_utils.post_api(path, body)`
 
 Low-level HTTP POST to Groq API endpoints.
 
-### `groq_utils.get(path)`
+### `groq_utils.get_api(path)`
 
 Low-level HTTP GET to Groq API endpoints.
 

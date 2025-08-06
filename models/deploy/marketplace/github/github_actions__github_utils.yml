@@ -4,7 +4,7 @@ models:
     columns:
       - name: workflows
         tests:
-          - test_udf:
+          - test_udf_without_context:
               name: test_github_actions__workflows_with_query
               args: >
                 'FlipsideCrypto',
@@ -13,7 +13,7 @@ models:
               assertions:
                 - result:workflows IS NOT NULL
                 - result:total_count IS NOT NULL
-          - test_udf:
+          - test_udf_without_context:
               name: test_github_actions__workflows_simple
               args: >
                 'FlipsideCrypto',
@@ -24,7 +24,7 @@ models:
 
       - name: runs
         tests:
-          - test_udf:
+          - test_udf_without_context:
               name: test_github_actions__runs_with_query
               args: >
                 'FlipsideCrypto',
@@ -33,7 +33,7 @@ models:
               assertions:
                 - result:workflow_runs IS NOT NULL
                 - result:total_count IS NOT NULL
-          - test_udf:
+          - test_udf_without_context:
               name: test_github_actions__runs_simple
               args: >
                 'FlipsideCrypto',
@@ -44,7 +44,7 @@ models:
 
       - name: workflow_runs
         tests:
-          - test_udf:
+          - test_udf_without_context:
               name: test_github_actions__workflow_runs_with_query
               args: >
                 'FlipsideCrypto',
@@ -54,7 +54,7 @@ models:
               assertions:
                 - result:workflow_runs IS NOT NULL
                 - result:total_count IS NOT NULL
-          - test_udf:
+          - test_udf_without_context:
               name: test_github_actions__workflow_runs_simple
               args: >
                 'FlipsideCrypto',
@@ -66,7 +66,7 @@ models:
 
       - name: workflow_dispatches
         tests:
-          - test_udf:
+          - test_udf_without_context:
               name: test_github_actions__workflow_dispatches_with_body
               args: >
                 'FlipsideCrypto',
@@ -75,7 +75,7 @@ models:
                 {'ref': 'main', 'inputs': {'debug': 'true'}}
               assertions:
                 - result IS NOT NULL
-          - test_udf:
+          - test_udf_without_context:
               name: test_github_actions__workflow_dispatches_simple
               args: >
                 'FlipsideCrypto',
@@ -86,7 +86,7 @@ models:
 
       - name: workflow_enable
         tests:
-          - test_udf:
+          - test_udf_without_context:
               name: test_github_actions__workflow_enable
               args: >
                 'FlipsideCrypto',
@@ -97,7 +97,7 @@ models:
 
       - name: workflow_disable
         tests:
-          - test_udf:
+          - test_udf_without_context:
               name: test_github_actions__workflow_disable
               args: >
                 'FlipsideCrypto',
@@ -108,7 +108,7 @@ models:
 
       - name: workflow_run_logs
         tests:
-          - test_udf:
+          - test_udf_without_context:
               name: test_github_actions__workflow_run_logs
               args: >
                 'FlipsideCrypto',
@@ -119,7 +119,7 @@ models:
 
       - name: job_logs
         tests:
-          - test_udf:
+          - test_udf_without_context:
               name: test_github_actions__job_logs
               args: >
                 'FlipsideCrypto',
@@ -130,7 +130,7 @@ models:
 
       - name: workflow_run_jobs
         tests:
-          - test_udf:
+          - test_udf_without_context:
               name: test_github_actions__workflow_run_jobs_with_query
               args: >
                 'FlipsideCrypto',
@@ -140,7 +140,7 @@ models:
               assertions:
                 - result:jobs IS NULL
                 - result:total_count IS NULL
-          - test_udf:
+          - test_udf_without_context:
               name: test_github_actions__workflow_run_jobs_simple
               args: >
                 'FlipsideCrypto',
@@ -246,9 +246,7 @@ models:
                 'FlipsideCrypto',
                 'admin-models',
                 '12345678',
-                true,
-                'cortex',
-                NULL
+                'cortex'
               assertions:
                 - row_count >= 0
           - test_udtf:
@@ -257,9 +255,7 @@ models:
                 'FlipsideCrypto',
                 'admin-models',
                 '12345678',
-                true,
-                'claude',
-                NULL
+                'claude'
               assertions:
                 - row_count >= 0
           - test_udtf:
@@ -268,20 +264,17 @@ models:
                 'FlipsideCrypto',
                 'admin-models',
                 '12345678',
-                true,
                 'groq',
-                'test-api-key'
+                'llama3-8b-8192'
               assertions:
                 - row_count >= 0
           - test_udtf:
-              name: test_github_actions__tf_failure_analysis_with_ai_disabled
+              name: test_github_actions__tf_failure_analysis_with_ai_default
               args: >
                 'FlipsideCrypto',
                 'admin-models',
                 '12345678',
-                false,
-                'cortex',
-                NULL
+                'cortex'
               assertions:
                 - row_count >= 0
 

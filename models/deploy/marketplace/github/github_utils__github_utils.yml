@@ -4,7 +4,7 @@ models:
     columns:
       - name: octocat
         tests:
-          - test_udf:
+          - test_udf_without_context:
               name: test_github_utils__octocat_status_200
               assertions:
                 - result:status_code = 200
@@ -13,7 +13,7 @@ models:
 
       - name: headers
         tests:
-          - test_udf:
+          - test_udf_without_context:
               name: test_github_utils__headers_format
               assertions:
                 - result IS NOT NULL
@@ -24,7 +24,7 @@ models:
 
       - name: post
         tests:
-          - test_udf:
+          - test_udf_without_context:
               name: test_github_utils__post_invalid_route
               args: >
                 'invalid/test/route',
@@ -35,7 +35,7 @@ models:
 
       - name: put
         tests:
-          - test_udf:
+          - test_udf_without_context:
               name: test_github_utils__put_invalid_route
               args: >
                 'invalid/test/route',

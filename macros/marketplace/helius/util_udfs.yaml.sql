@@ -3,7 +3,7 @@
     This macro is used to generate the Helius base endpoints
  #}
 
-- name: {{ schema -}}.get
+- name: {{ schema -}}.get_api
   signature:
     - [NETWORK, STRING, The network 'devnet' or 'mainnet']
     - [PATH, STRING, The API path starting with '/']
@@ -13,7 +13,7 @@
   options: |
     COMMENT = $$Used to issue an HTTP GET request to Helius.$$
   sql: |
-    SELECT live.udf_api(
+    SELECT live.udf_api_v2(
       'GET',
       CASE
           WHEN NETWORK = 'devnet' THEN
@@ -21,12 +21,12 @@
           ELSE
               concat('https://api.helius.xyz', PATH, '?api-key={API_KEY}&', utils.udf_object_to_url_query_string(QUERY_PARAMS))
       END,
-      {},
+      {'fsc-quantum-execution-mode': 'async'},
       {},
       '_FSC_SYS/HELIUS'
     ) as response
 
-- name: {{ schema -}}.post
+- name: {{ schema -}}.post_api
   signature:
     - [NETWORK, STRING, The network 'devnet' or 'mainnet']
     - [PATH, STRING, The API path starting with '/']
@@ -36,7 +36,7 @@
   options: |
     COMMENT = $$Used to issue an HTTP POST request to Helius.$$
   sql: |
-    SELECT live.udf_api(
+    SELECT live.udf_api_v2(
       'POST',
       CASE
           WHEN NETWORK = 'devnet' THEN
@@ -44,7 +44,7 @@
           ELSE
               concat('https://api.helius.xyz', PATH, '?api-key={API_KEY}')
       END,
-      {},
+      {'fsc-quantum-execution-mode': 'async'},
       BODY,
       '_FSC_SYS/HELIUS'
     ) as response
@@ -59,7 +59,7 @@
   options: |
     COMMENT = $$Used to issue an RPC call to Helius.$$
   sql: |
-    SELECT live.udf_api(
+    SELECT live.udf_api_v2(
       'POST',
       CASE
           WHEN NETWORK = 'devnet' THEN
@@ -67,7 +67,7 @@
           ELSE
               'https://mainnet.helius-rpc.com?api-key={API_KEY}'
       END,
-      {},
+      {'fsc-quantum-execution-mode': 'async'},
       {'id': 1,'jsonrpc': '2.0','method': METHOD,'params': PARAMS},
       '_FSC_SYS/HELIUS'
     ) as response
