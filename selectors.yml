@@ -20,5 +20,5 @@ selectors:
   - name: test_udfs_without_context
     definition:
       union:
-        - method: test_type
-          value: test_udf_without_context
+        - method: test_name
+          value: "*test_udf_without_context*"
