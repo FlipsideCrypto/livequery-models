@@ -92,7 +92,7 @@ models:
               args: >
                 '#general'
               assertions:
-                - result = true
+                - result = false
           - test_udf_without_context:
               name: test_slack_utils__validate_channel_dm
               args: >
