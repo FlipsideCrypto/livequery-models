@@ -227,7 +227,7 @@
     - [repo, "TEXT"]
     - [run_id, "TEXT"]
   return_type:
-    - "TABLE(run_id STRING, job_id NUMBER, job_name STRING, job_status STRING, job_conclusion STRING, job_url STRING, failed_steps VARIANT, logs TEXT, failed_step_logs ARRAY)"
+    - "TABLE(run_id STRING, job_id NUMBER, job_name STRING, job_status STRING, job_conclusion STRING, job_url STRING, workflow_name STRING, failed_steps VARIANT, logs TEXT, failed_step_logs ARRAY)"
   options: |
     COMMENT = $$Gets failed jobs for a workflow run with their complete logs. Combines job info with log content for analysis.$$
   sql: |
@@ -239,6 +239,7 @@
         status AS job_status,
         conclusion AS job_conclusion,
         html_url AS job_url,
+        workflow_name,
         steps AS failed_steps
       FROM TABLE({{ schema_name -}}.tf_workflow_run_jobs(owner, repo, run_id))
       WHERE conclusion = 'failure'
@@ -251,6 +252,7 @@
         job_status,
         job_conclusion,
         job_url,
+        workflow_name,
         failed_steps,
         {{ schema_name -}}.job_logs(owner, repo, job_id::TEXT) AS logs
       FROM failed_jobs
@@ -263,13 +265,14 @@
         job_status,
         job_conclusion,
         job_url,
+        workflow_name,
         failed_steps,
         logs,
         ARRAY_AGG(section.value) AS failed_step_logs
       FROM jobs_with_logs,
       LATERAL FLATTEN(INPUT => SPLIT(logs, '##[group]')) section
       WHERE CONTAINS(section.value, '##[error]')
-      GROUP BY run_id, job_id, job_name, job_status, job_conclusion, job_url, failed_steps, logs
+      GROUP BY run_id, job_id, job_name, job_status, job_conclusion, job_url, workflow_name, failed_steps, logs
     )
     SELECT
       run_id,
@@ -278,6 +281,7 @@
       job_status,
       job_conclusion,
       job_url,
+      workflow_name,
       failed_steps,
       logs,
       COALESCE(failed_step_logs, ARRAY_CONSTRUCT()) AS failed_step_logs
@@ -301,15 +305,17 @@
         run_id,
         COUNT(*) as total_failures,
         ARRAY_AGG(OBJECT_CONSTRUCT(
+          'workflow_name', workflow_name,
           'run_id', run_id,
           'job_name', job_name,
           'job_id', job_id,
           'job_url', job_url,
           'error_sections', ARRAY_SIZE(failed_step_logs),
-          'logs_preview', SUBSTR(ARRAY_TO_STRING(failed_step_logs, '\n'), 1, 500)
+          'logs_preview', ARRAY_TO_STRING(failed_step_logs, '\n')
         )) as failure_metadata,
         LISTAGG(
           CONCAT(
+            'Workflow: ', workflow_name, '\n',
             'Job: ', job_name, '\n',
             'Job ID: ', job_id, '\n',
             'Run ID: ', run_id, '\n',
@@ -328,6 +334,8 @@
             'mistral-large',
             CONCAT(
               'Analyze these ', total_failures, ' GitHub Actions failures for run ', run_id, ' and provide:\n',
+              'Keep it concise with 1-2 sentences per section\n',
+              'Return the analysis in markdown format\n',
               '1. Common failure patterns\n',
               '2. Root cause analysis\n',
               '3. Prioritized action items\n\n',
@@ -348,6 +356,8 @@
                     'role', 'user',
                     'content', CONCAT(
                       'Analyze these ', total_failures, ' GitHub Actions failures for run ', run_id, ' and provide:\n',
+                      'Keep it concise with 1-2 sentences per section\n',
+                      'Return the analysis in markdown format\n',
                       '1. Common failure patterns\n',
                       '2. Root cause analysis\n',
                       '3. Prioritized action items\n\n',
@@ -364,6 +374,8 @@
               groq.quick_chat(
                 CONCAT(
                   'Analyze these ', total_failures, ' GitHub Actions failures for run ', run_id, ' and provide:\n',
+                  'Keep it concise with 1-2 sentences\n',
+                  'Return the analysis in markdown format\n',
                   '1. Common failure patterns\n',
                   '2. Root cause analysis\n',
                   '3. Prioritized action items\n\n',
@@ -371,7 +383,7 @@
                 ),
                 COALESCE(NULLIF(groq_model, ''), 'llama3-8b-8192')
               )
-            )  
+            )
           )
         ELSE
           CONCAT('Unsupported AI provider: ', COALESCE(ai_provider, 'null'))
