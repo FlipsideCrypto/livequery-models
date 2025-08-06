@@ -22,7 +22,7 @@ models:
                 - CONTAINS(result, 'X-GitHub-Api-Version')
                 - CONTAINS(result, 'Accept')
 
-      - name: post
+      - name: post_api
         tests:
           - test_udf_without_context:
               name: test_github_utils__post_invalid_route
@@ -33,7 +33,7 @@ models:
                 - result:status_code = 404
                 - result IS NOT NULL
 
-      - name: put
+      - name: put_api
         tests:
           - test_udf_without_context:
               name: test_github_utils__put_invalid_route

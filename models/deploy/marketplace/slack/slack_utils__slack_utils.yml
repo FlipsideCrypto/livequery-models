@@ -35,8 +35,7 @@ models:
           - test_udf_without_context:
               name: test_slack_utils__post_message_httpbin
               args: >
-                'fake-test-token',
-                'https://httpbin.org/post',
+                'C1234567890',
                 {'text': 'Test message from Livequery'}
               assertions:
                 - result:status_code = 200
@@ -45,8 +44,7 @@ models:
           - test_udf_without_context:
               name: test_slack_utils__post_message_auth_error
               args: >
-                'invalid-token',
-                'https://httpbin.org/status/401',
+                'C1234567890',
                 {'text': 'Test message'}
               assertions:
                 - result:status_code = 401
@@ -57,8 +55,7 @@ models:
           - test_udf_without_context:
               name: test_slack_utils__post_reply_httpbin
               args: >
-                'fake-test-token',
-                'https://httpbin.org/post',
+                'C1234567890',
                 '1234567890.123456',
                 {'text': 'Test reply from Livequery'}
               assertions:
