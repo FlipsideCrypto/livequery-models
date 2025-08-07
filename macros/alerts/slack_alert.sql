@@ -204,7 +204,7 @@
   {# Handle threading for failures #}
   {%- if enable_auto_threading and total_failures > 0 and not use_webhook and slack_channel -%}
     {%- set main_response = fromjson(result.rows[0][0]) -%}
-    {%- set main_thread_ts = main_response.data.ts -%}
+    {%- set main_thread_ts = main_response.ts or (main_response.data and main_response.data.ts) -%}
 
     {{ log("Starting threading with " ~ failure_metadata|length ~ " jobs", true) }}
 
