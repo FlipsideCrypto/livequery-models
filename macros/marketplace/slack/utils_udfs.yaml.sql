@@ -24,7 +24,7 @@
           PAYLOAD,
           IFF(_utils.udf_whoami() <> CURRENT_USER(),
               '_FSC_SYS/SLACK/' || WEBHOOK_SECRET_NAME,
-              'Vault/prod/livequery/slack/' || WEBHOOK_SECRET_NAME),
+              'Vault/prod/data_platform/slack/' || WEBHOOK_SECRET_NAME),
           TRUE
         )
     END as response
@@ -55,7 +55,7 @@
           OBJECT_INSERT(PAYLOAD, 'channel', CHANNEL),
           IFF(_utils.udf_whoami() <> CURRENT_USER(),
               '_FSC_SYS/SLACK/' || COALESCE(BOT_SECRET_NAME, 'intelligence'),
-              'Vault/prod/livequery/slack/' || COALESCE(BOT_SECRET_NAME, 'intelligence')),
+              'Vault/prod/data_platform/slack/' || COALESCE(BOT_SECRET_NAME, 'intelligence')),
           TRUE
         )
     END as response
@@ -107,7 +107,7 @@
           ),
           IFF(_utils.udf_whoami() <> CURRENT_USER(),
               '_FSC_SYS/SLACK/' || COALESCE(BOT_SECRET_NAME, 'intelligence'),
-              'Vault/prod/livequery/slack/' || COALESCE(BOT_SECRET_NAME, 'intelligence')),
+              'Vault/prod/data_platform/slack/' || COALESCE(BOT_SECRET_NAME, 'intelligence')),
           TRUE
         )
     END as response

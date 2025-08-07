@@ -22,7 +22,7 @@
         BODY,
         IFF(_utils.udf_whoami() <> CURRENT_USER(),
               '_FSC_SYS/CLAUDE',
-              'Vault/prod/livequery/claude'
+              'Vault/prod/data_platform/claude'
           ),
           TRUE
     ) as response
@@ -46,7 +46,7 @@
         NULL,
         IFF(_utils.udf_whoami() <> CURRENT_USER(),
               '_FSC_SYS/CLAUDE',
-              'Vault/prod/livequery/claude'
+              'Vault/prod/data_platform/claude'
         ),
         TRUE
     ) as response
@@ -70,7 +70,7 @@
         NULL,
         IFF(_utils.udf_whoami() <> CURRENT_USER(),
               '_FSC_SYS/CLAUDE',
-              'Vault/prod/livequery/claude'
+              'Vault/prod/data_platform/claude'
         ),
         TRUE
     ) as response
