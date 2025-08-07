@@ -290,15 +290,16 @@
 
 - name: {{ schema_name -}}.tf_failure_analysis_with_ai
   signature:
-    - [owner, "TEXT"]
-    - [repo, "TEXT"]
-    - [run_id, "TEXT"]
-    - [ai_provider, "TEXT"]
-    - [model_name, "STRING"]
+    - [owner, "TEXT", "GitHub repository owner/organization name"]
+    - [repo, "TEXT", "GitHub repository name"]
+    - [run_id, "TEXT", "GitHub Actions run ID to analyze"]
+    - [ai_provider, "TEXT", "AI provider to use: 'cortex' (Snowflake built-in AI)"]
+    - [model_name, "STRING", "Model name (required): 'mistral-large', 'mistral-7b', 'llama2-70b-chat', 'mixtral-8x7b'"]
+    - [ai_prompt, "STRING", "Custom AI analysis prompt. Leave empty to use default failure analysis prompt."]
   return_type:
     - "TABLE(run_id STRING, ai_analysis STRING, total_failures NUMBER, failure_metadata ARRAY)"
   options: |
-    COMMENT = $$Gets GitHub Actions failure analysis with configurable AI providers (cortex, claude, groq) for Slack notifications.$$
+    COMMENT = $$Gets GitHub Actions failure analysis using Snowflake Cortex AI with custom prompts for Slack notifications.$$
   sql: |
     WITH failure_data AS (
       SELECT
@@ -328,68 +329,16 @@
     )
     SELECT
       run_id::STRING,
-      CASE
-        WHEN LOWER(COALESCE(ai_provider, 'cortex')) = 'cortex' THEN
-          snowflake.cortex.complete(
-            'mistral-large',
-            CONCAT(
-              'Analyze these ', total_failures, ' GitHub Actions failures for run ', run_id, ' and provide:\n',
-              'Keep it concise with 1-2 sentences per section\n',
-              'Return the analysis in markdown format\n',
-              '1. Common failure patterns\n',
-              '2. Root cause analysis\n',
-              '3. Prioritized action items\n\n',
-              job_details
-            )
-          )
-        WHEN LOWER(ai_provider) = 'claude' THEN
-          (
-            SELECT COALESCE(
-              response:data:content[0]:text::STRING,
-              response:data:error:message::STRING,
-              'Claude analysis failed'
-            )
-            FROM (
-              SELECT claude.post_messages(
-                COALESCE(NULLIF(model_name, ''), 'claude-3-5-sonnet-20241022'),
-                ARRAY_CONSTRUCT(
-                  OBJECT_CONSTRUCT(
-                    'role', 'user',
-                    'content', CONCAT(
-                      'Analyze these ', total_failures, ' GitHub Actions failures for run ', run_id, ' and provide:\n',
-                      'Keep it concise with 1-2 sentences per section\n',
-                      'Return the analysis in markdown format\n',
-                      '1. Common failure patterns\n',
-                      '2. Root cause analysis\n',
-                      '3. Prioritized action items\n\n',
-                      job_details
-                    )
-                  )
-                ),
-                4096
-              ) as response
-            )
-          )
-        WHEN LOWER(ai_provider) = 'groq' THEN
-          (
-            SELECT groq.extract_response_text(
-              groq.quick_chat(
-                CONCAT(
-                  'Analyze these ', total_failures, ' GitHub Actions failures for run ', run_id, ' and provide:\n',
-                  'Keep it concise with 1-2 sentences\n',
-                  'Return the analysis in markdown format\n',
-                  '1. Common failure patterns\n',
-                  '2. Root cause analysis\n',
-                  '3. Prioritized action items\n\n',
-                  job_details
-                ),
-                COALESCE(NULLIF(model_name, ''), 'llama3-8b-8192')
-              )
-            )
-          )
-        ELSE
-          CONCAT('Unsupported AI provider: ', COALESCE(ai_provider, 'null'))
-      END as ai_analysis,
+      snowflake.cortex.complete(
+        model_name,
+        CONCAT(
+          COALESCE(
+            NULLIF(ai_prompt, ''),
+            'Analyze these GitHub Actions failures and provide:\n1. Common failure patterns\n2. Root cause analysis\n3. Prioritized action items\n\nKeep it concise with 1-2 sentences per section in markdown format.\n\n'
+          ),
+          job_details
+        )
+      ) as ai_analysis,
       total_failures,
       failure_metadata
     FROM failure_data
@@ -399,12 +348,11 @@
     - [owner, "TEXT"]
     - [repo, "TEXT"]
     - [run_id, "TEXT"]
-    - [ai_provider, "TEXT"]
   return_type:
     - "TABLE(run_id STRING, ai_analysis STRING, total_failures NUMBER, failure_metadata ARRAY)"
   options: |
-    COMMENT = $$Gets GitHub Actions failure analysis with configurable AI providers (cortex, claude, groq) for Slack notifications. Uses default groq model.$$
+    COMMENT = $$Gets GitHub Actions failure analysis with default AI provider (cortex) for Slack notifications.$$
   sql: |
-    SELECT * FROM TABLE({{ schema_name -}}.tf_failure_analysis_with_ai(owner, repo, run_id, ai_provider, ''))
+    SELECT * FROM TABLE({{ schema_name -}}.tf_failure_analysis_with_ai(owner, repo, run_id, 'cortex', 'mistral-large', ''))
 
 {% endmacro %}

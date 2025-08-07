@@ -7,6 +7,8 @@
   {%- set slack_channel = var('slack_channel', none) -%}
   {%- set enable_ai_analysis = var('enable_ai_analysis', true) -%}
   {%- set ai_provider = var('ai_provider', 'cortex') -%}
+  {%- set model_name = var('model_name', 'mistral-large') -%}
+  {%- set ai_prompt = var('ai_prompt', '') -%}
   {%- set enable_auto_threading = var('enable_auto_threading', false) -%}
   {%- set bot_secret_name = var('bot_secret_name', 'intelligence') -%}
   {%- set webhook_secret_name = var('webhook_secret_name', none) -%}
@@ -27,7 +29,7 @@
     {{ return("") }}
   {%- endif -%}
 
-  {%- if enable_ai_analysis and ai_provider in ['cortex', 'claude'] -%}
+  {%- if enable_ai_analysis -%}
     {# Get failure data with AI analysis #}
     {% set failure_query %}
       SELECT
@@ -35,7 +37,7 @@
         ai_analysis,
         total_failures,
         failure_metadata
-      FROM TABLE(github_actions.tf_failure_analysis_with_ai('{{ owner }}', '{{ repo }}', '{{ run_id }}', '{{ ai_provider }}', '{{ var("model_name", "") }}'))
+      FROM TABLE(github_actions.tf_failure_analysis_with_ai('{{ owner }}', '{{ repo }}', '{{ run_id }}', '{{ ai_provider }}', '{{ model_name }}', '{{ ai_prompt }}'))
     {% endset %}
 
     {%- set failure_results = run_query(failure_query) -%}

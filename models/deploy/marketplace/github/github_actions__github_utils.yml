@@ -246,26 +246,20 @@ models:
                 'FlipsideCrypto',
                 'admin-models',
                 '12345678',
-                'cortex'
+                'cortex',
+                'mistral-large',
+                ''
               assertions:
                 - row_count >= 0
           - test_udtf:
-              name: test_github_actions__tf_failure_analysis_with_ai_claude
+              name: test_github_actions__tf_failure_analysis_with_ai_custom_prompt
               args: >
                 'FlipsideCrypto',
                 'admin-models',
                 '12345678',
-                'claude'
-              assertions:
-                - row_count >= 0
-          - test_udtf:
-              name: test_github_actions__tf_failure_analysis_with_ai_groq
-              args: >
-                'FlipsideCrypto',
-                'admin-models',
-                '12345678',
-                'groq',
-                'llama3-8b-8192'
+                'cortex',
+                'mistral-7b',
+                'Analyze these failures and provide concise recommendations:'
               assertions:
                 - row_count >= 0
           - test_udtf:
@@ -273,8 +267,7 @@ models:
               args: >
                 'FlipsideCrypto',
                 'admin-models',
-                '12345678',
-                'cortex'
+                '12345678'
               assertions:
                 - row_count >= 0
 

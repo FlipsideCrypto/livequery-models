@@ -72,7 +72,9 @@ The `failed_gha_slack_alert` macro is ready to use immediately - no deployment r
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `enable_ai_analysis` | boolean | `true` | Enable AI failure analysis |
-| `ai_provider` | string | `'cortex'` | AI provider: `'cortex'` or `'claude'` |
+| `ai_provider` | string | `'cortex'` | AI provider: `'cortex'` (Snowflake built-in AI) |
+| `model_name` | string | `'mistral-large'` | **Required for Cortex**: `'mistral-large'`, `'mistral-7b'`, `'llama2-70b-chat'`, `'mixtral-8x7b'` |
+| `ai_prompt` | string | `''` | Custom AI analysis prompt (leave empty for default) |
 
 ### Threading & Appearance
 
@@ -106,13 +108,14 @@ dbt run-operation failed_gha_slack_alert --vars '{
   "run_id": "16729602656",
   "slack_channel": "C087GJQ1ZHQ",
   "enable_ai_analysis": true,
-  "ai_provider": "claude",
+  "ai_provider": "cortex",
+  "model_name": "mistral-7b",
   "username": "CI/CD Alert Bot",
   "icon_emoji": ":robot_face:"
 }' --target dev
 ```
 
-### Auto-Threading with Detailed Logs
+### Auto-Threading with Custom Prompt
 
 ```bash
 dbt run-operation failed_gha_slack_alert --vars '{
@@ -122,6 +125,8 @@ dbt run-operation failed_gha_slack_alert --vars '{
   "slack_channel": "C087GJQ1ZHQ",
   "enable_ai_analysis": true,
   "ai_provider": "cortex",
+  "model_name": "mixtral-8x7b",
+  "ai_prompt": "Focus on dependency issues and provide quick fixes:",
   "enable_auto_threading": true,
   "username": "Pipeline Monitor",
   "icon_emoji": ":stellar:"
@@ -137,6 +142,8 @@ dbt run-operation failed_gha_slack_alert --vars '{
   "run_id": "16729602656",
   "webhook_secret_name": "prod-alerts",
   "enable_ai_analysis": true,
+  "ai_provider": "cortex",
+  "model_name": "mistral-large",
   "username": "Production Monitor",
   "icon_emoji": ":package:"
 }' --target dev
@@ -155,6 +162,7 @@ dbt run-operation failed_gha_slack_alert --vars '{
       "slack_channel": "C087GJQ1ZHQ",
       "enable_ai_analysis": true,
       "ai_provider": "cortex",
+      "model_name": "mistral-large",
       "enable_auto_threading": true,
       "username": "GitHub Actions",
       "icon_emoji": ":github:"
@@ -163,7 +171,7 @@ dbt run-operation failed_gha_slack_alert --vars '{
 
 ## Message Format
 
-### Failure Messages Include:
+### Failure Messages Include
 
 - **🔴 Red Sidebar**: Visual failure indicator
 - **Header**: Repository name with failure indicator (❌)
@@ -172,7 +180,7 @@ dbt run-operation failed_gha_slack_alert --vars '{
 - **🔗 Action Button**: Direct link to workflow run
 - **🧵 Threading** (if enabled): Individual job details and logs as thread replies
 
-### Success Messages Include:
+### Success Messages Include
 
 - **🟢 Green Sidebar**: Visual success indicator
 - **Header**: Repository name with success indicator (✅)
@@ -181,30 +189,33 @@ dbt run-operation failed_gha_slack_alert --vars '{
 
 ## AI Analysis
 
-The macro supports two AI providers for intelligent failure analysis:
+The macro supports Snowflake's Cortex AI for intelligent failure analysis:
 
 ### Cortex (Default)
-- Uses Snowflake's built-in Cortex AI
-- No additional configuration required
-- Automatically analyzes logs and provides insights
 
-### Claude
-- Uses Anthropic's Claude AI via Livequery integration
-- Provides sophisticated reasoning and code analysis
-- Better at understanding complex failure patterns
+- Uses Snowflake's built-in Cortex AI
+- **Requires `model_name` parameter** to specify which model to use
+- Available models: `'mistral-large'`, `'mistral-7b'`, `'llama2-70b-chat'`, `'mixtral-8x7b'`
+- Automatically analyzes logs and provides insights
+- Custom prompts supported via `ai_prompt` parameter
 
 Enable AI analysis with:
+
 ```yaml
 "enable_ai_analysis": true,
-"ai_provider": "claude"  # or "cortex"
+"ai_provider": "cortex",
+"model_name": "mistral-large",  # Required!
+"ai_prompt": "Focus on the most critical issues:"  # Optional
 ```
 
 ## Environment Variables & Vault Setup
 
 ### Webhook Method
+
 - `SLACK_WEBHOOK_URL`: Your Slack webhook URL (GitHub secret)
 
 ### Bot Token Method
+
 - **No environment variables required!**
 - Bot tokens are stored in Livequery vault at: `_FSC_SYS/SLACK/{bot_secret_name}`
 - Channel ID provided as parameter in macro call
@@ -212,10 +223,12 @@ Enable AI analysis with:
 ### Vault Paths for Bot Tokens
 
 Store your bot tokens in these vault locations:
-- `_FSC_SYS/SLACK/intelligence` (default)
-- `_FSC_SYS/SLACK/alerts` (custom)
-- `_FSC_SYS/SLACK/ci-cd` (custom)
-- `_FSC_SYS/SLACK/prod` (custom)
+
+- `prod/livequery/slack/intelligence` (default)
+- `prod/livequery/alerts` (custom)
+- `prod/livequery/<your bot's name>` (custom)
+
+** The `_FSC/SYS/..` will not work anymore, because we are not able to access studio to store `CREDENTIALS` anymore. So the context + `_FSC/SYS/...` is deprecated. It's in the sql code for backward compatability.
 
 ### How to Get Slack Channel IDs
 
@@ -254,10 +267,10 @@ Add this step before the notification to debug issues:
     echo "Channel: C1234567890"  # Your actual channel ID
 ```
 
-
 ### Channel ID Validation
 
 Test if your channel ID is valid:
+
 ```sql
 SELECT slack_utils.validate_channel('C1234567890') as is_valid;
 -- Should return true for valid channel IDs
@@ -291,18 +304,21 @@ Ensure these UDFs are deployed before using the notification macro.
 ## Performance & Benefits
 
 ### ⚡ **Lightning Fast Execution**
+
 - **Pure SQL**: No Python interpreter overhead
 - **Direct UDF calls**: Leverages Livequery's optimized marketplace functions
 - **Single transaction**: All operations in one dbt run-operation call
 - **Instant feedback**: Real-time execution with immediate Slack delivery
 
 ### 🎯 **Production Ready**
+
 - **Reliable**: Battle-tested with GitHub Actions workflows
 - **Scalable**: Handles multiple failed jobs with threading
 - **Secure**: Vault-based credential management
 - **Flexible**: Supports both webhook and bot token methods
 
 ### 🤖 **Intelligent Analysis**
+
 - **AI-Powered**: Cortex and Claude integration for failure analysis
 - **Actionable Insights**: Common patterns, root causes, and prioritized action items
 - **Context-Aware**: Includes job names, workflow details, and error logs
