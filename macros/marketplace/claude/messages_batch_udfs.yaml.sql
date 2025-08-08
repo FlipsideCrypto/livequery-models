@@ -12,7 +12,7 @@
   options: |
     COMMENT = $$Send a batch of messages to Claude and get responses [API docs: Messages Batch](https://docs.anthropic.com/en/api/creating-message-batches)$$
   sql: |
-    SELECT claude_utils.post(
+    SELECT claude_utils.post_api(
         '/v1/messages/batches',
         MESSAGES
     ) as response
@@ -26,7 +26,7 @@
   options: |
     COMMENT = $$Retrieve details of a specific Message Batch [API docs: Retrieve Message Batch](https://docs.anthropic.com/en/api/retrieving-message-batches)$$
   sql: |
-    SELECT claude_utils.get(
+    SELECT claude_utils.get_api(
         CONCAT('/v1/messages/batches/', MESSAGE_BATCH_ID)
     ) as response
 
@@ -38,7 +38,7 @@
   options: |
     COMMENT = $$Retrieve results of a Message Batch [API docs: Retrieve Message Batch Results](https://docs.anthropic.com/en/api/retrieving-message-batches)$$
   sql: |
-    SELECT claude_utils.get(
+    SELECT claude_utils.get_api(
         CONCAT('/v1/messages/batches/', MESSAGE_BATCH_ID, '/results')
     ) as response
 
@@ -49,7 +49,7 @@
   options: |
     COMMENT = $$List all Message Batches [API docs: List Message Batches](https://docs.anthropic.com/en/api/retrieving-message-batches)$$
   sql: |
-    SELECT claude_utils.get(
+    SELECT claude_utils.get_api(
         '/v1/messages/batches'
     ) as response
 
@@ -62,7 +62,7 @@
   options: |
     COMMENT = $$List all Message Batches [API docs: List Message Batches](https://docs.anthropic.com/en/api/retrieving-message-batches)$$
   sql: |
-    SELECT claude_utils.get(
+    SELECT claude_utils.get_api(
         CONCAT('/v1/messages/batches',
             '?before_id=', COALESCE(BEFORE_ID, ''),
             '&limit=', COALESCE(LIMIT::STRING, '')
@@ -78,7 +78,7 @@
   options: |
     COMMENT = $$List all Message Batches [API docs: List Message Batches](https://docs.anthropic.com/en/api/retrieving-message-batches)$$
   sql: |
-    SELECT claude_utils.get(
+    SELECT claude_utils.get_api(
         CONCAT('/v1/messages/batches',
             '?after_id=', COALESCE(AFTER_ID, ''),
             '&limit=', COALESCE(LIMIT::STRING, '')
@@ -92,7 +92,7 @@
   options: |
     COMMENT = $$Cancel a Message Batch [API docs: Cancel Message Batch](https://docs.anthropic.com/en/api/retrieving-message-batches)$$
   sql: |
-    SELECT claude_utils.post(
+    SELECT claude_utils.post_api(
         CONCAT('/v1/messages/batches/', MESSAGE_BATCH_ID, '/cancel'),
         {}
     ) as response

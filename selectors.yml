@@ -16,3 +16,9 @@ selectors:
           - livequery_models.deploy.marketplace.apilayer.* # API Endpoints not working
           - livequery_models.deploy.marketplace.opensea.* # Requite wallet validated API Key
           - livequery_models.deploy.marketplace.credmark.* # Requires API Key
+
+  - name: test_udfs_without_context
+    definition:
+      union:
+        - method: test_name
+          value: "*test_udf_without_context*"

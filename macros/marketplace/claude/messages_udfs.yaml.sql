@@ -12,7 +12,7 @@
   options: |
     COMMENT = $$Send a message to Claude and get a response [API docs: Messages](https://docs.anthropic.com/claude/reference/messages_post)$$
   sql: |
-    SELECT claude_utils.post(
+    SELECT claude_utils.post_api(
         '/v1/messages',
         {
             'model': 'claude-3-5-sonnet-20241022',
@@ -31,7 +31,7 @@
   options: |
     COMMENT = $$Send a message to Claude and get a response [API docs: Messages](https://docs.anthropic.com/claude/reference/messages_post)$$
   sql: |
-    SELECT claude_utils.post(
+    SELECT claude_utils.post_api(
         '/v1/messages',
         {
             'model': COALESCE(MODEL, 'claude-3-5-sonnet-20241022'),
@@ -54,7 +54,7 @@
   options: |
     COMMENT = $$Send a message to Claude and get a response [API docs: Messages](https://docs.anthropic.com/claude/reference/messages_post)$$
   sql: |
-    SELECT claude_utils.post(
+    SELECT claude_utils.post_api(
         '/v1/messages',
         {
             'model': MODEL,
@@ -76,7 +76,7 @@
   options: |
     COMMENT = $$Count tokens in a message array before sending to Claude [API docs: Count Tokens](https://docs.anthropic.com/claude/reference/counting-tokens)$$
   sql: |
-    SELECT claude_utils.post(
+    SELECT claude_utils.post_api(
         '/v1/messages/count_tokens',
         {
             'model': COALESCE(MODEL, 'claude-3-5-sonnet-20241022'),

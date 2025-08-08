@@ -2,10 +2,10 @@ version: 2
 models:
   - name: claude_utils__claude_utils
     columns:
-      - name: post
+      - name: post_api
         tests:
           - test_udf:
-              name: test_claude_utils__post_status_200
+              name: test_claude_utils__post_api_status_200
               args: >
                 '/v1/messages'
                 , {

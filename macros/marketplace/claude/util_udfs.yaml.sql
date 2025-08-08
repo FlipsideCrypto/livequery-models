@@ -2,7 +2,7 @@
 {#
     This macro is used to generate API calls to Claude API endpoints
  #}
-- name: {{ schema_name -}}.post
+- name: {{ schema_name -}}.post_api
   signature:
     - [PATH, STRING, The API endpoint path]
     - [BODY, OBJECT, The request body]
@@ -11,7 +11,10 @@
   options: |
     COMMENT = $$Make calls to Claude API [API docs: Claude](https://docs.anthropic.com/claude/reference/getting-started-with-the-api)$$
   sql: |
-    SELECT live.udf_api(
+    SELECT 
+    {% set v2_exists = check_udf_api_v2_exists() %}
+    {% if v2_exists -%}
+      live.udf_api_v2(
         'POST',
         CONCAT('https://api.anthropic.com', PATH),
         {
@@ -20,10 +23,31 @@
             'content-type': 'application/json'
         },
         BODY,
-        '_FSC_SYS/CLAUDE'
-    ) as response
+        IFF(_utils.udf_whoami() <> CURRENT_USER(),
+              '_FSC_SYS/CLAUDE',
+              'Vault/prod/data_platform/claude'
+          ),
+          TRUE
+      )
+    {%- else -%}
+      live.udf_api(
+        'POST',
+        CONCAT('https://api.anthropic.com', PATH),
+        {
+            'anthropic-version': '2023-06-01',
+            'x-api-key': '{API_KEY}',
+            'content-type': 'application/json'
+        },
+        BODY,
+        IFF(_utils.udf_whoami() <> CURRENT_USER(),
+              '_FSC_SYS/CLAUDE',
+              'Vault/prod/data_platform/claude'
+        )
+      )
+    {%- endif %}
+    as response
 
-- name: {{ schema_name -}}.get
+- name: {{ schema_name -}}.get_api
   signature:
     - [PATH, STRING, The API endpoint path]
   return_type:
@@ -31,7 +55,10 @@
   options: |
     COMMENT = $$Make GET requests to Claude API [API docs: Get](https://docs.anthropic.com/claude/reference/get)$$
   sql: |
-    SELECT live.udf_api(
+    SELECT 
+    {% set v2_exists = check_udf_api_v2_exists() %}
+    {% if v2_exists -%}
+      live.udf_api_v2(
         'GET',
         CONCAT('https://api.anthropic.com', PATH),
         {
@@ -40,8 +67,29 @@
             'content-type': 'application/json'
         },
         NULL,
-        '_FSC_SYS/CLAUDE'
-    ) as response
+        IFF(_utils.udf_whoami() <> CURRENT_USER(),
+              '_FSC_SYS/CLAUDE',
+              'Vault/prod/data_platform/claude'
+        ),
+        TRUE
+      )
+    {%- else -%}
+      live.udf_api(
+        'GET',
+        CONCAT('https://api.anthropic.com', PATH),
+        {
+            'anthropic-version': '2023-06-01',
+            'x-api-key': '{API_KEY}',
+            'content-type': 'application/json'
+        },
+        NULL,
+        IFF(_utils.udf_whoami() <> CURRENT_USER(),
+              '_FSC_SYS/CLAUDE',
+              'Vault/prod/data_platform/claude'
+        )
+      )
+    {%- endif %}
+    as response
 
 - name: {{ schema_name -}}.delete_method
   signature:
@@ -51,7 +99,10 @@
   options: |
     COMMENT = $$Make DELETE requests to Claude API [API docs: Delete](https://docs.anthropic.com/claude/reference/delete)$$
   sql: |
-    SELECT live.udf_api(
+    SELECT 
+    {% set v2_exists = check_udf_api_v2_exists() %}
+    {% if v2_exists -%}
+      live.udf_api_v2(
         'DELETE',
         CONCAT('https://api.anthropic.com', PATH),
         {
@@ -60,6 +111,27 @@
             'content-type': 'application/json'
         },
         NULL,
-        '_FSC_SYS/CLAUDE'
-    ) as response
+        IFF(_utils.udf_whoami() <> CURRENT_USER(),
+              '_FSC_SYS/CLAUDE',
+              'Vault/prod/data_platform/claude'
+        ),
+        TRUE
+      )
+    {%- else -%}
+      live.udf_api(
+        'DELETE',
+        CONCAT('https://api.anthropic.com', PATH),
+        {
+            'anthropic-version': '2023-06-01',
+            'x-api-key': '{API_KEY}',
+            'content-type': 'application/json'
+        },
+        NULL,
+        IFF(_utils.udf_whoami() <> CURRENT_USER(),
+              '_FSC_SYS/CLAUDE',
+              'Vault/prod/data_platform/claude'
+        )
+      )
+    {%- endif %}
+    as response
 {% endmacro %}

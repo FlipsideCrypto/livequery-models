@@ -4,8 +4,42 @@ models:
     columns:
       - name: octocat
         tests:
-          - test_udf:
+          - test_udf_without_context:
               name: test_github_utils__octocat_status_200
               assertions:
                 - result:status_code = 200
                 - result:error IS NULL
+                - result:data IS NOT NULL
+
+      - name: headers
+        tests:
+          - test_udf_without_context:
+              name: test_github_utils__headers_format
+              assertions:
+                - result IS NOT NULL
+                - LENGTH(result) > 50
+                - CONTAINS(result, 'Authorization')
+                - CONTAINS(result, 'X-GitHub-Api-Version')
+                - CONTAINS(result, 'Accept')
+
+      - name: post_api
+        tests:
+          - test_udf_without_context:
+              name: test_github_utils__post_invalid_route
+              args: >
+                'invalid/test/route',
+                {'test': 'data'}
+              assertions:
+                - result:status_code = 404
+                - result IS NOT NULL
+
+      - name: put_api
+        tests:
+          - test_udf_without_context:
+              name: test_github_utils__put_invalid_route
+              args: >
+                'invalid/test/route',
+                {'test': 'data'}
+              assertions:
+                - result:status_code = 404
+                - result IS NOT NULL

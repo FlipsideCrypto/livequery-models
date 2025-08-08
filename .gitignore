@@ -23,3 +23,7 @@ dbt-env/
 # Ignore Python bytecode files
 *.pyc
 __pycache__/
+
+# Claude
+.claude/
+CLAUDE.md

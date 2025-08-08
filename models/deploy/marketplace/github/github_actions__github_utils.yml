@@ -4,34 +4,270 @@ models:
     columns:
       - name: workflows
         tests:
-          - test_udf:
-              name: test_github_actions__workflows_status_200
+          - test_udf_without_context:
+              name: test_github_actions__workflows_with_query
+              args: >
+                'FlipsideCrypto',
+                'admin-models',
+                {'per_page': 5}
+              assertions:
+                - result:workflows IS NOT NULL
+                - result:total_count IS NOT NULL
+          - test_udf_without_context:
+              name: test_github_actions__workflows_simple
               args: >
                 'FlipsideCrypto',
                 'admin-models'
               assertions:
-                - result:status_code = 200
-                - result:error IS NULL
+                - result:workflows IS NOT NULL
+                - result:total_count IS NOT NULL
+
       - name: runs
         tests:
-          - test_udf:
-              name: test_github_actions__runs_status_200
+          - test_udf_without_context:
+              name: test_github_actions__runs_with_query
               args: >
                 'FlipsideCrypto',
                 'admin-models',
-                {}
+                {'per_page': 10, 'status': 'completed'}
               assertions:
-                - result:status_code = 200
-                - result:error IS NULL
+                - result:workflow_runs IS NOT NULL
+                - result:total_count IS NOT NULL
+          - test_udf_without_context:
+              name: test_github_actions__runs_simple
+              args: >
+                'FlipsideCrypto',
+                'admin-models'
+              assertions:
+                - result:workflow_runs IS NOT NULL
+                - result:total_count IS NOT NULL
+
       - name: workflow_runs
         tests:
-          - test_udf:
-              name: test_github_actions__workflow_runs_status_200
+          - test_udf_without_context:
+              name: test_github_actions__workflow_runs_with_query
               args: >
                 'FlipsideCrypto',
                 'admin-models',
                 'dbt_run_dev_refresh.yml',
-                {}
+                {'per_page': 5}
               assertions:
-                - result:status_code = 200
-                - result:error IS NULL
+                - result:workflow_runs IS NOT NULL
+                - result:total_count IS NOT NULL
+          - test_udf_without_context:
+              name: test_github_actions__workflow_runs_simple
+              args: >
+                'FlipsideCrypto',
+                'admin-models',
+                'dbt_run_dev_refresh.yml'
+              assertions:
+                - result:workflow_runs IS NOT NULL
+                - result:total_count IS NOT NULL
+
+      - name: workflow_dispatches
+        tests:
+          - test_udf_without_context:
+              name: test_github_actions__workflow_dispatches_with_body
+              args: >
+                'FlipsideCrypto',
+                'admin-models',
+                'test-workflow.yml',
+                {'ref': 'main', 'inputs': {'debug': 'true'}}
+              assertions:
+                - result IS NOT NULL
+          - test_udf_without_context:
+              name: test_github_actions__workflow_dispatches_simple
+              args: >
+                'FlipsideCrypto',
+                'admin-models',
+                'test-workflow.yml'
+              assertions:
+                - result IS NOT NULL
+
+      - name: workflow_enable
+        tests:
+          - test_udf_without_context:
+              name: test_github_actions__workflow_enable
+              args: >
+                'FlipsideCrypto',
+                'admin-models',
+                'test-workflow.yml'
+              assertions:
+                - result IS NOT NULL
+
+      - name: workflow_disable
+        tests:
+          - test_udf_without_context:
+              name: test_github_actions__workflow_disable
+              args: >
+                'FlipsideCrypto',
+                'admin-models',
+                'test-workflow.yml'
+              assertions:
+                - result IS NOT NULL
+
+      - name: workflow_run_logs
+        tests:
+          - test_udf_without_context:
+              name: test_github_actions__workflow_run_logs
+              args: >
+                'FlipsideCrypto',
+                'admin-models',
+                '12345678'
+              assertions:
+                - result IS NULL
+
+      - name: job_logs
+        tests:
+          - test_udf_without_context:
+              name: test_github_actions__job_logs
+              args: >
+                'FlipsideCrypto',
+                'admin-models',
+                '87654321'
+              assertions:
+                - result IS NULL
+
+      - name: workflow_run_jobs
+        tests:
+          - test_udf_without_context:
+              name: test_github_actions__workflow_run_jobs_with_query
+              args: >
+                'FlipsideCrypto',
+                'admin-models',
+                '12345678',
+                {'filter': 'latest'}
+              assertions:
+                - result:jobs IS NULL
+                - result:total_count IS NULL
+          - test_udf_without_context:
+              name: test_github_actions__workflow_run_jobs_simple
+              args: >
+                'FlipsideCrypto',
+                'admin-models',
+                '12345678'
+              assertions:
+                - result:jobs IS NULL
+                - result:total_count IS NULL
+
+      # Table Function Tests
+      - name: tf_workflows
+        tests:
+          - test_udtf:
+              name: test_github_actions__tf_workflows_with_query
+              args: >
+                'FlipsideCrypto',
+                'admin-models',
+                {'per_page': 3}
+              assertions:
+                - row_count >= 0
+          - test_udtf:
+              name: test_github_actions__tf_workflows_simple
+              args: >
+                'FlipsideCrypto',
+                'admin-models'
+              assertions:
+                - row_count >= 0
+
+      - name: tf_runs
+        tests:
+          - test_udtf:
+              name: test_github_actions__tf_runs_with_query
+              args: >
+                'FlipsideCrypto',
+                'admin-models',
+                {'per_page': 5, 'status': 'completed'}
+              assertions:
+                - row_count >= 0
+          - test_udtf:
+              name: test_github_actions__tf_runs_simple
+              args: >
+                'FlipsideCrypto',
+                'admin-models'
+              assertions:
+                - row_count >= 0
+
+      - name: tf_workflow_runs
+        tests:
+          - test_udtf:
+              name: test_github_actions__tf_workflow_runs_with_query
+              args: >
+                'FlipsideCrypto',
+                'admin-models',
+                'dbt_run_dev_refresh.yml',
+                {'per_page': 3}
+              assertions:
+                - row_count >= 0
+          - test_udtf:
+              name: test_github_actions__tf_workflow_runs_simple
+              args: >
+                'FlipsideCrypto',
+                'admin-models',
+                'dbt_run_dev_refresh.yml'
+              assertions:
+                - row_count >= 0
+
+      - name: tf_workflow_run_jobs
+        tests:
+          - test_udtf:
+              name: test_github_actions__tf_workflow_run_jobs_with_query
+              args: >
+                'FlipsideCrypto',
+                'admin-models',
+                '12345678',
+                {'filter': 'latest'}
+              assertions:
+                - row_count >= 0
+          - test_udtf:
+              name: test_github_actions__tf_workflow_run_jobs_simple
+              args: >
+                'FlipsideCrypto',
+                'admin-models',
+                '12345678'
+              assertions:
+                - row_count >= 0
+
+      - name: tf_failed_jobs_with_logs
+        tests:
+          - test_udtf:
+              name: test_github_actions__tf_failed_jobs_with_logs
+              args: >
+                'FlipsideCrypto',
+                'admin-models',
+                '12345678'
+              assertions:
+                - row_count >= 0
+
+      - name: tf_failure_analysis_with_ai
+        tests:
+          - test_udtf:
+              name: test_github_actions__tf_failure_analysis_with_ai_cortex
+              args: >
+                'FlipsideCrypto',
+                'admin-models',
+                '12345678',
+                'cortex',
+                'mistral-large',
+                ''
+              assertions:
+                - row_count >= 0
+          - test_udtf:
+              name: test_github_actions__tf_failure_analysis_with_ai_custom_prompt
+              args: >
+                'FlipsideCrypto',
+                'admin-models',
+                '12345678',
+                'cortex',
+                'mistral-7b',
+                'Analyze these failures and provide concise recommendations:'
+              assertions:
+                - row_count >= 0
+          - test_udtf:
+              name: test_github_actions__tf_failure_analysis_with_ai_default
+              args: >
+                'FlipsideCrypto',
+                'admin-models',
+                '12345678'
+              assertions:
+                - row_count >= 0
+

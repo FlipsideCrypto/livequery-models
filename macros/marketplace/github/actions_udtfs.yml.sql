@@ -166,4 +166,193 @@
     SELECT *
     FROM TABLE({{ schema_name -}}.tf_workflow_runs(owner, repo, WORKFLKOW_ID, {}))
 
+- name: {{ schema_name -}}.tf_workflow_run_jobs
+  signature:
+    - [owner, "TEXT"]
+    - [repo, "TEXT"]
+    - [run_id, "TEXT"]
+    - [query, "OBJECT"]
+  return_type:
+    - "TABLE(id NUMBER, run_id NUMBER, workflow_name STRING, head_branch STRING, run_url STRING, run_attempt NUMBER, node_id STRING, head_sha STRING, url STRING, html_url STRING, status STRING, conclusion STRING, created_at TIMESTAMP, started_at TIMESTAMP, completed_at TIMESTAMP, name STRING, check_run_url STRING, labels VARIANT, runner_id NUMBER, runner_name STRING, runner_group_id NUMBER, runner_group_name STRING, steps VARIANT)"
+  options: |
+    COMMENT = $$Lists jobs for a workflow run as a table. [Docs](https://docs.github.com/en/rest/actions/workflow-jobs?apiVersion=2022-11-28#list-jobs-for-a-workflow-run).$$
+  sql: |
+    WITH response AS
+    (
+    SELECT
+        github_actions.workflow_run_jobs(OWNER, REPO, RUN_ID, QUERY) AS response
+    )
+    SELECT
+      value:id::NUMBER AS id
+      ,value:run_id::NUMBER AS run_id
+      ,value:workflow_name::STRING AS workflow_name
+      ,value:head_branch::STRING AS head_branch
+      ,value:run_url::STRING AS run_url
+      ,value:run_attempt::NUMBER AS run_attempt
+      ,value:node_id::STRING AS node_id
+      ,value:head_sha::STRING AS head_sha
+      ,value:url::STRING AS url
+      ,value:html_url::STRING AS html_url
+      ,value:status::STRING AS status
+      ,value:conclusion::STRING AS conclusion
+      ,value:created_at::TIMESTAMP AS created_at
+      ,value:started_at::TIMESTAMP AS started_at
+      ,value:completed_at::TIMESTAMP AS completed_at
+      ,value:name::STRING AS name
+      ,value:check_run_url::STRING AS check_run_url
+      ,value:labels::VARIANT AS labels
+      ,value:runner_id::NUMBER AS runner_id
+      ,value:runner_name::STRING AS runner_name
+      ,value:runner_group_id::NUMBER AS runner_group_id
+      ,value:runner_group_name::STRING AS runner_group_name
+      ,value:steps::VARIANT AS steps
+    FROM response, LATERAL FLATTEN( input=> response:jobs)
+
+- name: {{ schema_name -}}.tf_workflow_run_jobs
+  signature:
+    - [owner, "TEXT"]
+    - [repo, "TEXT"]
+    - [run_id, "TEXT"]
+  return_type:
+    - "TABLE(id NUMBER, run_id NUMBER, workflow_name STRING, head_branch STRING, run_url STRING, run_attempt NUMBER, node_id STRING, head_sha STRING, url STRING, html_url STRING, status STRING, conclusion STRING, created_at TIMESTAMP, started_at TIMESTAMP, completed_at TIMESTAMP, name STRING, check_run_url STRING, labels VARIANT, runner_id NUMBER, runner_name STRING, runner_group_id NUMBER, runner_group_name STRING, steps VARIANT)"
+  options: |
+    COMMENT = $$Lists jobs for a workflow run as a table. [Docs](https://docs.github.com/en/rest/actions/workflow-jobs?apiVersion=2022-11-28#list-jobs-for-a-workflow-run).$$
+  sql: |
+    SELECT *
+    FROM TABLE({{ schema_name -}}.tf_workflow_run_jobs(owner, repo, run_id, {}))
+
+- name: {{ schema_name -}}.tf_failed_jobs_with_logs
+  signature:
+    - [owner, "TEXT"]
+    - [repo, "TEXT"]
+    - [run_id, "TEXT"]
+  return_type:
+    - "TABLE(run_id STRING, job_id NUMBER, job_name STRING, job_status STRING, job_conclusion STRING, job_url STRING, workflow_name STRING, failed_steps VARIANT, logs TEXT, failed_step_logs ARRAY)"
+  options: |
+    COMMENT = $$Gets failed jobs for a workflow run with their complete logs. Combines job info with log content for analysis.$$
+  sql: |
+    WITH failed_jobs AS (
+      SELECT
+        run_id::STRING AS run_id,
+        id AS job_id,
+        name AS job_name,
+        status AS job_status,
+        conclusion AS job_conclusion,
+        html_url AS job_url,
+        workflow_name,
+        steps AS failed_steps
+      FROM TABLE({{ schema_name -}}.tf_workflow_run_jobs(owner, repo, run_id))
+      WHERE conclusion = 'failure'
+    ),
+    jobs_with_logs AS (
+      SELECT
+        run_id,
+        job_id,
+        job_name,
+        job_status,
+        job_conclusion,
+        job_url,
+        workflow_name,
+        failed_steps,
+        {{ schema_name -}}.job_logs(owner, repo, job_id::TEXT) AS logs
+      FROM failed_jobs
+    ),
+    error_sections AS (
+      SELECT
+        run_id,
+        job_id,
+        job_name,
+        job_status,
+        job_conclusion,
+        job_url,
+        workflow_name,
+        failed_steps,
+        logs,
+        ARRAY_AGG(section.value) AS failed_step_logs
+      FROM jobs_with_logs,
+      LATERAL FLATTEN(INPUT => SPLIT(logs, '##[group]')) section
+      WHERE CONTAINS(section.value, '##[error]')
+      GROUP BY run_id, job_id, job_name, job_status, job_conclusion, job_url, workflow_name, failed_steps, logs
+    )
+    SELECT
+      run_id,
+      job_id,
+      job_name,
+      job_status,
+      job_conclusion,
+      job_url,
+      workflow_name,
+      failed_steps,
+      logs,
+      COALESCE(failed_step_logs, ARRAY_CONSTRUCT()) AS failed_step_logs
+    FROM jobs_with_logs
+    LEFT JOIN error_sections USING (run_id, job_id)
+
+- name: {{ schema_name -}}.tf_failure_analysis_with_ai
+  signature:
+    - [owner, "TEXT", "GitHub repository owner/organization name"]
+    - [repo, "TEXT", "GitHub repository name"]
+    - [run_id, "TEXT", "GitHub Actions run ID to analyze"]
+    - [ai_provider, "TEXT", "AI provider to use: 'cortex' (Snowflake built-in AI)"]
+    - [model_name, "STRING", "Model name (required): 'mistral-large', 'mistral-7b', 'llama2-70b-chat', 'mixtral-8x7b'"]
+    - [ai_prompt, "STRING", "Custom AI analysis prompt. Leave empty to use default failure analysis prompt."]
+  return_type:
+    - "TABLE(run_id STRING, ai_analysis STRING, total_failures NUMBER, failure_metadata ARRAY)"
+  options: |
+    COMMENT = $$Gets GitHub Actions failure analysis using Snowflake Cortex AI with custom prompts for Slack notifications.$$
+  sql: |
+    WITH failure_data AS (
+      SELECT
+        run_id,
+        COUNT(*) as total_failures,
+        ARRAY_AGG(OBJECT_CONSTRUCT(
+          'workflow_name', workflow_name,
+          'run_id', run_id,
+          'job_name', job_name,
+          'job_id', job_id,
+          'job_url', job_url,
+          'error_sections', ARRAY_SIZE(failed_step_logs),
+          'logs_preview', ARRAY_TO_STRING(failed_step_logs, '\n')
+        )) as failure_metadata,
+        LISTAGG(
+          CONCAT(
+            'Workflow: ', workflow_name, '\n',
+            'Job: ', job_name, '\n',
+            'Job ID: ', job_id, '\n',
+            'Run ID: ', run_id, '\n',
+            'Error: ', ARRAY_TO_STRING(failed_step_logs, '\n')
+          ),
+          '\n\n---\n\n'
+        ) WITHIN GROUP (ORDER BY job_name) as job_details
+      FROM TABLE({{ schema_name -}}.tf_failed_jobs_with_logs(owner, repo, run_id))
+      GROUP BY run_id
+    )
+    SELECT
+      run_id::STRING,
+      snowflake.cortex.complete(
+        model_name,
+        CONCAT(
+          COALESCE(
+            NULLIF(ai_prompt, ''),
+            'Analyze these GitHub Actions failures and provide:\n1. Common failure patterns\n2. Root cause analysis\n3. Prioritized action items\n\nKeep it concise with 1-2 sentences per section in markdown format.\n\n'
+          ),
+          job_details
+        )
+      ) as ai_analysis,
+      total_failures,
+      failure_metadata
+    FROM failure_data
+
+- name: {{ schema_name -}}.tf_failure_analysis_with_ai
+  signature:
+    - [owner, "TEXT"]
+    - [repo, "TEXT"]
+    - [run_id, "TEXT"]
+  return_type:
+    - "TABLE(run_id STRING, ai_analysis STRING, total_failures NUMBER, failure_metadata ARRAY)"
+  options: |
+    COMMENT = $$Gets GitHub Actions failure analysis with default AI provider (cortex) for Slack notifications.$$
+  sql: |
+    SELECT * FROM TABLE({{ schema_name -}}.tf_failure_analysis_with_ai(owner, repo, run_id, 'cortex', 'mistral-large', ''))
+
 {% endmacro %}

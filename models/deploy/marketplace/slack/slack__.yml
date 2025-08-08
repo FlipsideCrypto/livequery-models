@@ -1,0 +1,124 @@
+version: 2
+models:
+  - name: slack__
+    columns:
+      - name: webhook_send
+        tests:
+          - test_udf:
+              name: test_slack__webhook_send_simple
+              args: >
+                'https://httpbin.org/post',
+                {'text': 'Hello from Livequery!'}
+              assertions:
+                - result:status_code = 200
+                - result:data.json.text = 'Hello from Livequery!'
+                - result IS NOT NULL
+          - test_udf:
+              name: test_slack__webhook_send_rich
+              args: >
+                'https://httpbin.org/post',
+                {
+                  'text': 'Pipeline completed!',
+                  'username': 'dbt Bot',
+                  'icon_emoji': ':bar_chart:',
+                  'attachments': [
+                    {
+                      'color': '#36a64f',
+                      'title': 'Success',
+                      'fields': [
+                        {'title': 'Models', 'value': '5', 'short': true},
+                        {'title': 'Failed', 'value': '0', 'short': true}
+                      ]
+                    }
+                  ]
+                }
+              assertions:
+                - result:status_code = 200
+                - result:data.json.text = 'Pipeline completed!'
+                - result:data.json.username = 'dbt Bot'
+                - result IS NOT NULL
+
+      - name: post_message
+        tests:
+          - test_udf:
+              name: test_slack__post_message_simple
+              args: >
+                'C1234567890',
+                {'text': 'Hello from Livequery!'}
+              assertions:
+                - result IS NOT NULL
+          - test_udf:
+              name: test_slack__post_message_blocks
+              args: >
+                'C1234567890',
+                {
+                  'text': 'Pipeline completed!',
+                  'blocks': [
+                    {
+                      'type': 'header',
+                      'text': {
+                        'type': 'plain_text',
+                        'text': ':white_check_mark: Pipeline Success'
+                      }
+                    },
+                    {
+                      'type': 'section',
+                      'fields': [
+                        {'type': 'mrkdwn', 'text': '*Repository:*\nFlipsideCrypto/my-repo'},
+                        {'type': 'mrkdwn', 'text': '*Duration:*\n15m 30s'}
+                      ]
+                    }
+                  ]
+                }
+              assertions:
+                - result IS NOT NULL
+
+      - name: post_reply
+        tests:
+          - test_udf:
+              name: test_slack__post_reply_simple
+              args: >
+                'C1234567890',
+                '1234567890.123456',
+                {'text': 'Thread reply from Livequery!'}
+              assertions:
+                - result IS NOT NULL
+
+      - name: webhook_send
+        tests:
+          - test_udf:
+              name: test_slack__webhook_send_complex_payload
+              args: >
+                'https://httpbin.org/post',
+                {
+                  'text': 'Complex test message',
+                  'username': 'Test Bot',
+                  'icon_emoji': ':test_tube:',
+                  'blocks': [
+                    {
+                      'type': 'header',
+                      'text': {
+                        'type': 'plain_text',
+                        'text': '🧪 Test Results'
+                      }
+                    },
+                    {
+                      'type': 'section',
+                      'text': {
+                        'type': 'mrkdwn',
+                        'text': '*All tests passed!* ✅'
+                      }
+                    }
+                  ],
+                  'attachments': [
+                    {
+                      'color': '#36a64f',
+                      'blocks': []
+                    }
+                  ]
+                }
+              assertions:
+                - result:status_code = 200
+                - result:data.json.text = 'Complex test message'
+                - result:data.json.username = 'Test Bot'
+                - result IS NOT NULL

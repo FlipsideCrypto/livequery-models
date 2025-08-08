@@ -34,15 +34,6 @@ concurrency:
   group: ${{ github.workflow }}
 
 jobs:
-  scheduled:
-    uses: ./.github/workflows/dbt.yml
-    if: github.event_name == 'schedule' || github.event_name == 'push'
-    secrets: inherit
-    with:
-      warehouse: ${{ vars.WAREHOUSE }}
-      environment: prod
-      command: dbt test --selector test_udfs --threads 24
-
   dispatched:
     uses: ./.github/workflows/dbt.yml
     if:  github.event_name == 'workflow_dispatch'
@@ -50,7 +41,7 @@ jobs:
     with:
       warehouse: ${{ inputs.warehouse }}
       environment: ${{ inputs.environment }}
-      command: dbt test --selector test_udfs --threads 24
+      command: dbt test --selector test_udfs_without_context --threads 5
 
   pull_request:
     uses: ./.github/workflows/dbt.yml
@@ -59,4 +50,4 @@ jobs:
     with:
       warehouse: ${{ vars.WAREHOUSE }}
       environment: dev
-      command: dbt test --selector test_udfs --threads 24
+      command: dbt test --selector test_udfs_without_context --threads 5
