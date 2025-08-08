@@ -8,7 +8,7 @@
     - [repo, "TEXT"]
     - [query, "OBJECT"]
   return_type:
-    - "VARIANT"
+    - "OBJECT"
   options: |
     COMMENT = $$[List repository workflows](https://docs.github.com/en/rest/actions/workflows?apiVersion=2022-11-28#list-repository-workflows).$$
   sql: |
@@ -16,13 +16,13 @@
       {{ utils_schema_name }}.get_api(
         CONCAT_WS('/', 'repos', owner, repo, 'actions/workflows'),
         query
-    ):data::VARIANT
+    ):data::OBJECT
 - name: {{ schema_name -}}.workflows
   signature:
     - [owner, "TEXT"]
     - [repo, "TEXT"]
   return_type:
-    - "VARIANT"
+    - "OBJECT"
   options: |
     COMMENT = $$[List repository workflows](https://docs.github.com/en/rest/actions/workflows?apiVersion=2022-11-28#list-repository-workflows).$$
   sql: |
@@ -35,7 +35,7 @@
     - [repo, "TEXT"]
     - [query, "OBJECT"]
   return_type:
-    - "VARIANT"
+    - "OBJECT"
   options: |
     COMMENT = $$Lists all workflow runs for a repository. You can use query parameters to narrow the list of results. [Docs](https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-repository).$$
   sql: |
@@ -43,13 +43,13 @@
       {{ utils_schema_name }}.get_api(
         CONCAT_WS('/', 'repos', owner, repo, 'actions/runs'),
         query
-    ):data::VARIANT
+    ):data::OBJECT
 - name: {{ schema_name -}}.runs
   signature:
     - [owner, "TEXT"]
     - [repo, "TEXT"]
   return_type:
-    - "VARIANT"
+    - "OBJECT"
   options: |
     COMMENT = $$Lists all workflow runs for a repository. You can use query parameters to narrow the list of results. [Docs](https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-repository).$$
   sql: |
@@ -63,7 +63,7 @@
     - [workflow_id, "TEXT"]
     - [query, "OBJECT"]
   return_type:
-    - "VARIANT"
+    - "OBJECT"
   options: |
     COMMENT = $$List all workflow runs for a workflow. You can replace workflow_id with the workflow file name. You can use query parameters to narrow the list of results. [Docs](https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-workflow).$$
   sql: |
@@ -71,14 +71,14 @@
       {{ utils_schema_name }}.get_api(
         CONCAT_WS('/', 'repos', owner, repo, 'actions/workflows', workflow_id, 'runs'),
         query
-    ):data::VARIANT
+    ):data::OBJECT
 - name: {{ schema_name -}}.workflow_runs
   signature:
     - [owner, "TEXT"]
     - [repo, "TEXT"]
     - [workflow_id, "TEXT"]
   return_type:
-    - "VARIANT"
+    - "OBJECT"
   options: |
     COMMENT = $$List all workflow runs for a workflow. You can replace workflow_id with the workflow file name. You can use query parameters to narrow the list of results. [Docs](https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-workflow).$$
   sql: |
@@ -92,7 +92,7 @@
     - [workflow_id, "TEXT"]
     - [body, "OBJECT"]
   return_type:
-    - "VARIANT"
+    - "OBJECT"
   options: |
     COMMENT = $$You can use this endpoint to manually trigger a GitHub Actions workflow run. You can replace workflow_id with the workflow file name. For example, you could use main.yaml. [Docs](https://docs.github.com/en/rest/actions/workflows?apiVersion=2022-11-28#create-a-workflow-dispatch-event).$$
   sql: |
@@ -100,7 +100,7 @@
       {{ utils_schema_name }}.post_api(
         CONCAT_WS('/', 'repos', owner, repo, 'actions/workflows', workflow_id, 'dispatches'),
         COALESCE(body, {'ref': 'main'})::OBJECT
-    )::VARIANT
+    )::OBJECT
 
 - name: {{ schema_name -}}.workflow_dispatches
   signature:
@@ -108,7 +108,7 @@
     - [repo, "TEXT"]
     - [workflow_id, "TEXT"]
   return_type:
-    - "VARIANT"
+    - "OBJECT"
   options: |
     COMMENT = $$You can use this endpoint to manually trigger a GitHub Actions workflow run. You can replace workflow_id with the workflow file name. For example, you could use main.yaml. [Docs](https://docs.github.com/en/rest/actions/workflows?apiVersion=2022-11-28#create-a-workflow-dispatch-event).$$
   sql: |
@@ -121,7 +121,7 @@
     - [repo, "TEXT"]
     - [workflow_id, "TEXT"]
   return_type:
-    - "VARIANT"
+    - "OBJECT"
   options: |
     COMMENT = $$Enables a workflow. You can replace workflow_id with the workflow file name. For example, you could use main.yaml. [Docs](https://docs.github.com/en/rest/reference/actions#enable-a-workflow).$$
   sql: |
@@ -129,14 +129,14 @@
       {{ utils_schema_name }}.put_api(
         CONCAT_WS('/', 'repos', owner, repo, 'actions/workflows', workflow_id, 'enable'),
         {}
-    )::VARIANT
+    )::OBJECT
 - name: {{ schema_name -}}.workflow_disable
   signature:
     - [owner, "TEXT"]
     - [repo, "TEXT"]
     - [workflow_id, "TEXT"]
   return_type:
-    - "VARIANT"
+    - "OBJECT"
   options: |
     COMMENT = $$Disables a workflow. You can replace workflow_id with the workflow file name. For example, you could use main.yaml. [Docs](https://docs.github.com/en/rest/reference/actions#disable-a-workflow).$$
   sql: |
@@ -144,7 +144,7 @@
       {{ utils_schema_name }}.put_api(
         CONCAT_WS('/', 'repos', owner, repo, 'actions/workflows', workflow_id, 'disable'),
         {}
-    )::VARIANT
+    )::OBJECT
 
 - name: {{ schema_name -}}.workflow_run_logs
   signature:
@@ -160,7 +160,7 @@
       {{ utils_schema_name }}.get_api(
         CONCAT_WS('/', 'repos', owner, repo, 'actions/runs', run_id, 'logs'),
         {}
-    ):data::TEXT
+    ):data::OBJECT::TEXT
 
 - name: {{ schema_name -}}.job_logs
   signature:
@@ -176,7 +176,7 @@
       {{ utils_schema_name }}.get_api(
         CONCAT_WS('/', 'repos', owner, repo, 'actions/jobs', job_id, 'logs'),
         {}
-    ):data::TEXT
+    ):data::OBJECT::TEXT
 
 - name: {{ schema_name -}}.workflow_run_jobs
   signature:
@@ -185,7 +185,7 @@
     - [run_id, "TEXT"]
     - [query, "OBJECT"]
   return_type:
-    - "VARIANT"
+    - "OBJECT"
   options: |
     COMMENT = $$Lists jobs for a workflow run. [Docs](https://docs.github.com/en/rest/actions/workflow-jobs?apiVersion=2022-11-28#list-jobs-for-a-workflow-run).$$
   sql: |
@@ -193,14 +193,14 @@
       {{ utils_schema_name }}.get_api(
         CONCAT_WS('/', 'repos', owner, repo, 'actions/runs', run_id, 'jobs'),
         query
-    ):data::VARIANT
+    ):data::OBJECT
 - name: {{ schema_name -}}.workflow_run_jobs
   signature:
     - [owner, "TEXT"]
     - [repo, "TEXT"]
     - [run_id, "TEXT"]
   return_type:
-    - "VARIANT"
+    - "OBJECT"
   options: |
     COMMENT = $$Lists jobs for a workflow run. [Docs](https://docs.github.com/en/rest/actions/workflow-jobs?apiVersion=2022-11-28#list-jobs-for-a-workflow-run).$$
   sql: |
