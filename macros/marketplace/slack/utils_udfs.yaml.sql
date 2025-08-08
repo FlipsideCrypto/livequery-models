@@ -17,16 +17,29 @@
       WHEN PAYLOAD IS NULL THEN
         OBJECT_CONSTRUCT('ok', false, 'error', 'payload is required')
       ELSE
-        live.udf_api_v2(
-          'POST',
-          '{WEBHOOK_URL}',
-          OBJECT_CONSTRUCT('Content-Type', 'application/json'),
-          PAYLOAD,
-          IFF(_utils.udf_whoami() <> CURRENT_USER(),
-              '_FSC_SYS/SLACK/' || WEBHOOK_SECRET_NAME,
-              'Vault/prod/data_platform/slack/' || WEBHOOK_SECRET_NAME),
-          TRUE
-        )
+        {% set v2_exists = check_udf_api_v2_exists() %}
+        {% if v2_exists -%}
+          live.udf_api_v2(
+            'POST',
+            '{WEBHOOK_URL}',
+            OBJECT_CONSTRUCT('Content-Type', 'application/json'),
+            PAYLOAD,
+            IFF(_utils.udf_whoami() <> CURRENT_USER(),
+                '_FSC_SYS/SLACK/' || WEBHOOK_SECRET_NAME,
+                'Vault/prod/data_platform/slack/' || WEBHOOK_SECRET_NAME),
+            TRUE
+          )
+        {%- else -%}
+          live.udf_api(
+            'POST',
+            '{WEBHOOK_URL}',
+            OBJECT_CONSTRUCT('Content-Type', 'application/json'),
+            PAYLOAD,
+            IFF(_utils.udf_whoami() <> CURRENT_USER(),
+                '_FSC_SYS/SLACK/' || WEBHOOK_SECRET_NAME,
+                'Vault/prod/data_platform/slack/' || WEBHOOK_SECRET_NAME)
+          )
+        {%- endif %}
     END as response
 
 - name: {{ schema_name }}.post_message
@@ -45,19 +58,35 @@
       WHEN PAYLOAD IS NULL THEN
         OBJECT_CONSTRUCT('ok', false, 'error', 'payload is required')
       ELSE
-        live.udf_api_v2(
-          'POST',
-          'https://slack.com/api/chat.postMessage',
-          OBJECT_CONSTRUCT(
-            'Authorization', 'Bearer {BOT_TOKEN}',
-            'Content-Type', 'application/json'
-          ),
-          OBJECT_INSERT(PAYLOAD, 'channel', CHANNEL),
-          IFF(_utils.udf_whoami() <> CURRENT_USER(),
-              '_FSC_SYS/SLACK/' || COALESCE(BOT_SECRET_NAME, 'intelligence'),
-              'Vault/prod/data_platform/slack/' || COALESCE(BOT_SECRET_NAME, 'intelligence')),
-          TRUE
-        )
+        {% set v2_exists = check_udf_api_v2_exists() %}
+        {% if v2_exists -%}
+          live.udf_api_v2(
+            'POST',
+            'https://slack.com/api/chat.postMessage',
+            OBJECT_CONSTRUCT(
+              'Authorization', 'Bearer {BOT_TOKEN}',
+              'Content-Type', 'application/json'
+            ),
+            OBJECT_INSERT(PAYLOAD, 'channel', CHANNEL),
+            IFF(_utils.udf_whoami() <> CURRENT_USER(),
+                '_FSC_SYS/SLACK/' || COALESCE(BOT_SECRET_NAME, 'intelligence'),
+                'Vault/prod/data_platform/slack/' || COALESCE(BOT_SECRET_NAME, 'intelligence')),
+            TRUE
+          )
+        {%- else -%}
+          live.udf_api(
+            'POST',
+            'https://slack.com/api/chat.postMessage',
+            OBJECT_CONSTRUCT(
+              'Authorization', 'Bearer {BOT_TOKEN}',
+              'Content-Type', 'application/json'
+            ),
+            OBJECT_INSERT(PAYLOAD, 'channel', CHANNEL),
+            IFF(_utils.udf_whoami() <> CURRENT_USER(),
+                '_FSC_SYS/SLACK/' || COALESCE(BOT_SECRET_NAME, 'intelligence'),
+                'Vault/prod/data_platform/slack/' || COALESCE(BOT_SECRET_NAME, 'intelligence'))
+          )
+        {%- endif %}
     END as response
 
 - name: {{ schema_name }}.post_message
@@ -94,22 +123,41 @@
       WHEN PAYLOAD IS NULL THEN
         OBJECT_CONSTRUCT('ok', false, 'error', 'payload is required')
       ELSE
-        live.udf_api_v2(
-          'POST',
-          'https://slack.com/api/chat.postMessage',
-          OBJECT_CONSTRUCT(
-            'Authorization', 'Bearer {BOT_TOKEN}',
-            'Content-Type', 'application/json'
-          ),
-          OBJECT_INSERT(
-            OBJECT_INSERT(PAYLOAD, 'channel', CHANNEL),
-            'thread_ts', THREAD_TS
-          ),
-          IFF(_utils.udf_whoami() <> CURRENT_USER(),
-              '_FSC_SYS/SLACK/' || COALESCE(BOT_SECRET_NAME, 'intelligence'),
-              'Vault/prod/data_platform/slack/' || COALESCE(BOT_SECRET_NAME, 'intelligence')),
-          TRUE
-        )
+        {% set v2_exists = check_udf_api_v2_exists() %}
+        {% if v2_exists -%}
+          live.udf_api_v2(
+            'POST',
+            'https://slack.com/api/chat.postMessage',
+            OBJECT_CONSTRUCT(
+              'Authorization', 'Bearer {BOT_TOKEN}',
+              'Content-Type', 'application/json'
+            ),
+            OBJECT_INSERT(
+              OBJECT_INSERT(PAYLOAD, 'channel', CHANNEL),
+              'thread_ts', THREAD_TS
+            ),
+            IFF(_utils.udf_whoami() <> CURRENT_USER(),
+                '_FSC_SYS/SLACK/' || COALESCE(BOT_SECRET_NAME, 'intelligence'),
+                'Vault/prod/data_platform/slack/' || COALESCE(BOT_SECRET_NAME, 'intelligence')),
+            TRUE
+          )
+        {%- else -%}
+          live.udf_api(
+            'POST',
+            'https://slack.com/api/chat.postMessage',
+            OBJECT_CONSTRUCT(
+              'Authorization', 'Bearer {BOT_TOKEN}',
+              'Content-Type', 'application/json'
+            ),
+            OBJECT_INSERT(
+              OBJECT_INSERT(PAYLOAD, 'channel', CHANNEL),
+              'thread_ts', THREAD_TS
+            ),
+            IFF(_utils.udf_whoami() <> CURRENT_USER(),
+                '_FSC_SYS/SLACK/' || COALESCE(BOT_SECRET_NAME, 'intelligence'),
+                'Vault/prod/data_platform/slack/' || COALESCE(BOT_SECRET_NAME, 'intelligence'))
+          )
+        {%- endif %}
     END as response
 
 - name: {{ schema_name }}.post_reply
