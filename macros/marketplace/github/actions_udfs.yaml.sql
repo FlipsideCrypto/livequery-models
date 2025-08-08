@@ -160,7 +160,7 @@
       {{ utils_schema_name }}.get_api(
         CONCAT_WS('/', 'repos', owner, repo, 'actions/runs', run_id, 'logs'),
         {}
-    ):data::OBJECT::TEXT
+    ):data::TEXT
 
 - name: {{ schema_name -}}.job_logs
   signature:
@@ -176,7 +176,7 @@
       {{ utils_schema_name }}.get_api(
         CONCAT_WS('/', 'repos', owner, repo, 'actions/jobs', job_id, 'logs'),
         {}
-    ):data::OBJECT::TEXT
+    ):data::TEXT
 
 - name: {{ schema_name -}}.workflow_run_jobs
   signature:
