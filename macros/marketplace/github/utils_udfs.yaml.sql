@@ -43,7 +43,7 @@
   sql: |
     SELECT '{"Authorization": "Bearer {TOKEN}",
             "X-GitHub-Api-Version": "2022-11-28",
-            "Accept": "application/vnd.github+json",
+            "Accept": "application/vnd.github+json"
             }'
 
 - name: {{ schema_name -}}.get_api
