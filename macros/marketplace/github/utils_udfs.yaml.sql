@@ -10,16 +10,15 @@
   options: |
     COMMENT = $$Verify token [Authenticating to the REST API](https://docs.github.com/en/rest/overview/authenticating-to-the-rest-api?apiVersion=2022-11-28).$$
   sql: |
-    SELECT 
-    {% set v2_exists = check_udf_api_v2_exists() %}
+    SELECT
+    {% set v2_exists = is_udf_api_v2_compatible() %}
     {% if v2_exists -%}
       live.udf_api_v2(
         'GET',
         'https://api.github.com/octocat',
         {'Authorization': 'Bearer {TOKEN}', 'X-GitHub-Api-Version': '2022-11-28', 'fsc-quantum-execution-mode': 'async'},
         {},
-        IFF(_utils.udf_whoami() <> CURRENT_USER(), '_FSC_SYS/GITHUB', 'Vault/github/api'),
-        TRUE
+        IFF(_utils.udf_whoami() <> CURRENT_USER(), '_FSC_SYS/GITHUB', 'Vault/github/api')
       )
     {%- else -%}
       live.udf_api(
@@ -43,7 +42,8 @@
   sql: |
     SELECT '{"Authorization": "Bearer {TOKEN}",
             "X-GitHub-Api-Version": "2022-11-28",
-            "Accept": "application/vnd.github+json"
+            "Accept": "application/vnd.github+json",
+            "fsc-quantum-execution-mode": "async"
             }'
 
 - name: {{ schema_name -}}.get_api
@@ -55,16 +55,15 @@
   options: |
     COMMENT = $$List all workflow runs for a workflow. You can replace workflow_id with the workflow file name. You can use parameters to narrow the list of results. [Docs](https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-workflow).$$
   sql: |
-    SELECT 
-    {% set v2_exists = check_udf_api_v2_exists() %}
+    SELECT
+    {% set v2_exists = is_udf_api_v2_compatible() %}
     {% if v2_exists -%}
       live.udf_api_v2(
         'GET',
         CONCAT_WS('/', 'https://api.github.com',  route || '?') || utils.udf_urlencode(query),
         PARSE_JSON({{ schema_name -}}.headers()),
         {},
-        IFF(_utils.udf_whoami() <> CURRENT_USER(), '_FSC_SYS/GITHUB', 'Vault/github/api'),
-        TRUE
+        IFF(_utils.udf_whoami() <> CURRENT_USER(), '_FSC_SYS/GITHUB', 'Vault/github/api')
       )
     {%- else -%}
       live.udf_api(
@@ -85,16 +84,15 @@
   options: |
     COMMENT = $$List all workflow runs for a workflow. You can replace workflow_id with the workflow file name. You can use parameters to narrow the list of results. [Docs](https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-workflow).$$
   sql: |
-    SELECT 
-    {% set v2_exists = check_udf_api_v2_exists() %}
+    SELECT
+    {% set v2_exists = is_udf_api_v2_compatible() %}
     {% if v2_exists -%}
       live.udf_api_v2(
         'POST',
         CONCAT_WS('/', 'https://api.github.com', route),
         PARSE_JSON({{ schema_name -}}.headers()),
         data,
-        IFF(_utils.udf_whoami() <> CURRENT_USER(), '_FSC_SYS/GITHUB', 'Vault/github/api'),
-        TRUE
+        IFF(_utils.udf_whoami() <> CURRENT_USER(), '_FSC_SYS/GITHUB', 'Vault/github/api')
       )
     {%- else -%}
       live.udf_api(
@@ -115,16 +113,15 @@
   options: |
     COMMENT = $$List all workflow runs for a workflow. You can replace workflow_id with the workflow file name. You can use parameters to narrow the list of results. [Docs](https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-workflow).$$
   sql: |
-    SELECT 
-    {% set v2_exists = check_udf_api_v2_exists() %}
+    SELECT
+    {% set v2_exists = is_udf_api_v2_compatible() %}
     {% if v2_exists -%}
       live.udf_api_v2(
         'PUT',
         CONCAT_WS('/', 'https://api.github.com', route),
         PARSE_JSON({{ schema_name -}}.headers()),
         data,
-        IFF(_utils.udf_whoami() <> CURRENT_USER(), '_FSC_SYS/GITHUB', 'Vault/github/api'),
-        TRUE
+        IFF(_utils.udf_whoami() <> CURRENT_USER(), '_FSC_SYS/GITHUB', 'Vault/github/api')
       )
     {%- else -%}
       live.udf_api(

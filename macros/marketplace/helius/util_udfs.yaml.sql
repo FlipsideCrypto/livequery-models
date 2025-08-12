@@ -13,8 +13,8 @@
   options: |
     COMMENT = $$Used to issue an HTTP GET request to Helius.$$
   sql: |
-    SELECT 
-    {% set v2_exists = check_udf_api_v2_exists() %}
+    SELECT
+    {% set v2_exists = is_udf_api_v2_compatible() %}
     {% if v2_exists -%}
       live.udf_api_v2(
         'GET',
@@ -55,8 +55,8 @@
   options: |
     COMMENT = $$Used to issue an HTTP POST request to Helius.$$
   sql: |
-    SELECT 
-    {% set v2_exists = check_udf_api_v2_exists() %}
+    SELECT
+    {% set v2_exists = is_udf_api_v2_compatible() %}
     {% if v2_exists -%}
       live.udf_api_v2(
         'POST',
@@ -97,8 +97,8 @@
   options: |
     COMMENT = $$Used to issue an RPC call to Helius.$$
   sql: |
-    SELECT 
-    {% set v2_exists = check_udf_api_v2_exists() %}
+    SELECT
+    {% set v2_exists = is_udf_api_v2_compatible() %}
     {% if v2_exists -%}
       live.udf_api_v2(
         'POST',

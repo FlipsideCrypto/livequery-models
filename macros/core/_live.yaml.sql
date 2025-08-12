@@ -31,6 +31,7 @@
     NOT NULL
   sql: udf_api
 
+{% if is_udf_api_v2_compatible() %}
 - name: {{ schema }}.udf_api_sync
   signature:
     - [method, STRING]
@@ -66,5 +67,6 @@
   options: |
     NOT NULL
   sql: 'v2/udf_api'
+{% endif %}
 
 {% endmacro %}
