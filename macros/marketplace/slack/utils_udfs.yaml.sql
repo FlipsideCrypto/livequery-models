@@ -17,7 +17,7 @@
       WHEN PAYLOAD IS NULL THEN
         OBJECT_CONSTRUCT('ok', false, 'error', 'payload is required')
       ELSE
-        {% set v2_exists = check_udf_api_v2_exists() %}
+        {% set v2_exists = is_udf_api_v2_compatible() %}
         {% if v2_exists -%}
           live.udf_api_v2(
             'POST',
@@ -58,7 +58,7 @@
       WHEN PAYLOAD IS NULL THEN
         OBJECT_CONSTRUCT('ok', false, 'error', 'payload is required')
       ELSE
-        {% set v2_exists = check_udf_api_v2_exists() %}
+        {% set v2_exists = is_udf_api_v2_compatible() %}
         {% if v2_exists -%}
           live.udf_api_v2(
             'POST',
@@ -123,7 +123,7 @@
       WHEN PAYLOAD IS NULL THEN
         OBJECT_CONSTRUCT('ok', false, 'error', 'payload is required')
       ELSE
-        {% set v2_exists = check_udf_api_v2_exists() %}
+        {% set v2_exists = is_udf_api_v2_compatible() %}
         {% if v2_exists -%}
           live.udf_api_v2(
             'POST',

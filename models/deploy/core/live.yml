@@ -231,7 +231,7 @@ models:
           - test_udf:
               name: test__live_udf_api_v2_get_with_params_sync
               args: |
-                'GET', 'https://httpbin.org/get', {'Content-Type': 'application/json'}, {'param1': 'value1', 'param2': 'value2'}, ''
+                'GET', 'https://httpbin.org/get', {'Content-Type': 'application/json'}, {'param1': 'value1', 'param2': 'value2'}, FALSE
               assertions:
                 - result:status_code IN (200, 502, 503)
                 - CASE WHEN result:status_code = 200 THEN result:data.args is not null ELSE true END
@@ -248,7 +248,7 @@ models:
                   'id': 1,
                   'method': 'getVersion'
                 },
-                ''
+                FALSE
               assertions:
                 - result:status_code IN (200, 502, 503)
                 - CASE WHEN result:status_code = 200 THEN result:data.jsonrpc = '2.0' ELSE true END
@@ -264,7 +264,7 @@ models:
                   {'jsonrpc': '2.0', 'id': 1, 'method': 'getVersion'},
                   {'jsonrpc': '2.0', 'id': 2, 'method': 'getVersion'}
                 ],
-                ''
+                FALSE
               assertions:
                 - result:status_code IN (200, 502, 503)
                 - CASE WHEN result:status_code = 200 THEN result:data[0]:jsonrpc = '2.0' ELSE true END
@@ -283,7 +283,7 @@ models:
                   {'jsonrpc': '2.0', 'id': 1, 'method': 'eth_blockNumber', 'params': []},
                   {'jsonrpc': '2.0', 'id': 2, 'method': 'eth_chainId', 'params': []}
                 ],
-                ''
+                FALSE
               assertions:
                 - result:status_code IN (200, 502, 503)
                 - CASE WHEN result:status_code = 200 THEN result:data[0]:jsonrpc = '2.0' ELSE true END
@@ -297,7 +297,7 @@ models:
           - test_udf:
               name: test__live_udf_api_v2_get_with_params_async
               args: |
-                'GET', 'https://httpbin.org/get', {'Content-Type': 'application/json', 'fsc-quantum-execution-mode': 'async'}, {'param1': 'value1', 'param2': 'value2'}, ''
+                'GET', 'https://httpbin.org/get', {'Content-Type': 'application/json'}, {'param1': 'value1', 'param2': 'value2'}, TRUE
               assertions:
                 - result:status_code IN (200, 502, 503)
                 - CASE WHEN result:status_code = 200 THEN result:data.args is not null ELSE true END
@@ -308,13 +308,13 @@ models:
               args: |
                 'POST',
                 'https://api.mainnet-beta.solana.com',
-                {'Content-Type': 'application/json', 'fsc-quantum-execution-mode': 'async'},
+                {'Content-Type': 'application/json'},
                 {
                   'jsonrpc': '2.0',
                   'id': 1,
                   'method': 'getVersion'
                 },
-                ''
+                TRUE
               assertions:
                 - result:status_code IN (200, 502, 503)
                 - CASE WHEN result:status_code = 200 THEN result:data.jsonrpc = '2.0' ELSE true END
@@ -325,12 +325,12 @@ models:
               args: |
                 'POST',
                 'https://api.mainnet-beta.solana.com',
-                {'Content-Type': 'application/json', 'fsc-quantum-execution-mode': 'async'},
+                {'Content-Type': 'application/json'},
                 [
                   {'jsonrpc': '2.0', 'id': 1, 'method': 'getVersion'},
                   {'jsonrpc': '2.0', 'id': 2, 'method': 'getVersion'}
                 ],
-                ''
+                TRUE
               assertions:
                 - result:status_code IN (200, 502, 503)
                 - CASE WHEN result:status_code = 200 THEN result:data[0]:jsonrpc = '2.0' ELSE true END
@@ -344,12 +344,12 @@ models:
               args: |
                 'POST',
                 'https://ethereum-rpc.publicnode.com',
-                {'Content-Type': 'application/json', 'fsc-quantum-execution-mode': 'async'},
+                {'Content-Type': 'application/json'},
                 [
                   {'jsonrpc': '2.0', 'id': 1, 'method': 'eth_blockNumber', 'params': []},
                   {'jsonrpc': '2.0', 'id': 2, 'method': 'eth_chainId', 'params': []}
                 ],
-                ''
+                TRUE
               assertions:
                 - result:status_code IN (200, 502, 503)
                 - CASE WHEN result:status_code = 200 THEN result:data[0]:jsonrpc = '2.0' ELSE true END

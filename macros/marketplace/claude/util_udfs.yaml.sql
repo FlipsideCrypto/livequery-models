@@ -11,8 +11,8 @@
   options: |
     COMMENT = $$Make calls to Claude API [API docs: Claude](https://docs.anthropic.com/claude/reference/getting-started-with-the-api)$$
   sql: |
-    SELECT 
-    {% set v2_exists = check_udf_api_v2_exists() %}
+    SELECT
+    {% set v2_exists = is_udf_api_v2_compatible() %}
     {% if v2_exists -%}
       live.udf_api_v2(
         'POST',
@@ -55,8 +55,8 @@
   options: |
     COMMENT = $$Make GET requests to Claude API [API docs: Get](https://docs.anthropic.com/claude/reference/get)$$
   sql: |
-    SELECT 
-    {% set v2_exists = check_udf_api_v2_exists() %}
+    SELECT
+    {% set v2_exists = is_udf_api_v2_compatible() %}
     {% if v2_exists -%}
       live.udf_api_v2(
         'GET',
@@ -99,8 +99,8 @@
   options: |
     COMMENT = $$Make DELETE requests to Claude API [API docs: Delete](https://docs.anthropic.com/claude/reference/delete)$$
   sql: |
-    SELECT 
-    {% set v2_exists = check_udf_api_v2_exists() %}
+    SELECT
+    {% set v2_exists = is_udf_api_v2_compatible() %}
     {% if v2_exists -%}
       live.udf_api_v2(
         'DELETE',

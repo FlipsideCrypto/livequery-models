@@ -240,22 +240,10 @@
         conclusion AS job_conclusion,
         html_url AS job_url,
         workflow_name,
-        steps AS failed_steps
+        steps AS failed_steps,
+        {{ schema_name -}}.job_logs(owner, repo, job_id::TEXT) AS logs
       FROM TABLE({{ schema_name -}}.tf_workflow_run_jobs(owner, repo, run_id))
       WHERE conclusion = 'failure'
-    ),
-    jobs_with_logs AS (
-      SELECT
-        run_id,
-        job_id,
-        job_name,
-        job_status,
-        job_conclusion,
-        job_url,
-        workflow_name,
-        failed_steps,
-        {{ schema_name -}}.job_logs(owner, repo, job_id::TEXT) AS logs
-      FROM failed_jobs
     ),
     error_sections AS (
       SELECT
@@ -269,7 +257,7 @@
         failed_steps,
         logs,
         ARRAY_AGG(section.value) AS failed_step_logs
-      FROM jobs_with_logs,
+      FROM failed_jobs,
       LATERAL FLATTEN(INPUT => SPLIT(logs, '##[group]')) section
       WHERE CONTAINS(section.value, '##[error]')
       GROUP BY run_id, job_id, job_name, job_status, job_conclusion, job_url, workflow_name, failed_steps, logs
@@ -285,7 +273,7 @@
       failed_steps,
       logs,
       COALESCE(failed_step_logs, ARRAY_CONSTRUCT()) AS failed_step_logs
-    FROM jobs_with_logs
+    FROM failed_jobs
     LEFT JOIN error_sections USING (run_id, job_id)
 
 - name: {{ schema_name -}}.tf_failure_analysis_with_ai

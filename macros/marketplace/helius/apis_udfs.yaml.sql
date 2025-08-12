@@ -22,15 +22,15 @@
   options: |
     COMMENT = $$Returns the native Solana balance (in lamports) and all token balances for a given address. [Helius docs here](https://docs.helius.xyz/solana-apis/balances-api).$$
   sql: |
-    SELECT 
-    {% set v2_exists = check_udf_api_v2_exists() %}
+    SELECT
+    {% set v2_exists = is_udf_api_v2_compatible() %}
     {% if v2_exists -%}
       live.udf_api_v2(
         'GET',
-        CASE 
-            WHEN NETWORK = 'devnet' THEN 
+        CASE
+            WHEN NETWORK = 'devnet' THEN
                 concat('https://api-devnet.helius.xyz/v0/addresses/', ADDRESS, '/balances?api-key={API_KEY}')
-            ELSE 
+            ELSE
                 concat('https://api.helius.xyz/v0/addresses/', ADDRESS, '/balances?api-key={API_KEY}')
         END,
         {'fsc-quantum-execution-mode': 'async'},
@@ -41,10 +41,10 @@
     {%- else -%}
       live.udf_api(
         'GET',
-        CASE 
-            WHEN NETWORK = 'devnet' THEN 
+        CASE
+            WHEN NETWORK = 'devnet' THEN
                 concat('https://api-devnet.helius.xyz/v0/addresses/', ADDRESS, '/balances?api-key={API_KEY}')
-            ELSE 
+            ELSE
                 concat('https://api.helius.xyz/v0/addresses/', ADDRESS, '/balances?api-key={API_KEY}')
         END,
         {},
