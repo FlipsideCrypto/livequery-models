@@ -16,9 +16,10 @@
       live.udf_api_v2(
         'GET',
         'https://api.github.com/octocat',
-        {'Authorization': 'Bearer {TOKEN}', 'X-GitHub-Api-Version': '2022-11-28', 'fsc-quantum-execution-mode': 'async'},
+        {'Authorization': 'Bearer {TOKEN}', 'X-GitHub-Api-Version': '2022-11-28'},
         {},
-        IFF(_utils.udf_whoami() <> CURRENT_USER(), '_FSC_SYS/GITHUB', 'Vault/github/api')
+        IFF(_utils.udf_whoami() <> CURRENT_USER(), '_FSC_SYS/GITHUB', 'Vault/github/api'),
+        TRUE
       )
     {%- else -%}
       live.udf_api(
@@ -43,7 +44,6 @@
     SELECT '{"Authorization": "Bearer {TOKEN}",
             "X-GitHub-Api-Version": "2022-11-28",
             "Accept": "application/vnd.github+json",
-            "fsc-quantum-execution-mode": "async"
             }'
 
 - name: {{ schema_name -}}.get_api
@@ -63,7 +63,8 @@
         CONCAT_WS('/', 'https://api.github.com',  route || '?') || utils.udf_urlencode(query),
         PARSE_JSON({{ schema_name -}}.headers()),
         {},
-        IFF(_utils.udf_whoami() <> CURRENT_USER(), '_FSC_SYS/GITHUB', 'Vault/github/api')
+        IFF(_utils.udf_whoami() <> CURRENT_USER(), '_FSC_SYS/GITHUB', 'Vault/github/api'),
+        TRUE
       )
     {%- else -%}
       live.udf_api(
@@ -92,7 +93,8 @@
         CONCAT_WS('/', 'https://api.github.com', route),
         PARSE_JSON({{ schema_name -}}.headers()),
         data,
-        IFF(_utils.udf_whoami() <> CURRENT_USER(), '_FSC_SYS/GITHUB', 'Vault/github/api')
+        IFF(_utils.udf_whoami() <> CURRENT_USER(), '_FSC_SYS/GITHUB', 'Vault/github/api'),
+        TRUE
       )
     {%- else -%}
       live.udf_api(
@@ -121,7 +123,8 @@
         CONCAT_WS('/', 'https://api.github.com', route),
         PARSE_JSON({{ schema_name -}}.headers()),
         data,
-        IFF(_utils.udf_whoami() <> CURRENT_USER(), '_FSC_SYS/GITHUB', 'Vault/github/api')
+        IFF(_utils.udf_whoami() <> CURRENT_USER(), '_FSC_SYS/GITHUB', 'Vault/github/api'),
+        TRUE
       )
     {%- else -%}
       live.udf_api(
