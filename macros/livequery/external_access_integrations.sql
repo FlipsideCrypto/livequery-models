@@ -1,8 +1,4 @@
 {% macro create_s3_express_external_access_integration() %}
-  {% set use_schema_sql %}
-    USE SCHEMA live
-  {% endset %}
-
   {% set network_rule_sql %}
     CREATE NETWORK RULE IF NOT EXISTS s3_express_network_rule
     MODE = EGRESS
