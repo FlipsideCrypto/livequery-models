@@ -4,4 +4,4 @@ packages:
   - package: dbt-labs/dbt_utils
     version: [">=1.0.0", "<1.1.0"]
   - git: https://github.com/FlipsideCrypto/livequery-models.git
-    revision: "v1.10.1"
+    revision: "v1.10.2"
