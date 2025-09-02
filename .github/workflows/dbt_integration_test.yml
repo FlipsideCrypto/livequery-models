@@ -41,6 +41,6 @@ jobs:
     uses: ./.github/workflows/dbt.yml
     secrets: inherit
     with:
-      warehouse: ${{ (github.event.inputs.environment == 'prod' || github.event.inputs.environment == 'workflow_prod') && 'DBT_CLOUD' || 'XSMALL' }}
+      warehouse: ${{ (github.event.inputs.environment == 'workflow_prod' || github.event.inputs.environment == 'workflow_dev') && 'DBT_CLOUD' || 'XSMALL' }}
       environment: ${{ github.event.inputs.environment == 'workflow_prod' && 'prod' || (github.event.inputs.environment == 'workflow_dev' && 'dev' || github.event.inputs.environment) }}
       command: dbt test -s test___utils_udf_introspect
