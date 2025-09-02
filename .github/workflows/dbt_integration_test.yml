@@ -3,14 +3,21 @@ run-name: ${{ github.event.inputs.branch }}
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        required: false
+        type: string
+        default: hosted
   schedule:
-    # Runs “Daily at midnight GMT” (see https://crontab.guru)
+    # Runs "Daily at midnight GMT" (see https://crontab.guru)
     - cron: '0 0 * * *'
 
 concurrency: ${{ github.workflow }}
 
 jobs:
-  test:
+  # For scheduled runs, run both environments
+  test-scheduled:
+    if: ${{ github.event_name == 'schedule' }}
     name: ${{ matrix.environment }}
     uses: ./.github/workflows/dbt.yml
     secrets: inherit
@@ -25,4 +32,15 @@ jobs:
     with:
       warehouse: ${{ matrix.warehouse }}
       environment: ${{ matrix.environment }}
+      command: dbt test -s test___utils_udf_introspect
+
+  # For manual dispatch, run only the specified environment
+  test-dispatch:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    name: ${{ github.event.inputs.environment }}
+    uses: ./.github/workflows/dbt.yml
+    secrets: inherit
+    with:
+      warehouse: ${{ (github.event.inputs.environment == 'workflow_prod' || github.event.inputs.environment == 'workflow_dev') && 'DBT_CLOUD' || 'XSMALL' }}
+      environment: ${{ github.event.inputs.environment == 'workflow_prod' && 'prod' || (github.event.inputs.environment == 'workflow_dev' && 'dev' || github.event.inputs.environment) }}
       command: dbt test -s test___utils_udf_introspect
