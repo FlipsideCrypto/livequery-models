@@ -1,17 +1,46 @@
-name: dbt_run_integration_test
+name: integration test
 run-name: ${{ github.event.inputs.branch }}
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        required: false
+        type: string
+        default: hosted
+  schedule:
+    # Runs "Daily at midnight GMT" (see https://crontab.guru)
+    - cron: '0 0 * * *'
 
 concurrency: ${{ github.workflow }}
 
 jobs:
-  called_workflow_template:
-    uses: FlipsideCrypto/analytics-workflow-templates/.github/workflows/dbt.yml@main
-    with:
-      command: >
-        dbt test --selector 'integration_tests'
-      environment:  ${{ github.ref == 'refs/heads/main' && 'workflow_prod' || 'workflow_dev' }}
-      warehouse: ${{ vars.WAREHOUSE }}
+  # For scheduled runs, run both environments
+  test-scheduled:
+    if: ${{ github.event_name == 'schedule' }}
+    name: ${{ matrix.environment }}
+    uses: ./.github/workflows/dbt.yml
     secrets: inherit
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - environment: hosted
+            warehouse: XSMALL
+          - environment: prod
+            warehouse: DBT_CLOUD
+    with:
+      warehouse: ${{ matrix.warehouse }}
+      environment: ${{ matrix.environment }}
+      command: dbt test -s test___utils_udf_introspect
+
+  # For manual dispatch, run only the specified environment
+  test-dispatch:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    name: ${{ github.event.inputs.environment }}
+    uses: ./.github/workflows/dbt.yml
+    secrets: inherit
+    with:
+      warehouse: ${{ github.event.inputs.environment == 'prod' && 'DBT_CLOUD' || 'XSMALL' }}
+      environment: ${{ github.event.inputs.environment }}
+      command: dbt test -s test___utils_udf_introspect
